@@ -7,33 +7,6 @@ datasource db {
   provider = "postgresql"
 }
 
-enum TenantStatus {
-  TRIAL
-  ACTIVE
-  SUSPENDED
-}
-
-enum DomainDnsStatus {
-  PENDING
-  VERIFIED
-  ERROR
-}
-
-enum DomainSslStatus {
-  PENDING
-  ACTIVE
-  ERROR
-}
-
-enum UserRole {
-  OWNER
-  ADMIN
-}
-
-enum LeadSource {
-  FORMULARIO
-}
-
 model Tenant {
   id           String          @id @default(cuid())
   name         String
@@ -44,13 +17,13 @@ model Tenant {
   createdAt    DateTime        @default(now())
   updatedAt    DateTime        @updatedAt
   deletedAt    DateTime?
+  auditLogs    AuditLog[]
   domains      Domain[]
-  settings     TenantSettings?
-  profile      TenantProfile?
-  users        User[]
   faqs         Faq[]
   leads        Lead[]
-  auditLogs    AuditLog[]
+  profile      TenantProfile?
+  settings     TenantSettings?
+  users        User[]
 
   @@index([status])
 }
@@ -65,7 +38,7 @@ model Domain {
   createdAt DateTime        @default(now())
   updatedAt DateTime        @updatedAt
   deletedAt DateTime?
-  tenant    Tenant          @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  tenant    Tenant          @relation(fields: [tenantId], references: [id])
 
   @@index([tenantId, createdAt])
   @@index([tenantId, isPrimary])
@@ -110,8 +83,8 @@ model User {
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
   deletedAt    DateTime?
-  tenant       Tenant     @relation(fields: [tenantId], references: [id], onDelete: Restrict)
   auditLogs    AuditLog[]
+  tenant       Tenant     @relation(fields: [tenantId], references: [id])
 
   @@unique([tenantId, email])
   @@index([tenantId, createdAt])
@@ -126,7 +99,7 @@ model Faq {
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
-  tenant    Tenant    @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  tenant    Tenant    @relation(fields: [tenantId], references: [id])
 
   @@unique([tenantId, position])
   @@index([tenantId, createdAt])
@@ -142,7 +115,7 @@ model Lead {
   consentedAt DateTime
   createdAt   DateTime   @default(now())
   deletedAt   DateTime?
-  tenant      Tenant     @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  tenant      Tenant     @relation(fields: [tenantId], references: [id])
 
   @@index([tenantId, createdAt])
 }
@@ -155,9 +128,36 @@ model AuditLog {
   resource  String
   metadata  Json?
   createdAt DateTime @default(now())
-  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Restrict)
-  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  tenant    Tenant   @relation(fields: [tenantId], references: [id])
+  user      User?    @relation(fields: [userId], references: [id])
 
   @@index([tenantId, createdAt])
   @@index([userId, createdAt])
+}
+
+enum TenantStatus {
+  TRIAL
+  ACTIVE
+  SUSPENDED
+}
+
+enum DomainDnsStatus {
+  PENDING
+  VERIFIED
+  ERROR
+}
+
+enum DomainSslStatus {
+  PENDING
+  ACTIVE
+  ERROR
+}
+
+enum UserRole {
+  OWNER
+  ADMIN
+}
+
+enum LeadSource {
+  FORMULARIO
 }

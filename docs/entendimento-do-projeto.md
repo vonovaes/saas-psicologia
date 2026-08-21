@@ -316,10 +316,155 @@ O desenvolvimento será feito de forma guiada, com mudanças pequenas e verific�
 - O npm incluído com o Node está presente e funcional quando executado com o prefixo correto; portanto, isso não bloqueia a criação do projeto.
 - Antes do uso cotidiano do ambiente, a ação recomendada é reinstalar o Node.js em versão LTS para restaurar a configuração padrão do npm. Essa ação altera o ambiente global da máquina e será feita apenas com confirmação explícita.
 
-### Andamento da Fase 0
+### Andamento da Fase 0 - Atualizado (21/08/2026)
 
-- Foi criado o projeto Next.js em `saas-psicologos/`, com Next.js 16, React 19, TypeScript 5, Tailwind CSS 4, ESLint e App Router.
-- A estrutura utiliza `src/` e o alias de importação `@/*`.
-- As dependências foram instaladas e a verificação inicial do ESLint foi concluída sem erros.
-- O projeto possui repositório Git local, sem commits e sem remoto configurado.
-- Os documentos de planejamento e o arquivo draw.io ainda estão na pasta pai. Antes do primeiro commit, eles devem ser movidos para uma pasta `docs/` dentro do repositório ou o repositório deve ser criado na pasta pai, conforme a organização que for escolhida.
+- ✅ Projeto Next.js criado em `saas-psicologos/`, com Next.js 16, React 19, TypeScript 5, Tailwind CSS 4, ESLint e App Router.
+- ✅ Estrutura com `src/` e alias de importação `@/*`.
+- ✅ Dependências instaladas e ESLint validado.
+- ✅ Prisma 7.9.1 configurado com PostgreSQL (Neon)
+- ✅ Schema multi-tenant completo implementado (8 tabelas, enums, índices, soft delete)
+- ✅ Migration inicial criada e aplicada no banco Neon
+- ✅ Camada de backend implementada:
+  - Repository Pattern com tenant-aware (BaseRepository)
+  - Services para todas as entidades (Tenant, User, Domain, Profile, Lead, FAQ, Settings, AuditLog)
+  - DTOs com Zod para validação
+  - Factory para repositories com contexto de tenant
+- ✅ Middleware de resolução de tenant por host
+- ✅ TenantContext para acesso ao contexto de tenant
+- ✅ Sistema de autenticação com Auth.js v5 (Credentials provider)
+- ✅ Hash de senhas com bcrypt
+- ✅ Script de seed para dados de teste
+- ✅ Páginas de login e dashboard básicas
+- ✅ Variáveis de ambiente configuradas
+- ✅ **Login funcional** (email/senha autenticados corretamente)
+- 🔄 **EM PROGRESSO**: Implementação das telas do painel administrativo
+
+### Problemas Conhecidos e Soluções
+
+1. **Email de teste inválido**: Zod rejeitava `admin@localhost` como email inválido
+   - **Solução**: Alterado para `admin@psicologos.test` e ajustado validador para permitir emails locais
+2. **Edge Runtime com Prisma**: Middleware não pode usar Prisma diretamente
+   - **Solução**: Usar API interna `/api/tenant-resolve` para resolver tenant
+3. **Contexto de tenant no login**: Middleware não injetava contexto para rotas de login
+   - **Solução**: Middleware agora resolve tenant para rotas de login e injeta headers apropriados
+4. **Índice único composto no Prisma**: `findUnique` não aceitava apenas `email` devido ao índice `tenantId_email`
+   - **Solução**: Alterado para `findFirst` que funciona com filtros normais
+5. **Auth.js v5 authorize callback**: Não tem acesso fácil ao contexto de request do middleware
+   - **Solução**: Buscar usuário globalmente pelo email e validar tenant status dentro do próprio callback
+
+### Credenciais de Teste Atuais
+
+- **Email:** admin@psicologos.test
+- **Senha:** password123
+- **Domínio:** localhost
+- **Tenant ID:** cmt3gfd810000esty7e875mqj
+
+## Próximas Etapas do Projeto
+
+### Fase 3 - Painel Administrativo (Próxima Fase)
+
+1. **Tela de Edição de Perfil**
+   - Formulário para editar nome, CRP, especialidades, cidade, descrição, endereço
+   - Upload de foto profissional (Vercel Blob)
+   - Configuração de tipo de atendimento (presencial, online, ambos)
+   - Validação com Zod DTOs existentes
+
+2. **Tela de Gestão de FAQ**
+   - Lista de perguntas e respostas
+   - CRUD completo (criar, editar, excluir, reordenar)
+   - Preview de como aparece na landing page
+
+3. **Tela de Configurações**
+   - Número de WhatsApp
+   - Handle do Instagram
+   - URL do Google Maps Embed
+   - IDs de analytics (GTM, GA4, Google Ads, Meta Pixel)
+
+4. **Tela de Domínios**
+   - Listar domínios configurados
+   - Adicionar novo domínio
+   - Mostrar status de DNS e SSL
+   - Instruções de configuração DNS
+   - Integração com Vercel Domains API
+
+5. **Tela de Leads**
+   - Lista de leads recebidos
+   - Filtros por data e origem
+   - Detalhes do lead
+   - Exportação simples
+
+### Fase 4 - Landing Page Pública
+
+1. **Componentes da Landing Page**
+   - Hero section com foto, nome, especialidade e CTA de WhatsApp
+   - Seção de credibilidade (CRP, experiência, abordagem)
+   - Seção de especialidades
+   - Seção sobre o profissional
+   - Como funciona o atendimento
+   - Localização/mapa
+   - FAQ pública
+   - CTA final e botão flutuante de WhatsApp
+
+2. **Formulário de Contato**
+   - Captura de nome, telefone e mensagem
+   - Consentimento de privacidade
+   - Validação e rate limiting
+   - Criação de lead no banco
+
+3. **Tracking de Conversão**
+   - Integração com GTM
+   - Eventos de tracking (click_whatsapp, form_submit, click_maps, page_view)
+   - Injeção de scripts por tenant
+
+### Fase 5 - Domínios Personalizados e SSL
+
+1. **Integração Vercel Domains API**
+   - Adicionar domínio ao projeto Vercel
+   - Validar configuração DNS
+   - Monitorar status de SSL
+   - Renovação automática
+
+2. **Validação de DNS**
+   - Verificar registros configurados
+   - Mostrar instruções ao usuário
+   - Status em tempo real
+
+### Fase 6 - Analytics e Tracking
+
+1. **Implementação de Tracking**
+   - dataLayer por tenant
+   - Injeção condicional de scripts
+   - Eventos de conversão personalizados
+
+2. **Configuração por Tenant**
+   - Interface para configurar IDs
+   - Preview de scripts injetados
+   - Validação de formatos
+
+### Fase 7 - Segurança e LGPD
+
+1. **Segurança**
+   - Rate limiting em rotas públicas
+   - Validação de uploads
+   - Headers de segurança
+   - Proteção contra CSRF
+
+2. **LGPD**
+   - Política de privacidade
+   - Fluxo de exclusão de dados
+   - Consentimento explícito
+   - Auditoria de ações sensíveis
+
+### Fase 8 - Preparação para Produção
+
+1. **Ambiente de Produção**
+   - Configuração de variáveis de ambiente
+   - Setup de domínio principal
+   - Backup e restore
+   - Monitoramento
+
+2. **Onboarding Manual**
+   - Processo para novos clientes
+   - Checklist de configuração
+   - Documentação de suporte
+   - Soft launch com 2-5 clientes

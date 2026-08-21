@@ -64,4 +64,8 @@ export class LeadService {
   async getRecentLeads(limit: number = 10): Promise<Lead[]> {
     return this.leadRepository.listAll({ limit });
   }
+
+  async getLeadsByDateRange(startDate?: Date, endDate?: Date): Promise<Lead[]> {
+    return this.leadRepository.findByDateRange(startDate, endDate);
+  }
 }

@@ -3,6 +3,7 @@ import type { NextRequest } from 'next/server';
 
 // Rotas que não precisam de resolução de tenant
 const PUBLIC_ROUTES = [
+  '/',
   '/api/health',
   '/api/public',
   '/api/tenant-resolve',
@@ -12,6 +13,8 @@ const PUBLIC_ROUTES = [
   '/api/debug-tenant',
   '/api/auth',
   '/api/profile',
+  '/api/faq',
+  '/api/lead',
   '/login',
   '/_next',
   '/favicon.ico',
@@ -22,6 +25,8 @@ const PUBLIC_ROUTES = [
 const PROTECTED_ROUTES = [
   '/dashboard',
   '/profile',
+  '/faq',
+  '/leads',
 ];
 
 function validateHost(host: string): boolean {
@@ -132,11 +137,12 @@ export const config = {
   matcher: [
     /*
      * Match all request paths except:
+     * - root path (landing page)
      * - api routes that don't need tenant resolution
      * - _next/static (static files)
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
      */
-    '/((?!api/health|api/public|api/tenant-resolve|api/test-tenant-resolution|api/test-resolve|api/test-db|api/debug-tenant|api/auth|api/profile|_next/static|_next/image|favicon.ico).*)',
+    '/((?!^$|api/health|api/public|api/tenant-resolve|api/test-tenant-resolution|api/test-resolve|api/test-db|api/debug-tenant|api/auth|api/profile|api/faq|api/lead|_next/static|_next/image|favicon.ico).*)',
   ],
 };

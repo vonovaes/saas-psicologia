@@ -3,3 +3,4 @@ export { Textarea } from './Textarea';
 export { Select } from './Select';
 export { Button } from './Button';
 export { FieldGroup } from './FieldGroup';
+export { Accordion, AccordionItem } from './Accordion';

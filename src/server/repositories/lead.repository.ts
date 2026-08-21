@@ -65,4 +65,23 @@ export class LeadRepository extends BaseRepository {
       },
     });
   }
+
+  async findByDateRange(startDate?: Date, endDate?: Date): Promise<Lead[]> {
+    const dateFilter: any = {};
+    
+    if (startDate) {
+      dateFilter.gte = startDate;
+    }
+    if (endDate) {
+      dateFilter.lte = endDate;
+    }
+
+    return prisma.lead.findMany({
+      where: {
+        ...this.baseFilters,
+        ...(Object.keys(dateFilter).length > 0 && { createdAt: dateFilter }),
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+  }
 }

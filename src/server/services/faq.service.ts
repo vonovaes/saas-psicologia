@@ -62,6 +62,14 @@ export class FaqService {
     return this.faqRepository.listAll();
   }
 
+  async getAllFaqs(): Promise<Faq[]> {
+    return this.faqRepository.listAll();
+  }
+
+  async deleteFaq(id: string): Promise<void> {
+    await this.softDeleteFaq(id);
+  }
+
   async reorderFaqs(updates: { id: string; position: number }[]): Promise<void> {
     await this.faqRepository.updatePositions(updates);
 

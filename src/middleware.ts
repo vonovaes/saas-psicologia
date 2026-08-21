@@ -11,6 +11,7 @@ const PUBLIC_ROUTES = [
   '/api/test-db',
   '/api/debug-tenant',
   '/api/auth',
+  '/api/profile',
   '/login',
   '/_next',
   '/favicon.ico',
@@ -20,6 +21,7 @@ const PUBLIC_ROUTES = [
 // Rotas do painel administrativo (precisam de autenticação)
 const PROTECTED_ROUTES = [
   '/dashboard',
+  '/profile',
 ];
 
 function validateHost(host: string): boolean {
@@ -135,6 +137,6 @@ export const config = {
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
      */
-    '/((?!api/health|api/public|api/tenant-resolve|api/test-tenant-resolution|api/test-resolve|api/test-db|api/debug-tenant|api/auth|_next/static|_next/image|favicon.ico).*)',
+    '/((?!api/health|api/public|api/tenant-resolve|api/test-tenant-resolution|api/test-resolve|api/test-db|api/debug-tenant|api/auth|api/profile|_next/static|_next/image|favicon.ico).*)',
   ],
 };

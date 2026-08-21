@@ -19,7 +19,7 @@ export default function LoginPage() {
       const result = await signIn('credentials', {
         email,
         password,
-        redirect: false,
+        callbackUrl: '/dashboard',
       });
 
       console.log('Resultado do login:', result);
@@ -27,9 +27,6 @@ export default function LoginPage() {
       if (result?.error) {
         setError('Credenciais inválidas');
         console.error('Erro de login:', result.error);
-      } else if (result?.ok) {
-        console.log('Login bem-sucedido, redirecionando...');
-        window.location.href = '/dashboard';
       }
     } catch (error) {
       console.error('Erro no login:', error);

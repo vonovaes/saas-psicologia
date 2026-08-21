@@ -1,0 +1,485 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/27.0.9 Chrome/134.0.6998.205 Electron/35.4.0 Safari/537.36" version="27.0.9">
+  <diagram name="Página-1" id="ckFqAkG9w8wuaVE-avY4">
+    <mxGraphModel dx="2620" dy="1971" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="cPl3ceWjCS6YshrA1ShO-4" value="Usuários" style="swimlane;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="50" y="110" width="220" height="260" as="geometry" />
+        </mxCell>
+        <mxCell id="cPl3ceWjCS6YshrA1ShO-5" value="Paciente" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="cPl3ceWjCS6YshrA1ShO-4">
+          <mxGeometry x="50" y="40" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="cPl3ceWjCS6YshrA1ShO-6" value="Psicólogo" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="cPl3ceWjCS6YshrA1ShO-4">
+          <mxGeometry x="50" y="160" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="cPl3ceWjCS6YshrA1ShO-7" value="Internet e Domínios" style="swimlane;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="320" y="110" width="220" height="340" as="geometry" />
+        </mxCell>
+        <mxCell id="cPl3ceWjCS6YshrA1ShO-8" value="Domínio do psicólogo&lt;div&gt;ex: psicologaana.com.br&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="cPl3ceWjCS6YshrA1ShO-7">
+          <mxGeometry x="50" y="40" width="130" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="cPl3ceWjCS6YshrA1ShO-9" value="Domínio do painel&lt;br&gt;ex&lt;br&gt;app.plataforma.com.br" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="cPl3ceWjCS6YshrA1ShO-7">
+          <mxGeometry x="50" y="160" width="132.5" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="cPl3ceWjCS6YshrA1ShO-10" value="Provedor DNS do cliente" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="cPl3ceWjCS6YshrA1ShO-7">
+          <mxGeometry x="50" y="260" width="132.5" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="cPl3ceWjCS6YshrA1ShO-11" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="cPl3ceWjCS6YshrA1ShO-6" target="cPl3ceWjCS6YshrA1ShO-9">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="cPl3ceWjCS6YshrA1ShO-14" value="Acessa o painel" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="cPl3ceWjCS6YshrA1ShO-11">
+          <mxGeometry x="0.03" y="-1" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="cPl3ceWjCS6YshrA1ShO-12" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="cPl3ceWjCS6YshrA1ShO-5" target="cPl3ceWjCS6YshrA1ShO-8">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="cPl3ceWjCS6YshrA1ShO-13" value="Acessa a Página" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="cPl3ceWjCS6YshrA1ShO-12">
+          <mxGeometry x="-0.02" relative="1" as="geometry">
+            <mxPoint y="-1" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="cPl3ceWjCS6YshrA1ShO-15" value="Versel" style="swimlane;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="590" y="80" width="1390" height="410" as="geometry" />
+        </mxCell>
+        <mxCell id="cPl3ceWjCS6YshrA1ShO-26" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="cPl3ceWjCS6YshrA1ShO-15" source="cPl3ceWjCS6YshrA1ShO-16" target="cPl3ceWjCS6YshrA1ShO-25">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="cPl3ceWjCS6YshrA1ShO-16" value="CND + HTTPS/SSL&lt;br&gt;Versel Domains" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="cPl3ceWjCS6YshrA1ShO-15">
+          <mxGeometry x="50" y="140" width="130" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="cPl3ceWjCS6YshrA1ShO-24" value="Aplicação Next.js" style="swimlane;whiteSpace=wrap;html=1;startSize=23;" vertex="1" parent="cPl3ceWjCS6YshrA1ShO-15">
+          <mxGeometry x="210" y="50" width="1160" height="330" as="geometry" />
+        </mxCell>
+        <mxCell id="cPl3ceWjCS6YshrA1ShO-32" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.25;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="cPl3ceWjCS6YshrA1ShO-24" source="cPl3ceWjCS6YshrA1ShO-25" target="cPl3ceWjCS6YshrA1ShO-29">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="318" y="140" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="cPl3ceWjCS6YshrA1ShO-33" value="Tenant pelo Host" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="cPl3ceWjCS6YshrA1ShO-32">
+          <mxGeometry x="-0.2827" y="-6" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="cPl3ceWjCS6YshrA1ShO-37" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="cPl3ceWjCS6YshrA1ShO-24" source="cPl3ceWjCS6YshrA1ShO-25" target="cPl3ceWjCS6YshrA1ShO-36">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="250" y="110" />
+              <mxPoint x="250" y="110" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="cPl3ceWjCS6YshrA1ShO-38" value="Tenant pelo Host" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="cPl3ceWjCS6YshrA1ShO-37">
+          <mxGeometry x="-0.262" y="2" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="cPl3ceWjCS6YshrA1ShO-25" value="Middleware&lt;br&gt;Lê Host e resolve tenant" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="cPl3ceWjCS6YshrA1ShO-24">
+          <mxGeometry x="50" y="91" width="130" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="cPl3ceWjCS6YshrA1ShO-35" value="Login e Edição" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="cPl3ceWjCS6YshrA1ShO-24" source="cPl3ceWjCS6YshrA1ShO-29" target="cPl3ceWjCS6YshrA1ShO-34">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="cPl3ceWjCS6YshrA1ShO-42" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="cPl3ceWjCS6YshrA1ShO-24" source="cPl3ceWjCS6YshrA1ShO-29" target="cPl3ceWjCS6YshrA1ShO-39">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="400" y="280" />
+              <mxPoint x="880" y="280" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="cPl3ceWjCS6YshrA1ShO-43" value="Solicita URL Pré-assinada" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="cPl3ceWjCS6YshrA1ShO-42">
+          <mxGeometry x="-0.1028" y="3" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="cPl3ceWjCS6YshrA1ShO-29" value="Painel Administrativo" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="cPl3ceWjCS6YshrA1ShO-24">
+          <mxGeometry x="285" y="190" width="130" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="cPl3ceWjCS6YshrA1ShO-40" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="cPl3ceWjCS6YshrA1ShO-24" source="cPl3ceWjCS6YshrA1ShO-34" target="cPl3ceWjCS6YshrA1ShO-39">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="cPl3ceWjCS6YshrA1ShO-41" value="Sessão com tenantID" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="cPl3ceWjCS6YshrA1ShO-40">
+          <mxGeometry x="0.22" y="4" relative="1" as="geometry">
+            <mxPoint x="-17" y="4" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="cPl3ceWjCS6YshrA1ShO-34" value="Auth&lt;div&gt;Sessão e autorização&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="cPl3ceWjCS6YshrA1ShO-24">
+          <mxGeometry x="520" y="190" width="130" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="cPl3ceWjCS6YshrA1ShO-44" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="cPl3ceWjCS6YshrA1ShO-24" source="cPl3ceWjCS6YshrA1ShO-36" target="cPl3ceWjCS6YshrA1ShO-39">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="880" y="130" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="cPl3ceWjCS6YshrA1ShO-45" value="Consulta conteúdo do tenant" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="cPl3ceWjCS6YshrA1ShO-44">
+          <mxGeometry x="-0.2763" y="4" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="cPl3ceWjCS6YshrA1ShO-46" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.25;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="cPl3ceWjCS6YshrA1ShO-24" source="cPl3ceWjCS6YshrA1ShO-36" target="cPl3ceWjCS6YshrA1ShO-39">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="495" y="160" />
+              <mxPoint x="845" y="160" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="cPl3ceWjCS6YshrA1ShO-47" value="Envio de formulário" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="cPl3ceWjCS6YshrA1ShO-46">
+          <mxGeometry x="-0.4075" y="3" relative="1" as="geometry">
+            <mxPoint x="66" y="-2" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="cPl3ceWjCS6YshrA1ShO-49" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="cPl3ceWjCS6YshrA1ShO-24" source="cPl3ceWjCS6YshrA1ShO-36" target="cPl3ceWjCS6YshrA1ShO-48">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="cPl3ceWjCS6YshrA1ShO-50" value="Consulta conteúdo do tenant" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="cPl3ceWjCS6YshrA1ShO-49">
+          <mxGeometry x="0.3057" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="cPl3ceWjCS6YshrA1ShO-36" value="Landing page pública&lt;div&gt;Server components&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="cPl3ceWjCS6YshrA1ShO-24">
+          <mxGeometry x="430" y="80" width="130" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="cPl3ceWjCS6YshrA1ShO-51" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.25;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="cPl3ceWjCS6YshrA1ShO-24" source="cPl3ceWjCS6YshrA1ShO-39" target="cPl3ceWjCS6YshrA1ShO-48">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="cPl3ceWjCS6YshrA1ShO-39" value="&lt;div&gt;Route Handlers / Server&lt;/div&gt;&lt;div&gt;Actions&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="cPl3ceWjCS6YshrA1ShO-24">
+          <mxGeometry x="810" y="190" width="140" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="cPl3ceWjCS6YshrA1ShO-48" value="&lt;div&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;Services - Repositories&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;tenant-aware&lt;/span&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="cPl3ceWjCS6YshrA1ShO-24">
+          <mxGeometry x="1000" y="130" width="140" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="cPl3ceWjCS6YshrA1ShO-20" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="cPl3ceWjCS6YshrA1ShO-9" target="cPl3ceWjCS6YshrA1ShO-16">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="cPl3ceWjCS6YshrA1ShO-21" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="cPl3ceWjCS6YshrA1ShO-8" target="cPl3ceWjCS6YshrA1ShO-16">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="cPl3ceWjCS6YshrA1ShO-22" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.181;entryY=1.075;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="cPl3ceWjCS6YshrA1ShO-10" target="cPl3ceWjCS6YshrA1ShO-16">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="cPl3ceWjCS6YshrA1ShO-23" value="Configuração CNAME/A" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="cPl3ceWjCS6YshrA1ShO-22">
+          <mxGeometry x="-0.5152" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="cPl3ceWjCS6YshrA1ShO-30" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.642;entryY=1.033;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="cPl3ceWjCS6YshrA1ShO-6" target="cPl3ceWjCS6YshrA1ShO-29">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="210" y="520" />
+              <mxPoint x="1169" y="520" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="cPl3ceWjCS6YshrA1ShO-31" value="Informa domínio" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="cPl3ceWjCS6YshrA1ShO-30">
+          <mxGeometry x="-0.0482" y="-1" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="cPl3ceWjCS6YshrA1ShO-52" value="Dados e arquivos" style="swimlane;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="2050" y="120" width="280" height="345" as="geometry" />
+        </mxCell>
+        <mxCell id="cPl3ceWjCS6YshrA1ShO-53" value="Neon PostgresSQL&lt;div&gt;Dados multi-tenant&lt;/div&gt;" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.database;whiteSpace=wrap;" vertex="1" parent="cPl3ceWjCS6YshrA1ShO-52">
+          <mxGeometry x="80" y="36" width="120" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="cPl3ceWjCS6YshrA1ShO-55" value="&lt;div&gt;Storage de imagens&lt;/div&gt;&lt;div&gt;R2 ou Vercel Blob&lt;/div&gt;" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.database;whiteSpace=wrap;" vertex="1" parent="cPl3ceWjCS6YshrA1ShO-52">
+          <mxGeometry x="80" y="205" width="120" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="cPl3ceWjCS6YshrA1ShO-56" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="cPl3ceWjCS6YshrA1ShO-48" target="cPl3ceWjCS6YshrA1ShO-53">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="cPl3ceWjCS6YshrA1ShO-57" value="Queries sempre filtradas&lt;div&gt;por tenantID&lt;/div&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="cPl3ceWjCS6YshrA1ShO-56">
+          <mxGeometry x="0.0839" y="6" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="cPl3ceWjCS6YshrA1ShO-58" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=1;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="cPl3ceWjCS6YshrA1ShO-36" target="cPl3ceWjCS6YshrA1ShO-55">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1295" y="530" />
+              <mxPoint x="2190" y="530" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="cPl3ceWjCS6YshrA1ShO-59" value="Carrega Fotos" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="cPl3ceWjCS6YshrA1ShO-58">
+          <mxGeometry x="0.1707" y="4" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="cPl3ceWjCS6YshrA1ShO-60" value="Integrações do cliente" style="swimlane;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="1670" y="-340" width="390" height="345" as="geometry" />
+        </mxCell>
+        <mxCell id="cPl3ceWjCS6YshrA1ShO-68" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="cPl3ceWjCS6YshrA1ShO-60" source="cPl3ceWjCS6YshrA1ShO-63" target="cPl3ceWjCS6YshrA1ShO-66">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="cPl3ceWjCS6YshrA1ShO-63" value="&lt;div&gt;Google Tag Manager&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="cPl3ceWjCS6YshrA1ShO-60">
+          <mxGeometry x="20" y="60" width="130" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="cPl3ceWjCS6YshrA1ShO-64" value="&lt;div&gt;Whatsapp&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="cPl3ceWjCS6YshrA1ShO-60">
+          <mxGeometry x="20" y="140" width="130" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="cPl3ceWjCS6YshrA1ShO-65" value="&lt;div&gt;Google Maps&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="cPl3ceWjCS6YshrA1ShO-60">
+          <mxGeometry x="20" y="230" width="130" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="cPl3ceWjCS6YshrA1ShO-66" value="&lt;div&gt;GA4 / Google ADS&lt;/div&gt;&lt;div&gt;Meta pixel opcional&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="cPl3ceWjCS6YshrA1ShO-60">
+          <mxGeometry x="240" y="59" width="130" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="cPl3ceWjCS6YshrA1ShO-69" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="cPl3ceWjCS6YshrA1ShO-36" target="cPl3ceWjCS6YshrA1ShO-63">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1320" y="-255" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="cPl3ceWjCS6YshrA1ShO-72" value="Injeta container do tenant" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="cPl3ceWjCS6YshrA1ShO-69">
+          <mxGeometry x="0.4744" y="-1" relative="1" as="geometry">
+            <mxPoint x="-1" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="cPl3ceWjCS6YshrA1ShO-70" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="cPl3ceWjCS6YshrA1ShO-36" target="cPl3ceWjCS6YshrA1ShO-64">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1320" y="-175" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="cPl3ceWjCS6YshrA1ShO-73" value="CTA/ Evento&lt;div&gt;click_whatsapp&lt;/div&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="cPl3ceWjCS6YshrA1ShO-70">
+          <mxGeometry x="0.4065" y="3" relative="1" as="geometry">
+            <mxPoint x="-1" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="cPl3ceWjCS6YshrA1ShO-71" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="cPl3ceWjCS6YshrA1ShO-36" target="cPl3ceWjCS6YshrA1ShO-65">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1320" y="-85" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="cPl3ceWjCS6YshrA1ShO-74" value="Mapa ou Link" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="cPl3ceWjCS6YshrA1ShO-71">
+          <mxGeometry x="0.3501" y="-3" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram name="Fluxo interno e isolamento" id="tenant-isolamento-001">
+    <mxGraphModel dx="1600" dy="1000" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="ti-1" value="Fluxo interno da requisição e isolamento de tenants" style="text;html=1;align=left;verticalAlign=middle;fontSize=20;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="50" y="30" width="720" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="ti-2" value="Entrada" style="swimlane;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="50" y="120" width="190" height="220" as="geometry" />
+        </mxCell>
+        <mxCell id="ti-3" value="Requisição HTTP&lt;div&gt;Host + cookies/sessão&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="ti-2">
+          <mxGeometry x="30" y="70" width="130" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="ti-4" value="Aplicação Next.js" style="swimlane;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="300" y="100" width="950" height="420" as="geometry" />
+        </mxCell>
+        <mxCell id="ti-5" value="Middleware&lt;div&gt;lê Host e resolve tenant&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="ti-4">
+          <mxGeometry x="40" y="90" width="140" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="ti-6" value="Rota pública, painel&lt;div&gt;ou Route Handler&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="ti-4">
+          <mxGeometry x="260" y="90" width="140" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="ti-7" value="Validação&lt;div&gt;Zod&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="ti-4">
+          <mxGeometry x="480" y="90" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="ti-8" value="Service&lt;div&gt;regra de negócio&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="ti-4">
+          <mxGeometry x="670" y="90" width="140" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="ti-9" value="Repository&lt;div&gt;tenantId obrigatório&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="ti-4">
+          <mxGeometry x="670" y="250" width="140" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="ti-10" value="Auth.js&lt;div&gt;confere sessão e tenantId&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="ti-4">
+          <mxGeometry x="260" y="250" width="140" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="ti-11" value="PostgreSQL&lt;div&gt;dados multi-tenant&lt;/div&gt;" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.database;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="1360" y="250" width="130" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="ti-12" value="Bloquear requisição&lt;div&gt;404 / 401 / 403&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="560" y="620" width="160" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="ti-13" value="Domínio desconhecido&lt;div&gt;ou tenant suspenso&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="290" y="620" width="180" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="ti-14" value="Sessão ausente ou tenantId&lt;div&gt;diferente do recurso&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="800" y="620" width="190" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="ti-15" value="Regras obrigatórias" style="swimlane;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="1050" y="580" width="440" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="ti-16" value="• Rotas não acessam Prisma diretamente&lt;br&gt;• Toda query filtra por tenantId&lt;br&gt;• O tenant da sessão só acessa seus recursos" style="whiteSpace=wrap;html=1;align=left;verticalAlign=middle;" vertex="1" parent="ti-15">
+          <mxGeometry x="20" y="35" width="390" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="ti-e1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="ti-3" target="ti-5"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="ti-e2" value="tenant pelo Host" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="ti-4" source="ti-5" target="ti-6"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="ti-e3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="ti-4" source="ti-6" target="ti-7"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="ti-e4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="ti-4" source="ti-7" target="ti-8"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="ti-e5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="ti-4" source="ti-8" target="ti-9"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="740" y="210" /></Array></mxGeometry></mxCell>
+        <mxCell id="ti-e6" value="queries filtradas por tenantId" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="ti-9" target="ti-11"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="ti-e7" value="painel: valida sessão" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;" edge="1" parent="ti-4" source="ti-6" target="ti-10"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="ti-e8" value="tenantId da sessão" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;" edge="1" parent="ti-4" source="ti-10" target="ti-9"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="480" y="340" /><mxPoint x="740" y="340" /></Array></mxGeometry></mxCell>
+        <mxCell id="ti-e9" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;strokeColor=#b85450;" edge="1" parent="1" source="ti-13" target="ti-12"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="ti-e10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;strokeColor=#b85450;" edge="1" parent="1" source="ti-14" target="ti-12"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="ti-e11" value="falha na resolução" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;strokeColor=#b85450;" edge="1" parent="1" source="ti-5" target="ti-13"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="ti-e12" value="falha de autorização" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;strokeColor=#b85450;" edge="1" parent="1" source="ti-10" target="ti-14"><mxGeometry relative="1" as="geometry" /></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram name="Onboarding de domínio e SSL" id="onboarding-dominio-001">
+    <mxGraphModel dx="1700" dy="1000" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="od-1" value="Onboarding de domínio personalizado e SSL" style="text;html=1;align=left;verticalAlign=middle;fontSize=20;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="50" y="30" width="700" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="od-2" value="Psicólogo" style="swimlane;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="50" y="120" width="200" height="250" as="geometry" />
+        </mxCell>
+        <mxCell id="od-3" value="Informa o domínio&lt;div&gt;no painel&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="od-2">
+          <mxGeometry x="35" y="55" width="130" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="od-4" value="Configura os&lt;div&gt;registros DNS&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="od-2">
+          <mxGeometry x="35" y="145" width="130" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="od-5" value="Aplicação Next.js" style="swimlane;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="330" y="100" width="520" height="390" as="geometry" />
+        </mxCell>
+        <mxCell id="od-6" value="Painel administrativo&lt;div&gt;Domínio&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="od-5">
+          <mxGeometry x="40" y="70" width="145" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="od-7" value="Route Handler / Service&lt;div&gt;valida e registra domínio&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="od-5">
+          <mxGeometry x="280" y="70" width="185" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="od-8" value="Exibe instruções DNS&lt;div&gt;e status ao psicólogo&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="od-5">
+          <mxGeometry x="40" y="230" width="160" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="od-9" value="Consulta status&lt;div&gt;de verificação&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="od-5">
+          <mxGeometry x="290" y="230" width="150" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="od-10" value="Dados" style="swimlane;whiteSpace=wrap;html=1;" vertex="1">
+          <mxGeometry x="930" y="390" width="270" height="210" as="geometry" />
+        </mxCell>
+        <mxCell id="od-11" value="PostgreSQL&lt;div&gt;domains: domínio, tenantId,&lt;/div&gt;&lt;div&gt;status DNS/SSL e isPrimary&lt;/div&gt;" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.database;whiteSpace=wrap;" vertex="1" parent="od-10">
+          <mxGeometry x="65" y="50" width="140" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="od-12" value="Vercel" style="swimlane;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="930" y="100" width="540" height="220" as="geometry" />
+        </mxCell>
+        <mxCell id="od-13" value="Vercel Domains API&lt;div&gt;adiciona o domínio&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="od-12">
+          <mxGeometry x="40" y="65" width="160" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="od-14" value="Verificação DNS&lt;div&gt;e emissão automática de SSL&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="od-12">
+          <mxGeometry x="305" y="65" width="190" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="od-15" value="Provedor DNS&lt;div&gt;do cliente&lt;/div&gt;" style="swimlane;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="520" y="610" width="240" height="180" as="geometry" />
+        </mxCell>
+        <mxCell id="od-16" value="Registro CNAME&lt;div&gt;ou A record&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="od-15">
+          <mxGeometry x="50" y="55" width="140" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="od-17" value="Resultado" style="swimlane;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="1280" y="430" width="220" height="190" as="geometry" />
+        </mxCell>
+        <mxCell id="od-18" value="Domínio ativo&lt;div&gt;HTTPS válido&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="od-17">
+          <mxGeometry x="40" y="55" width="140" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="od-e1" value="1. cadastra domínio" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="od-3" target="od-6"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="od-e2" value="2. envia solicitação" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="od-5" source="od-6" target="od-7"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="od-e3" value="3. adiciona domínio" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="od-7" target="od-13"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="od-e4" value="4. grava status pendente" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="od-7" target="od-11"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="790" y="410" /><mxPoint x="1065" y="410" /></Array></mxGeometry></mxCell>
+        <mxCell id="od-e5" value="5. retorna instruções DNS" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;" edge="1" parent="od-5" source="od-7" target="od-8"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="od-e6" value="6. mostra registros" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="od-8" target="od-4"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="od-e7" value="7. cria CNAME/A" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="od-4" target="od-16"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="od-e8" value="8. DNS aponta para Vercel" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;" edge="1" parent="1" source="od-16" target="od-14"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="640" y="500" /><mxPoint x="1330" y="500" /></Array></mxGeometry></mxCell>
+        <mxCell id="od-e9" value="9. valida DNS e emite SSL" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="od-12" source="od-13" target="od-14"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="od-e10" value="10. consulta status" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;" edge="1" parent="1" source="od-9" target="od-13"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="od-e11" value="11. atualiza ativo" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="od-9" target="od-11"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="od-e12" value="12. domínio pronto" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="od-14" target="od-18"><mxGeometry relative="1" as="geometry" /></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram name="Modelo de dados (ERD)" id="modelo-dados-erd-001">
+    <mxGraphModel dx="1800" dy="1100" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="er-1" value="Modelo de dados — MVP multi-tenant" style="text;html=1;align=left;verticalAlign=middle;fontSize=20;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="50" y="30" width="620" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="er-2" value="Regra de isolamento: todas as entidades operacionais possuem tenantId obrigatório. A tabela tenants é a origem do contexto do cliente." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="50" y="85" width="820" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="er-3" value="tenants" style="swimlane;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="80" y="200" width="220" height="240" as="geometry" />
+        </mxCell>
+        <mxCell id="er-4" value="PK id&lt;br&gt;nome&lt;br&gt;crp&lt;br&gt;emailContato&lt;br&gt;status: ativo | trial | suspenso&lt;br&gt;plano&lt;br&gt;createdAt&lt;br&gt;deletedAt" style="whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=8;" vertex="1" parent="er-3">
+          <mxGeometry x="0" y="30" width="220" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="er-5" value="domains" style="swimlane;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="420" y="160" width="230" height="210" as="geometry" />
+        </mxCell>
+        <mxCell id="er-6" value="PK id&lt;br&gt;FK tenantId&lt;br&gt;dominio&lt;br&gt;dnsStatus&lt;br&gt;sslStatus&lt;br&gt;isPrimary&lt;br&gt;createdAt&lt;br&gt;deletedAt" style="whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=8;" vertex="1" parent="er-5">
+          <mxGeometry x="0" y="30" width="230" height="170" as="geometry" />
+        </mxCell>
+        <mxCell id="er-7" value="tenant_settings" style="swimlane;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="420" y="440" width="230" height="250" as="geometry" />
+        </mxCell>
+        <mxCell id="er-8" value="PK id&lt;br&gt;FK tenantId (único)&lt;br&gt;whatsappNumber&lt;br&gt;instagramHandle&lt;br&gt;googleMapsEmbedUrl&lt;br&gt;googleTagManagerId&lt;br&gt;googleAnalyticsId&lt;br&gt;googleAdsId&lt;br&gt;metaPixelId&lt;br&gt;updatedAt" style="whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=8;" vertex="1" parent="er-7">
+          <mxGeometry x="0" y="30" width="230" height="210" as="geometry" />
+        </mxCell>
+        <mxCell id="er-9" value="tenant_profile" style="swimlane;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="760" y="160" width="260" height="270" as="geometry" />
+        </mxCell>
+        <mxCell id="er-10" value="PK id&lt;br&gt;FK tenantId (único)&lt;br&gt;nomeExibido&lt;br&gt;especialidades&lt;br&gt;cidade&lt;br&gt;descricao&lt;br&gt;endereco&lt;br&gt;fotoUrl&lt;br&gt;tipoAtendimento&lt;br&gt;updatedAt" style="whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=8;" vertex="1" parent="er-9">
+          <mxGeometry x="0" y="30" width="260" height="230" as="geometry" />
+        </mxCell>
+        <mxCell id="er-11" value="users" style="swimlane;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="1110" y="150" width="220" height="230" as="geometry" />
+        </mxCell>
+        <mxCell id="er-12" value="PK id&lt;br&gt;FK tenantId&lt;br&gt;email&lt;br&gt;passwordHash&lt;br&gt;role: owner | admin&lt;br&gt;createdAt&lt;br&gt;updatedAt&lt;br&gt;deletedAt" style="whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=8;" vertex="1" parent="er-11">
+          <mxGeometry x="0" y="30" width="220" height="190" as="geometry" />
+        </mxCell>
+        <mxCell id="er-13" value="faqs" style="swimlane;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="760" y="540" width="220" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="er-14" value="PK id&lt;br&gt;FK tenantId&lt;br&gt;pergunta&lt;br&gt;resposta&lt;br&gt;ordem&lt;br&gt;createdAt&lt;br&gt;updatedAt&lt;br&gt;deletedAt" style="whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=8;" vertex="1" parent="er-13">
+          <mxGeometry x="0" y="30" width="220" height="170" as="geometry" />
+        </mxCell>
+        <mxCell id="er-15" value="leads" style="swimlane;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="1110" y="470" width="220" height="230" as="geometry" />
+        </mxCell>
+        <mxCell id="er-16" value="PK id&lt;br&gt;FK tenantId&lt;br&gt;nome&lt;br&gt;telefone&lt;br&gt;mensagem&lt;br&gt;origem: formulario&lt;br&gt;consentimentoAt&lt;br&gt;createdAt&lt;br&gt;deletedAt" style="whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=8;" vertex="1" parent="er-15">
+          <mxGeometry x="0" y="30" width="220" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="er-17" value="audit_logs" style="swimlane;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="1430" y="270" width="230" height="240" as="geometry" />
+        </mxCell>
+        <mxCell id="er-18" value="PK id&lt;br&gt;FK tenantId&lt;br&gt;FK userId (opcional)&lt;br&gt;acao&lt;br&gt;recurso&lt;br&gt;metadata&lt;br&gt;createdAt" style="whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=8;" vertex="1" parent="er-17">
+          <mxGeometry x="0" y="30" width="230" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="er-e1" value="1 : N" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;startArrow=ERone;endArrow=ERmany;startFill=0;endFill=0;" edge="1" parent="1" source="er-3" target="er-5"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="er-e2" value="1 : 1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;startArrow=ERone;endArrow=ERone;startFill=0;endFill=0;" edge="1" parent="1" source="er-3" target="er-7"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="er-e3" value="1 : 1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;startArrow=ERone;endArrow=ERone;startFill=0;endFill=0;" edge="1" parent="1" source="er-3" target="er-9"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="520" y="120" /><mxPoint x="890" y="120" /></Array></mxGeometry></mxCell>
+        <mxCell id="er-e4" value="1 : N" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;startArrow=ERone;endArrow=ERmany;startFill=0;endFill=0;" edge="1" parent="1" source="er-3" target="er-11"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="380" y="100" /><mxPoint x="1220" y="100" /></Array></mxGeometry></mxCell>
+        <mxCell id="er-e5" value="1 : N" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;startArrow=ERone;endArrow=ERmany;startFill=0;endFill=0;" edge="1" parent="1" source="er-3" target="er-13"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="370" y="780" /><mxPoint x="870" y="780" /></Array></mxGeometry></mxCell>
+        <mxCell id="er-e6" value="1 : N" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;startArrow=ERone;endArrow=ERmany;startFill=0;endFill=0;" edge="1" parent="1" source="er-3" target="er-15"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="370" y="820" /><mxPoint x="1220" y="820" /></Array></mxGeometry></mxCell>
+        <mxCell id="er-e7" value="1 : N" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;startArrow=ERone;endArrow=ERmany;startFill=0;endFill=0;" edge="1" parent="1" source="er-3" target="er-17"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="370" y="760" /><mxPoint x="1540" y="760" /></Array></mxGeometry></mxCell>
+        <mxCell id="er-e8" value="1 : N" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;startArrow=ERone;endArrow=ERmany;startFill=0;endFill=0;" edge="1" parent="1" source="er-11" target="er-17"><mxGeometry relative="1" as="geometry" /></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -1,0 +1,78 @@
+flowchart LR
+    %% SaaS multi-tenant para psicólogos — visão geral de produção
+
+    subgraph Usuarios[Usuários]
+        V[Visitante / potencial paciente]
+        P[Psicólogo / administrador]
+    end
+
+    subgraph Internet[Internet e domínios]
+        DP[Domínio do psicólogo<br/>ex.: psicologoana.com.br]
+        DA[Domínio do painel<br/>ex.: app.plataforma.com.br]
+        DNS[Provedor DNS do cliente]
+    end
+
+    subgraph Vercel[Vercel]
+        EDGE[CDN + HTTPS / SSL<br/>Vercel Domains]
+        subgraph Next[Aplicação Next.js]
+            MW[Middleware<br/>lê Host e resolve tenant]
+            LP[Landing page pública<br/>Server Components]
+            PA[Painel administrativo]
+            API[Route Handlers / Server Actions]
+            AUTH[Auth.js<br/>sessão e autorização]
+            SVC[Services + Repositories<br/>tenant-aware]
+        end
+    end
+
+    subgraph Dados[Dados e arquivos]
+        DB[(Neon PostgreSQL<br/>dados multi-tenant)]
+        ST[Storage de imagens<br/>R2 ou Vercel Blob]
+    end
+
+    subgraph Externos[Integrações do cliente]
+        GTM[Google Tag Manager]
+        AN[GA4 / Google Ads<br/>Meta Pixel opcional]
+        WA[WhatsApp]
+        MAP[Google Maps]
+    end
+
+    V -->|acessa a página| DP
+    P -->|acessa o painel| DA
+    DP --> EDGE
+    DA --> EDGE
+    EDGE --> MW
+    MW -->|tenant pelo Host| LP
+    MW -->|tenant pelo Host| PA
+
+    LP -->|consulta conteúdo do tenant| SVC
+    PA -->|login e edição| AUTH
+    PA --> API
+    API --> SVC
+    AUTH -->|sessão com tenantId| API
+    SVC -->|queries sempre filtradas por tenantId| DB
+
+    LP -->|carrega fotos| ST
+    PA -->|solicita URL pré-assinada| API
+    P -.->|upload direto| ST
+
+    LP -->|injeta container do tenant| GTM
+    GTM --> AN
+    LP -->|CTA / evento click_whatsapp| WA
+    LP -->|mapa ou link| MAP
+    LP -->|envio de formulário| API
+
+    P -->|informa domínio| PA
+    API -->|registra e consulta status| EDGE
+    DNS -.->|configuração CNAME/A| EDGE
+
+    classDef user fill:#dbeafe,stroke:#2563eb,color:#172554;
+    classDef infra fill:#e5e7eb,stroke:#4b5563,color:#111827;
+    classDef app fill:#ede9fe,stroke:#7c3aed,color:#2e1065;
+    classDef data fill:#dcfce7,stroke:#16a34a,color:#14532d;
+    classDef external fill:#ffedd5,stroke:#ea580c,color:#7c2d12;
+
+    class V,P user;
+    class DP,DA,DNS,EDGE infra;
+    class MW,LP,PA,API,AUTH,SVC app;
+    class DB,ST data;
+    class GTM,AN,WA,MAP external;

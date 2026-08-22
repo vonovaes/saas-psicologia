@@ -28,7 +28,7 @@ interface PublicData {
 export default function LandingPage() {
   const [data, setData] = useState<PublicData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [formData, setFormData] = useState({ name: '', phone: '', message: '' });
+  const [formData, setFormData] = useState({ name: '', phone: '', message: '', consent: false });
   const [submitting, setSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [submitError, setSubmitError] = useState('');
@@ -69,7 +69,7 @@ export default function LandingPage() {
       if (!response.ok) throw new Error('Failed to submit');
 
       setSubmitSuccess(true);
-      setFormData({ name: '', phone: '', message: '' });
+      setFormData({ name: '', phone: '', message: '', consent: false });
     } catch (error) {
       console.error('Error submitting form:', error);
       setSubmitError('Erro ao enviar mensagem. Tente novamente.');
@@ -340,8 +340,21 @@ export default function LandingPage() {
                   required
                   className="bg-[#1a1b1e] border-white/10 text-white placeholder-gray-500"
                 />
-                <div className="text-sm text-gray-500 font-light">
-                  Ao enviar, você concorda com o processamento dos seus dados de contato.
+                <div className="flex items-start gap-3">
+                  <input
+                    type="checkbox"
+                    id="consent"
+                    checked={formData.consent}
+                    onChange={(e) => setFormData({ ...formData, consent: e.target.checked })}
+                    required
+                    className="mt-1 w-5 h-5 bg-[#1a1b1e] border-white/20 rounded focus:ring-amber-500/50"
+                  />
+                  <label htmlFor="consent" className="text-sm text-gray-400 font-light">
+                    Concordo com o processamento dos meus dados de contato conforme a{" "}
+                    <a href="/privacy" className="text-amber-400 hover:text-amber-300 underline">
+                      Política de Privacidade
+                    </a>
+                  </label>
                 </div>
                 <Button
                   type="submit"
@@ -389,6 +402,12 @@ export default function LandingPage() {
                   Instagram: {settings.instagramHandle}
                 </a>
               )}
+              <a
+                href="/privacy"
+                className="block text-gray-400 hover:text-amber-400 transition-colors font-light mt-3"
+              >
+                Política de Privacidade
+              </a>
             </div>
             <div>
               <h3 className="text-lg font-light mb-6 text-gray-300">Atendimento</h3>

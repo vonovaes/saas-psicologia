@@ -3,9 +3,34 @@ import { TenantProfileService } from '@/server/services/tenant-profile.service';
 import { TenantSettingsService } from '@/server/services/tenant-settings.service';
 import { FaqService } from '@/server/services/faq.service';
 import { TenantResolutionService } from '@/server/services/tenant-resolution.service';
+import { publicApiRateLimiter } from '@/server/lib/rate-limit';
 
 export async function GET(request: NextRequest) {
   try {
+    // Rate limiting check
+    const ip = request.headers.get('x-forwarded-for') || 
+                request.headers.get('x-real-ip') || 
+                'unknown';
+    
+    const rateLimit = publicApiRateLimiter.check(ip);
+    
+    if (!rateLimit.success) {
+      return NextResponse.json(
+        { 
+          error: 'Too many requests',
+          retryAfter: Math.ceil((rateLimit.resetTime - Date.now()) / 1000)
+        },
+        { 
+          status: 429,
+          headers: {
+            'X-RateLimit-Limit': '30',
+            'X-RateLimit-Remaining': '0',
+            'X-RateLimit-Reset': new Date(rateLimit.resetTime).toISOString(),
+          }
+        }
+      );
+    }
+
     const { searchParams } = new URL(request.url);
     const host = searchParams.get('host') || request.headers.get('host') || 'localhost';
 
@@ -48,6 +73,12 @@ export async function GET(request: NextRequest) {
         googleMapsEmbedUrl: settings.googleMapsEmbedUrl,
       } : null,
       faqs: faqs || [],
+    }, {
+      headers: {
+        'X-RateLimit-Limit': '30',
+        'X-RateLimit-Remaining': rateLimit.remaining.toString(),
+        'X-RateLimit-Reset': new Date(rateLimit.resetTime).toISOString(),
+      }
     });
   } catch (error) {
     console.error('Error fetching public data:', error);

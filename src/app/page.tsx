@@ -60,19 +60,27 @@ export default function LandingPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          ...formData,
+          name: formData.name,
+          phone: formData.phone,
+          message: formData.message,
           source: 'FORMULARIO',
           consentedAt: new Date().toISOString(),
         }),
       });
 
-      if (!response.ok) throw new Error('Failed to submit');
+      if (!response.ok) {
+        const errorData = await response.json();
+        if (response.status === 429) {
+          throw new Error('Muitas tentativas. Por favor, aguarde alguns minutos antes de tentar novamente.');
+        }
+        throw new Error(errorData.error || 'Failed to submit');
+      }
 
       setSubmitSuccess(true);
       setFormData({ name: '', phone: '', message: '', consent: false });
     } catch (error) {
       console.error('Error submitting form:', error);
-      setSubmitError('Erro ao enviar mensagem. Tente novamente.');
+      setSubmitError(error instanceof Error ? error.message : 'Erro ao enviar mensagem. Tente novamente.');
     } finally {
       setSubmitting(false);
     }

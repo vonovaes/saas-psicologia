@@ -17,7 +17,7 @@
 | Fase 4 - Landing Page Pública | ✅ Completo | 100% |
 | Fase 5 - Domínios Personalizados e SSL | ⏳ Pendente | 0% |
 | Fase 6 - Analytics e Tracking | ⏳ Pendente | 0% |
-| Fase 7 - Segurança e LGPD | 🚧 Em Progresso | 40% |
+| Fase 7 - Segurança e LGPD | 🚧 Em Progresso | 70% |
 | Fase 8 - Preparação para Produção | ⏳ Pendente | 0% |
 
 ## Detalhamento por Fase
@@ -174,9 +174,10 @@
 - ✅ API endpoint para solicitações de direitos de dados
 - ✅ Navegação do painel atualizada com link para direitos de dados
 - ✅ Audit log para solicitações de direitos de dados
+- ✅ Rate limiting em rotas públicas (/api/lead e /api/public/data)
+- ✅ Headers informativos de rate limit (X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset)
 
 **Pendente:**
-- ⏳ Rate limiting em rotas públicas
 - ⏳ Validação de uploads
 - ⏳ Proteção contra CSRF adicional
 - ⏳ Fluxo de exclusão de dados automatizado
@@ -223,8 +224,8 @@
 
 ## Métricas do Projeto
 
-- **Total de arquivos:** ~85
-- **Linhas de código:** ~5800
+- **Total de arquivos:** ~86
+- **Linhas de código:** ~5900
 - **Tabelas no banco:** 8
 - **Services implementados:** 8
 - **Repositories implementados:** 8
@@ -232,13 +233,14 @@
 - **Rotas API:** 9 (health, tenant-resolve, test-resolve, test-db, debug-tenant, profile, faq, lead, public/data, data-rights)
 - **Páginas implementadas:** 7 (login, dashboard, profile, faq, leads, landing page, privacy, data-rights)
 - **Componentes UI:** 6 (Input, Textarea, Select, Button, FieldGroup, Accordion)
+- **Security features:** Rate limiting, security headers, privacy policy, data rights portal
 
 ## Próximos Passos Imediatos
 
-1. Implementar rate limiting em rotas públicas (API route middleware)
-2. Implementar validação de uploads (se houver)
-3. Implementar proteção CSRF adicional
-4. Implementar fluxo de exclusão de dados automatizado
+1. Implementar validação de uploads (se houver funcionalidade de upload)
+2. Implementar proteção CSRF adicional
+3. Implementar fluxo de exclusão de dados automatizado
+4. Implementar auditoria de ações sensíveis
 5. Implementar gestão de domínios personalizados (integração Vercel API)
 6. Implementar sistema de analytics e tracking
 7. Testar fluxo completo end-to-end

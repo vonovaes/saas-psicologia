@@ -88,8 +88,17 @@ export async function POST(request: NextRequest) {
     // Validar dados
     const validatedData = createLeadSchema.parse(body);
 
+    // Convert string to Date for consentedAt
+    const leadData = {
+      name: validatedData.name,
+      phone: validatedData.phone,
+      message: validatedData.message,
+      source: validatedData.source,
+      consentedAt: validatedData.consentedAt ? new Date(validatedData.consentedAt) : new Date(),
+    };
+
     const leadService = new LeadService(tenantId);
-    const lead = await leadService.createLead(validatedData);
+    const lead = await leadService.createLead(leadData);
 
     return NextResponse.json(
       { lead }, 

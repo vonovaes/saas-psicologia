@@ -17,7 +17,7 @@
 | Fase 4 - Landing Page Pública | ✅ Completo | 100% |
 | Fase 5 - Domínios Personalizados e SSL | ⏳ Pendente | 0% |
 | Fase 6 - Analytics e Tracking | ⏳ Pendente | 0% |
-| Fase 7 - Segurança e LGPD | 🚧 Em Progresso | 70% |
+| Fase 7 - Segurança e LGPD | 🚧 Em Progresso | 85% |
 | Fase 8 - Preparação para Produção | ⏳ Pendente | 0% |
 
 ## Detalhamento por Fase
@@ -176,9 +176,12 @@
 - ✅ Audit log para solicitações de direitos de dados
 - ✅ Rate limiting em rotas públicas (/api/lead e /api/public/data)
 - ✅ Headers informativos de rate limit (X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset)
+- ✅ Validação de uploads (tipo, tamanho, assinatura de arquivo)
+- ✅ Upload service com Vercel Blob integration
+- ✅ API endpoint para uploads (/api/upload)
+- ✅ Proteção contra uploads maliciosos (magic bytes validation)
 
 **Pendente:**
-- ⏳ Validação de uploads
 - ⏳ Proteção contra CSRF adicional
 - ⏳ Fluxo de exclusão de dados automatizado
 - ⏳ Auditoria de ações sensíveis
@@ -224,27 +227,27 @@
 
 ## Métricas do Projeto
 
-- **Total de arquivos:** ~86
-- **Linhas de código:** ~5900
+- **Total de arquivos:** ~90
+- **Linhas de código:** ~6100
 - **Tabelas no banco:** 8
-- **Services implementados:** 8
+- **Services implementados:** 9 (adicionado UploadService)
 - **Repositories implementados:** 8
-- **DTOs implementados:** 8
-- **Rotas API:** 9 (health, tenant-resolve, test-resolve, test-db, debug-tenant, profile, faq, lead, public/data, data-rights)
+- **DTOs implementados:** 9 (adicionado upload.dto)
+- **Rotas API:** 10 (adicionado /api/upload)
 - **Páginas implementadas:** 7 (login, dashboard, profile, faq, leads, landing page, privacy, data-rights)
 - **Componentes UI:** 6 (Input, Textarea, Select, Button, FieldGroup, Accordion)
-- **Security features:** Rate limiting, security headers, privacy policy, data rights portal
+- **Security features:** Rate limiting, security headers, privacy policy, data rights portal, upload validation
+- **Storage:** Vercel Blob integration configured
 
 ## Próximos Passos Imediatos
 
-1. Implementar validação de uploads (se houver funcionalidade de upload)
-2. Implementar proteção CSRF adicional
-3. Implementar fluxo de exclusão de dados automatizado
-4. Implementar auditoria de ações sensíveis
-5. Implementar gestão de domínios personalizados (integração Vercel API)
-6. Implementar sistema de analytics e tracking
-7. Testar fluxo completo end-to-end
-8. Preparar para produção
+1. Implementar proteção CSRF adicional
+2. Implementar fluxo de exclusão de dados automatizado
+3. Implementar auditoria de ações sensíveis
+4. Implementar gestão de domínios personalizados (integração Vercel API)
+5. Implementar sistema de analytics e tracking
+6. Testar fluxo completo end-to-end
+7. Preparar para produção
 
 ## Observações Importantes
 

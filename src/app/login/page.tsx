@@ -2,8 +2,10 @@
 
 import { useState } from 'react';
 import { signIn } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 
 export default function LoginPage() {
+  const router = useRouter();
   const [email, setEmail] = useState('admin@psicologos.test');
   const [password, setPassword] = useState('password123');
   const [error, setError] = useState('');
@@ -19,7 +21,7 @@ export default function LoginPage() {
       const result = await signIn('credentials', {
         email,
         password,
-        callbackUrl: '/dashboard',
+        redirect: false,
       });
 
       console.log('Resultado do login:', result);
@@ -27,6 +29,8 @@ export default function LoginPage() {
       if (result?.error) {
         setError('Credenciais inválidas');
         console.error('Erro de login:', result.error);
+      } else if (result?.ok) {
+        router.replace('/dashboard');
       }
     } catch (error) {
       console.error('Erro no login:', error);

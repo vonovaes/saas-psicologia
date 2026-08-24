@@ -3,6 +3,8 @@ import { auth } from '@/server/lib/auth';
 import { LeadService } from '@/server/services/lead.service';
 import { TenantResolutionService } from '@/server/services/tenant-resolution.service';
 import { createLeadSchema } from '@/server/dtos/lead.dto';
+import { leadRateLimiter } from '@/server/lib/rate-limit';
+import { validatePublicRequest, addCSRFHeaders } from '@/server/lib/csrf-public';
 
 export async function GET(request: NextRequest) {
   try {
@@ -40,6 +42,38 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    // CSRF protection for public requests
+    if (!validatePublicRequest(request)) {
+      return NextResponse.json(
+        { error: 'Invalid request origin' },
+        { status: 403 }
+      );
+    }
+
+    // Rate limiting check
+    const ip = request.headers.get('x-forwarded-for') || 
+                request.headers.get('x-real-ip') || 
+                'unknown';
+    
+    const rateLimit = leadRateLimiter.check(ip);
+    
+    if (!rateLimit.success) {
+      return NextResponse.json(
+        { 
+          error: 'Too many requests',
+          retryAfter: Math.ceil((rateLimit.resetTime - Date.now()) / 1000)
+        },
+        { 
+          status: 429,
+          headers: {
+            'X-RateLimit-Limit': '5',
+            'X-RateLimit-Remaining': '0',
+            'X-RateLimit-Reset': new Date(rateLimit.resetTime).toISOString(),
+          }
+        }
+      );
+    }
+
     const body = await request.json();
     const { searchParams } = new URL(request.url);
     const host = searchParams.get('host') || request.headers.get('host') || 'localhost';
@@ -63,10 +97,31 @@ export async function POST(request: NextRequest) {
     // Validar dados
     const validatedData = createLeadSchema.parse(body);
 
-    const leadService = new LeadService(tenantId);
-    const lead = await leadService.createLead(validatedData);
+    // Convert string to Date for consentedAt
+    const leadData = {
+      name: validatedData.name,
+      phone: validatedData.phone,
+      message: validatedData.message,
+      source: validatedData.source,
+      consentedAt: validatedData.consentedAt ? new Date(validatedData.consentedAt) : new Date(),
+    };
 
-    return NextResponse.json({ lead }, { status: 201 });
+    const leadService = new LeadService(tenantId);
+    const lead = await leadService.createLead(leadData);
+
+    const response = NextResponse.json(
+      { lead }, 
+      { 
+        status: 201,
+        headers: {
+          'X-RateLimit-Limit': '5',
+          'X-RateLimit-Remaining': rateLimit.remaining.toString(),
+          'X-RateLimit-Reset': new Date(rateLimit.resetTime).toISOString(),
+        }
+      }
+    );
+
+    return addCSRFHeaders(response);
   } catch (error) {
     console.error('Error creating lead:', error);
     

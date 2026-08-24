@@ -3,9 +3,43 @@ import { TenantProfileService } from '@/server/services/tenant-profile.service';
 import { TenantSettingsService } from '@/server/services/tenant-settings.service';
 import { FaqService } from '@/server/services/faq.service';
 import { TenantResolutionService } from '@/server/services/tenant-resolution.service';
+import { publicApiRateLimiter } from '@/server/lib/rate-limit';
+import { validatePublicRequest, addCSRFHeaders } from '@/server/lib/csrf-public';
 
 export async function GET(request: NextRequest) {
   try {
+    // CSRF protection for public requests
+    if (!validatePublicRequest(request)) {
+      return NextResponse.json(
+        { error: 'Invalid request origin' },
+        { status: 403 }
+      );
+    }
+
+    // Rate limiting check
+    const ip = request.headers.get('x-forwarded-for') || 
+                request.headers.get('x-real-ip') || 
+                'unknown';
+    
+    const rateLimit = publicApiRateLimiter.check(ip);
+    
+    if (!rateLimit.success) {
+      return NextResponse.json(
+        { 
+          error: 'Too many requests',
+          retryAfter: Math.ceil((rateLimit.resetTime - Date.now()) / 1000)
+        },
+        { 
+          status: 429,
+          headers: {
+            'X-RateLimit-Limit': '30',
+            'X-RateLimit-Remaining': '0',
+            'X-RateLimit-Reset': new Date(rateLimit.resetTime).toISOString(),
+          }
+        }
+      );
+    }
+
     const { searchParams } = new URL(request.url);
     const host = searchParams.get('host') || request.headers.get('host') || 'localhost';
 
@@ -32,7 +66,7 @@ export async function GET(request: NextRequest) {
       new FaqService(tenantId).getAllFaqs(),
     ]);
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       profile: profile ? {
         displayName: profile.displayName,
         specialties: profile.specialties,
@@ -49,6 +83,8 @@ export async function GET(request: NextRequest) {
       } : null,
       faqs: faqs || [],
     });
+
+    return addCSRFHeaders(response);
   } catch (error) {
     console.error('Error fetching public data:', error);
     return NextResponse.json(

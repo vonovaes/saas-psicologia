@@ -5,7 +5,7 @@ export const createLeadSchema = z.object({
   phone: z.string().min(10, 'Telefone deve ter no mínimo 10 caracteres'),
   message: z.string().optional(),
   source: z.enum(['FORMULARIO']).optional(),
-  consentedAt: z.date().default(() => new Date()),
+  consentedAt: z.string().datetime().optional().default(() => new Date().toISOString()),
 });
 
 export type CreateLeadDto = z.infer<typeof createLeadSchema>;

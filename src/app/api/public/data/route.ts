@@ -66,7 +66,7 @@ export async function GET(request: NextRequest) {
       new FaqService(tenantId).getAllFaqs(),
     ]);
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       profile: profile ? {
         displayName: profile.displayName,
         specialties: profile.specialties,

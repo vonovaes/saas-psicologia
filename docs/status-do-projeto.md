@@ -17,7 +17,7 @@
 | Fase 4 - Landing Page Pública | ✅ Completo | 100% |
 | Fase 5 - Domínios Personalizados e SSL | ⏳ Pendente | 0% |
 | Fase 6 - Analytics e Tracking | ⏳ Pendente | 0% |
-| Fase 7 - Segurança e LGPD | 🚧 Em Progresso | 85% |
+| Fase 7 - Segurança e LGPD | 🚧 Em Progresso | 95% |
 | Fase 8 - Preparação para Produção | ⏳ Pendente | 0% |
 
 ## Detalhamento por Fase
@@ -180,9 +180,11 @@
 - ✅ Upload service com Vercel Blob integration
 - ✅ API endpoint para uploads (/api/upload)
 - ✅ Proteção contra uploads maliciosos (magic bytes validation)
+- ✅ Proteção CSRF em rotas públicas (validação de Origin/Referer)
+- ✅ Proteção CSRF no Auth.js (configuração de secure cookies)
+- ✅ Headers de segurança adicionais em respostas CSRF
 
 **Pendente:**
-- ⏳ Proteção contra CSRF adicional
 - ⏳ Fluxo de exclusão de dados automatizado
 - ⏳ Auditoria de ações sensíveis
 
@@ -227,8 +229,8 @@
 
 ## Métricas do Projeto
 
-- **Total de arquivos:** ~90
-- **Linhas de código:** ~6100
+- **Total de arquivos:** ~92
+- **Linhas de código:** ~6300
 - **Tabelas no banco:** 8
 - **Services implementados:** 9 (adicionado UploadService)
 - **Repositories implementados:** 8
@@ -236,18 +238,18 @@
 - **Rotas API:** 10 (adicionado /api/upload)
 - **Páginas implementadas:** 7 (login, dashboard, profile, faq, leads, landing page, privacy, data-rights)
 - **Componentes UI:** 6 (Input, Textarea, Select, Button, FieldGroup, Accordion)
-- **Security features:** Rate limiting, security headers, privacy policy, data rights portal, upload validation
+- **Security features:** Rate limiting, security headers, privacy policy, data rights portal, upload validation, CSRF protection
 - **Storage:** Vercel Blob integration configured
+- **Security libraries:** CSRF protection utilities (session-based and public request validation)
 
 ## Próximos Passos Imediatos
 
-1. Implementar proteção CSRF adicional
-2. Implementar fluxo de exclusão de dados automatizado
-3. Implementar auditoria de ações sensíveis
-4. Implementar gestão de domínios personalizados (integração Vercel API)
-5. Implementar sistema de analytics e tracking
-6. Testar fluxo completo end-to-end
-7. Preparar para produção
+1. Implementar fluxo de exclusão de dados automatizado
+2. Implementar auditoria de ações sensíveis
+3. Implementar gestão de domínios personalizados (integração Vercel API)
+4. Implementar sistema de analytics e tracking
+5. Testar fluxo completo end-to-end
+6. Preparar para produção
 
 ## Observações Importantes
 

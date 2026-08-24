@@ -4,9 +4,18 @@ import { TenantSettingsService } from '@/server/services/tenant-settings.service
 import { FaqService } from '@/server/services/faq.service';
 import { TenantResolutionService } from '@/server/services/tenant-resolution.service';
 import { publicApiRateLimiter } from '@/server/lib/rate-limit';
+import { validatePublicRequest, addCSRFHeaders } from '@/server/lib/csrf-public';
 
 export async function GET(request: NextRequest) {
   try {
+    // CSRF protection for public requests
+    if (!validatePublicRequest(request)) {
+      return NextResponse.json(
+        { error: 'Invalid request origin' },
+        { status: 403 }
+      );
+    }
+
     // Rate limiting check
     const ip = request.headers.get('x-forwarded-for') || 
                 request.headers.get('x-real-ip') || 
@@ -73,13 +82,9 @@ export async function GET(request: NextRequest) {
         googleMapsEmbedUrl: settings.googleMapsEmbedUrl,
       } : null,
       faqs: faqs || [],
-    }, {
-      headers: {
-        'X-RateLimit-Limit': '30',
-        'X-RateLimit-Remaining': rateLimit.remaining.toString(),
-        'X-RateLimit-Reset': new Date(rateLimit.resetTime).toISOString(),
-      }
     });
+
+    return addCSRFHeaders(response);
   } catch (error) {
     console.error('Error fetching public data:', error);
     return NextResponse.json(

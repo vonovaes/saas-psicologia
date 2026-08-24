@@ -102,4 +102,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     strategy: 'jwt',
   },
   secret: process.env.NEXTAUTH_SECRET || 'your-secret-key-change-in-production',
+  // CSRF protection is enabled by default in Auth.js v5
+  // The following options enhance CSRF security
+  useSecureCookies: process.env.NODE_ENV === 'production',
 });

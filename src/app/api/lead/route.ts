@@ -4,6 +4,7 @@ import { LeadService } from '@/server/services/lead.service';
 import { TenantResolutionService } from '@/server/services/tenant-resolution.service';
 import { createLeadSchema } from '@/server/dtos/lead.dto';
 import { leadRateLimiter } from '@/server/lib/rate-limit';
+import { validatePublicRequest, addCSRFHeaders } from '@/server/lib/csrf-public';
 
 export async function GET(request: NextRequest) {
   try {
@@ -41,6 +42,14 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    // CSRF protection for public requests
+    if (!validatePublicRequest(request)) {
+      return NextResponse.json(
+        { error: 'Invalid request origin' },
+        { status: 403 }
+      );
+    }
+
     // Rate limiting check
     const ip = request.headers.get('x-forwarded-for') || 
                 request.headers.get('x-real-ip') || 
@@ -100,7 +109,7 @@ export async function POST(request: NextRequest) {
     const leadService = new LeadService(tenantId);
     const lead = await leadService.createLead(leadData);
 
-    return NextResponse.json(
+    const response = NextResponse.json(
       { lead }, 
       { 
         status: 201,
@@ -111,6 +120,8 @@ export async function POST(request: NextRequest) {
         }
       }
     );
+
+    return addCSRFHeaders(response);
   } catch (error) {
     console.error('Error creating lead:', error);
     

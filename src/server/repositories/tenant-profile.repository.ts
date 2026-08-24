@@ -51,4 +51,21 @@ export class TenantProfileRepository extends BaseRepository {
       update: data,
     });
   }
+
+  async getProfile(): Promise<TenantProfile | null> {
+    return this.findByTenant();
+  }
+
+  async softDelete(): Promise<TenantProfile> {
+    return prisma.tenantProfile.update({
+      where: { tenantId: this.tenantId },
+      data: { deletedAt: new Date() },
+    });
+  }
+
+  async hardDelete(): Promise<void> {
+    await prisma.tenantProfile.delete({
+      where: { tenantId: this.tenantId },
+    });
+  }
 }

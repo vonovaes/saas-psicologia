@@ -84,4 +84,23 @@ export class LeadRepository extends BaseRepository {
       orderBy: { createdAt: 'desc' },
     });
   }
+
+  async update(id: string, data: Partial<Omit<Lead, 'id' | 'tenantId' | 'createdAt'>>): Promise<Lead> {
+    return prisma.lead.update({
+      where: {
+        id,
+        ...this.tenantWhereClause,
+      },
+      data,
+    });
+  }
+
+  async hardDelete(id: string): Promise<void> {
+    await prisma.lead.deleteMany({
+      where: {
+        id,
+        ...this.tenantWhereClause,
+      },
+    });
+  }
 }

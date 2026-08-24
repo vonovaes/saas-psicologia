@@ -44,6 +44,28 @@ export default function DataRightsPage() {
     await signOut({ callbackUrl: '/login' });
   };
 
+  const handleAccountClosure = async () => {
+    const confirmation = window.prompt('Digite ENCERRAR_MINHA_CONTA para confirmar o encerramento permanente.');
+    if (confirmation !== 'ENCERRAR_MINHA_CONTA') return;
+
+    setLoading(true);
+    setSubmitError('');
+    try {
+      const response = await fetch('/api/data-delete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'account', confirmation }),
+      });
+      if (!response.ok) throw new Error('Falha ao encerrar conta');
+      await signOut({ callbackUrl: '/login' });
+    } catch (error) {
+      console.error('Error closing account:', error);
+      setSubmitError('Não foi possível encerrar a conta. Tente novamente.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -123,7 +145,7 @@ export default function DataRightsPage() {
                 </label>
                 <select
                   value={requestType}
-                  onChange={(e) => setRequestType(e.target.value as any)}
+                  onChange={(e) => setRequestType(e.target.value as 'delete' | 'export' | 'access')}
                   className="block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                   required
                 >
@@ -182,6 +204,14 @@ export default function DataRightsPage() {
             <li>• Para dúvidas, consulte nossa política de privacidade</li>
           </ul>
         </div>
+
+        <section className="mt-8 border border-red-200 bg-red-50 rounded-lg p-6">
+          <h3 className="text-lg font-semibold text-red-900">Encerrar conta</h3>
+          <p className="mt-2 text-sm text-red-800">Esta ação suspende a conta, anonimiza dados de leads e remove o conteúdo público. Não pode ser desfeita.</p>
+          <Button onClick={handleAccountClosure} variant="danger" className="mt-4" disabled={loading}>
+            Encerrar minha conta
+          </Button>
+        </section>
       </main>
     </div>
   );

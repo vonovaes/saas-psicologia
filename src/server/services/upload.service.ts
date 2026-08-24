@@ -20,7 +20,7 @@ export class UploadService {
     });
 
     if (!validation.success) {
-      throw new Error(validation.error.errors[0].message);
+      throw new Error(validation.error.issues[0]?.message ?? 'Arquivo inválido');
     }
 
     // Generate unique filename with tenant prefix

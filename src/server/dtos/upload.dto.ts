@@ -13,9 +13,7 @@ const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 
 export const uploadFileSchema = z.object({
   fileName: z.string().min(1, 'Nome do arquivo é obrigatório'),
-  fileType: z.enum(ALLOWED_MIME_TYPES, {
-    errorMap: () => ({ message: 'Tipo de arquivo não permitido. Apenas imagens (JPEG, PNG, WebP, GIF)' }),
-  }),
+  fileType: z.enum(ALLOWED_MIME_TYPES, { error: 'Tipo de arquivo não permitido. Apenas imagens (JPEG, PNG, WebP, GIF)' }),
   fileSize: z.number()
     .max(MAX_FILE_SIZE, `Tamanho do arquivo excede o limite de ${MAX_FILE_SIZE / 1024 / 1024}MB`)
     .min(1, 'Arquivo vazio não é permitido'),

@@ -60,8 +60,8 @@ model TenantSettings {
 }
 
 model TenantProfile {
-  id              String   @id @default(cuid())
-  tenantId        String   @unique
+  id              String    @id @default(cuid())
+  tenantId        String    @unique
   displayName     String
   specialties     String[]
   city            String
@@ -69,9 +69,10 @@ model TenantProfile {
   address         String?
   profileImageUrl String?
   attendanceType  String?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  tenant          Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  deletedAt       DateTime?
+  tenant          Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 }
 
 model User {

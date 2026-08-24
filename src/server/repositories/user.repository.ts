@@ -60,4 +60,13 @@ export class UserRepository extends BaseRepository {
       orderBy: { createdAt: 'desc' },
     });
   }
+
+  async hardDelete(id: string): Promise<void> {
+    await prisma.user.deleteMany({
+      where: {
+        id,
+        ...this.tenantWhereClause,
+      },
+    });
+  }
 }

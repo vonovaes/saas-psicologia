@@ -88,6 +88,20 @@ export default function LeadsPage() {
     setEndDate('');
   };
 
+  const handleDeleteLead = async (leadId: string) => {
+    if (window.prompt('Digite DELETE_LEAD para anonimizar este lead.') !== 'DELETE_LEAD') return;
+    const response = await fetch('/api/data-delete', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'lead', leadId, confirmation: 'DELETE_LEAD' }),
+    });
+    if (!response.ok) {
+      window.alert('Não foi possível anonimizar o lead.');
+      return;
+    }
+    await fetchLeads();
+  };
+
   const handleLogout = async () => {
     await signOut({ callbackUrl: '/login' });
   };
@@ -226,6 +240,7 @@ export default function LeadsPage() {
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Data de Criação
                     </th>
+                    <th className="px-6 py-3" />
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
@@ -249,6 +264,9 @@ export default function LeadsPage() {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-sm text-gray-900">{formatDate(lead.createdAt)}</div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <Button variant="danger" size="sm" onClick={() => handleDeleteLead(lead.id)}>Anonimizar</Button>
                       </td>
                     </tr>
                   ))}

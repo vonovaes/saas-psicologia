@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "SaaS Psicólogos",
-  description: "Landing pages e captação de leads para psicólogos.",
+  title: "Acolha",
+  description: "Presença digital e captação de contatos para psicólogos.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

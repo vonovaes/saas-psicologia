@@ -10,6 +10,24 @@
   --color-foreground: var(--foreground);
   --font-sans: Arial, Helvetica, sans-serif;
   --font-mono: "Courier New", monospace;
+  --color-acolha-canvas: #fcfcfa;
+  --color-acolha-ink: #18312b;
+  --color-acolha-body: #5f746c;
+  --color-acolha-muted: #70827b;
+  --color-acolha-accent: #245847;
+  --color-acolha-accent-hover: #183f32;
+  --color-acolha-mist: #eaf4ee;
+  --color-acolha-line: #dce7e0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .acolha-home,
+  .acolha-home * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 @media (prefers-color-scheme: dark) {

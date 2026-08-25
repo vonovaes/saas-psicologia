@@ -244,6 +244,102 @@
 
 ## Próximos Passos Imediatos
 
+### Prioridade 1: Preview em Tempo Real e Landing Page Flexível
+
+**Objetivo:** Melhorar experiência do psicólogo com preview visual durante edição e permitir customização da landing page.
+
+**Status:** ✅ Fase 1 Completa (Preview Básico Implementado)
+
+**Progresso Atual:**
+- ✅ PreviewWrapper component (container split-screen)
+- ✅ LivePreview component básico (renderiza landing page com dados do form)
+- ✅ Integração com página de perfil (/profile)
+- ✅ Toggle de preview (mostrar/ocultar)
+- ✅ Layout responsivo desktop/tablet/mobile
+- ✅ PreviewStateManager com debounce (300ms)
+- ✅ Build testado e funcionando
+- ✅ Dev server rodando sem erros
+
+**Arquivos Criados:**
+- `src/components/features/preview/PreviewWrapper.tsx` - Container split-screen com toggle
+- `src/components/features/preview/LivePreview.tsx` - Preview simplificado da landing page
+- `src/components/features/preview/PreviewStateManager.tsx` - Hook para debounce de atualizações
+
+**Arquivos Modificados:**
+- `src/app/profile/page.tsx` - Integrado com preview wrapper e state manager
+- `next.config.ts` - Adicionado `allowedDevOrigins: ['127.0.0.1']` para desenvolvimento
+
+**Funcionalidades Implementadas:**
+- Preview em tempo real com debounce (300ms)
+- Layout responsivo (desktop split-screen, mobile modal)
+- Toggle de preview (mostrar/ocultar)
+- Atualização automática ao modificar campos do formulário
+- Preview mostra dados do formulário (não apenas do banco)
+- Indicador visual de "Modo Preview"
+
+**Próximas Fases:**
+
+#### Fase 2: Preview Avançado (3-4 horas)
+- DevicePreview component (Mobile/Tablet/Desktop)
+- PreviewStateManager otimizado
+- Performance optimizations (memoization, virtual scroll)
+- Mobile preview modal
+- Preview de FAQ e contatos
+
+#### Fase 3: Sistema de Aparência (6-8 horas)
+- Nova tabela TenantAppearance no schema (cores, estilos, layout)
+- Migration Prisma
+- DTOs e Services de aparência
+- Edição de cores e estilos no painel
+- Preview com customizações
+
+#### Fase 4: Sistema de Temas (4-6 horas)
+- Paletas de cores predefinidas (premium_dark, warm_professional, calm_clinical, professional_blue)
+- Variants de layout (centered, split, minimalist, modern)
+- Presets de design
+- Editor visual de temas
+- Salvamento de customizações
+
+#### Fase 5: Componentes Modulares (8-10 horas)
+- Refatorar TenantLandingPage em slots configuráveis
+- Componentes configuráveis (Hero, About, Specialties, Contact, CTA)
+- Variant system
+- Preview de variantes
+- Foundation para A/B testing
+
+#### Fase 6: Polish e UX (4-6 horas)
+- Micro-interactions e animações
+- Loading states otimizados
+- Error handling
+- Acessibilidade
+
+**Arquitetura Proposta:**
+```
+src/components/features/preview/ (novo)
+├── PreviewWrapper.tsx ✅
+├── LivePreview.tsx ✅
+├── PreviewStateManager.tsx ✅
+├── DevicePreview.tsx (próxima fase)
+└── ThemeEditor.tsx (fase 4)
+
+src/components/features/tenant/TenantLandingPageComponents/ (novo)
+├── HeroComponent.tsx (fase 5)
+├── AboutComponent.tsx (fase 5)
+├── SpecialtiesComponent.tsx (fase 5)
+├── ContactComponent.tsx (fase 5)
+└── CTAComponent.tsx (fase 5)
+
+src/app/customization/ (novo)
+└── page.tsx (edição de customizações - fase 3)
+```
+
+**Estimativa Total:** 29-40 horas (Fase 1: ~6 horas completada)
+
+### Prioridade 2: Completar Fase 7 - Segurança e LGPD
+1. Implementar fluxo de exclusão de dados automatizado
+2. Implementar auditoria de ações sensíveis
+
+### Prioridade 3: Fases Futuras
 1. Implementar gestão de domínios personalizados (integração Vercel API)
 2. Implementar sistema de analytics e tracking
 3. Testar fluxo completo end-to-end

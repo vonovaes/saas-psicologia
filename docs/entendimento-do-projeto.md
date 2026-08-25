@@ -316,6 +316,86 @@ O desenvolvimento será feito de forma guiada, com mudanças pequenas e verific�
 - O npm incluído com o Node está presente e funcional quando executado com o prefixo correto; portanto, isso não bloqueia a criação do projeto.
 - Antes do uso cotidiano do ambiente, a ação recomendada é reinstalar o Node.js em versão LTS para restaurar a configuração padrão do npm. Essa ação altera o ambiente global da máquina e será feita apenas com confirmação explícita.
 
+## 18. Home institucional do Acolha — plano de implementação
+
+### Objetivo
+
+Criar uma home institucional para o **Acolha**, a plataforma oferecida aos psicólogos. A página deve explicar a proposta de valor, apresentar o produto e conduzir o visitante para login ou contato comercial/onboarding.
+
+Ela não substitui a landing page pública de cada psicólogo: são duas experiências com públicos diferentes.
+
+### Separação de domínios e rotas
+
+| Endereço | Público | Conteúdo |
+|---|---|---|
+| `acolha.com.br` | Psicólogos interessados | Home institucional do Acolha |
+| `app.acolha.com.br/login` | Psicólogos clientes | Login e painel administrativo |
+| Domínio próprio do cliente | Potenciais pacientes | Landing page do psicólogo |
+
+Durante o desenvolvimento local, `localhost` deve representar a plataforma Acolha; domínios de teste de tenants continuam sendo usados para testar a landing page pública.
+
+O middleware/proxy deve reconhecer explicitamente os hosts da plataforma. Neles, a rota `/` entrega a home do Acolha. Em qualquer domínio pertencente a um tenant ativo, a mesma rota `/` continua entregando a landing page daquele tenant. Essa regra evita colisão de rotas e preserva a arquitetura multi-tenant atual.
+
+### Estrutura da página
+
+1. **Header**: logotipo textual Acolha, links âncora e CTAs “Entrar” e “Quero conhecer”.
+2. **Hero**: mensagem direta para psicólogos, explicando landing page profissional, domínio próprio e foco em gerar novos contatos.
+3. **Problema e solução**: apresentar a dificuldade de ter presença digital sem transformar o profissional em gestor de tecnologia; mostrar o Acolha como solução enxuta.
+4. **Como funciona**: três passos — configurar perfil, conectar domínio, receber contatos.
+5. **Recursos principais**: landing page responsiva, painel simples, formulário/WhatsApp, domínio próprio, privacidade e analytics.
+6. **Para quem é**: psicólogos que desejam captar contatos sem CRM, agenda ou construtor de sites complexo.
+7. **CTA final**: login para clientes existentes e canal de interesse para novos clientes.
+8. **Footer**: marca, privacidade, termos (quando criados) e contato.
+
+### Decisões de UX e conteúdo
+
+- O visual deve ser distinto das páginas dos psicólogos: o Acolha representa a marca da plataforma, enquanto o tenant representa o profissional.
+- A copy deve prometer presença profissional e captação de contatos, sem prometer resultados clínicos ou volume garantido de pacientes.
+- A home será estática e rápida; não depende do banco nem da resolução de tenant.
+- O primeiro CTA para visitantes novos será “Quero conhecer o Acolha”; inicialmente pode apontar para contato via WhatsApp/e-mail configurado por variável de ambiente. O CTA “Entrar” aponta para `/login` no domínio do painel.
+- Não haverá página de preços, checkout ou auto-onboarding neste primeiro recorte; isso depende da definição comercial de planos.
+
+### Arquitetura proposta
+
+- Criar grupo de rotas para a plataforma, separado das rotas públicas de tenant.
+- Extrair a landing page de tenant atual para uma rota/componente explícito, renderizado somente depois que o host for identificado como domínio de tenant.
+- Criar componentes específicos da plataforma em `src/components/features/marketing/`; componentes genéricos permanecem em `src/components/ui/`.
+- Definir metadata própria para a marca Acolha, sem misturar SEO do produto com SEO dos psicólogos.
+- Variáveis esperadas: `NEXT_PUBLIC_APP_URL` e `NEXT_PUBLIC_SALES_CONTACT_URL`.
+
+### Critérios de aceite
+
+- Acessar o domínio da plataforma mostra a home do Acolha.
+- Acessar `/login` no domínio da plataforma preserva o login atual.
+- Acessar um domínio de tenant ativo continua mostrando sua landing page personalizada.
+- Nenhuma consulta ao banco é feita para renderizar a home institucional.
+- A página é responsiva, acessível e passa pelo build de produção.
+
+### Direção de UI/UX e bibliotecas
+
+**Decisão recomendada:** manter **Tailwind CSS 4** como base visual, adicionar **shadcn/ui** seletivamente e usar **Lucide React** para ícones. Não adotar uma biblioteca visual completa, como Material UI, para preservar a identidade própria do Acolha e evitar CSS/temas concorrentes.
+
+| Recurso | Papel no Acolha | Decisão |
+|---|---|---|
+| Tailwind CSS | Layout, responsividade, tokens e acabamento visual | Manter |
+| shadcn/ui | Componentes acessíveis com código no próprio repositório | Adotar seletivamente |
+| Lucide React | Ícones leves e consistentes | Adotar |
+| Motion for React | Animações mais elaboradas | Adiar; usar transições CSS no primeiro corte |
+| Base UI / Radix | Primitivas headless para interações complexas | Não instalar diretamente agora; avaliar somente se um componente do shadcn/ui exigir |
+
+O shadcn/ui é particularmente adequado porque entrega o código dos componentes ao projeto, permitindo que o design seja ajustado sem camadas de override. Para a home inicial, os componentes previstos são `Button`, `Card`, `Badge`, `Accordion` e, se necessário, `Sheet` para a navegação mobile.
+
+Motion for React é uma opção madura para animações declarativas, mas não é requisito para uma primeira página confortável. O Acolha deve começar com transições CSS discretas e respeitar `prefers-reduced-motion`; Motion será considerado somente se animações de entrada e scroll trouxerem ganho claro de comunicação.
+
+### Princípios de experiência para a home
+
+- Priorizar clareza e acolhimento sobre efeitos visuais excessivos.
+- Usar uma paleta calma, com alto contraste e uma única cor de destaque para CTAs.
+- Trabalhar em mobile-first, com espaçamento generoso e largura de leitura limitada.
+- Manter no máximo dois CTAs visuais no hero: interesse no produto e acesso para cliente existente.
+- Usar ícones apenas como apoio à compreensão, nunca como única forma de comunicar uma ação.
+- Garantir áreas clicáveis confortáveis, estados de foco visíveis, navegação por teclado e respeito à redução de movimento.
+
 ### Andamento da Fase 0 - Atualizado (21/08/2026)
 
 - ✅ Projeto Next.js criado em `saas-psicologos/`, com Next.js 16, React 19, TypeScript 5, Tailwind CSS 4, ESLint e App Router.

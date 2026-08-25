@@ -1,0 +1,9 @@
+export { BaseRepository } from './base.repository';
+export { TenantRepository } from './tenant.repository';
+export { UserRepository } from './user.repository';
+export { DomainRepository } from './domain.repository';
+export { TenantProfileRepository } from './tenant-profile.repository';
+export { LeadRepository } from './lead.repository';
+export { FaqRepository } from './faq.repository';
+export { TenantSettingsRepository } from './tenant-settings.repository';
+export { AuditLogRepository } from './audit-log.repository';

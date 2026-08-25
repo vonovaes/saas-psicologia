@@ -316,10 +316,235 @@ O desenvolvimento será feito de forma guiada, com mudanças pequenas e verific�
 - O npm incluído com o Node está presente e funcional quando executado com o prefixo correto; portanto, isso não bloqueia a criação do projeto.
 - Antes do uso cotidiano do ambiente, a ação recomendada é reinstalar o Node.js em versão LTS para restaurar a configuração padrão do npm. Essa ação altera o ambiente global da máquina e será feita apenas com confirmação explícita.
 
-### Andamento da Fase 0
+## 18. Home institucional do Acolha — plano de implementação
 
-- Foi criado o projeto Next.js em `saas-psicologos/`, com Next.js 16, React 19, TypeScript 5, Tailwind CSS 4, ESLint e App Router.
-- A estrutura utiliza `src/` e o alias de importação `@/*`.
-- As dependências foram instaladas e a verificação inicial do ESLint foi concluída sem erros.
-- O projeto possui repositório Git local, sem commits e sem remoto configurado.
-- Os documentos de planejamento e o arquivo draw.io ainda estão na pasta pai. Antes do primeiro commit, eles devem ser movidos para uma pasta `docs/` dentro do repositório ou o repositório deve ser criado na pasta pai, conforme a organização que for escolhida.
+### Objetivo
+
+Criar uma home institucional para o **Acolha**, a plataforma oferecida aos psicólogos. A página deve explicar a proposta de valor, apresentar o produto e conduzir o visitante para login ou contato comercial/onboarding.
+
+Ela não substitui a landing page pública de cada psicólogo: são duas experiências com públicos diferentes.
+
+### Separação de domínios e rotas
+
+| Endereço | Público | Conteúdo |
+|---|---|---|
+| `acolha.com.br` | Psicólogos interessados | Home institucional do Acolha |
+| `app.acolha.com.br/login` | Psicólogos clientes | Login e painel administrativo |
+| Domínio próprio do cliente | Potenciais pacientes | Landing page do psicólogo |
+
+Durante o desenvolvimento local, `localhost` deve representar a plataforma Acolha; domínios de teste de tenants continuam sendo usados para testar a landing page pública.
+
+O middleware/proxy deve reconhecer explicitamente os hosts da plataforma. Neles, a rota `/` entrega a home do Acolha. Em qualquer domínio pertencente a um tenant ativo, a mesma rota `/` continua entregando a landing page daquele tenant. Essa regra evita colisão de rotas e preserva a arquitetura multi-tenant atual.
+
+### Estrutura da página
+
+1. **Header**: logotipo textual Acolha, links âncora e CTAs “Entrar” e “Quero conhecer”.
+2. **Hero**: mensagem direta para psicólogos, explicando landing page profissional, domínio próprio e foco em gerar novos contatos.
+3. **Problema e solução**: apresentar a dificuldade de ter presença digital sem transformar o profissional em gestor de tecnologia; mostrar o Acolha como solução enxuta.
+4. **Como funciona**: três passos — configurar perfil, conectar domínio, receber contatos.
+5. **Recursos principais**: landing page responsiva, painel simples, formulário/WhatsApp, domínio próprio, privacidade e analytics.
+6. **Para quem é**: psicólogos que desejam captar contatos sem CRM, agenda ou construtor de sites complexo.
+7. **CTA final**: login para clientes existentes e canal de interesse para novos clientes.
+8. **Footer**: marca, privacidade, termos (quando criados) e contato.
+
+### Decisões de UX e conteúdo
+
+- O visual deve ser distinto das páginas dos psicólogos: o Acolha representa a marca da plataforma, enquanto o tenant representa o profissional.
+- A copy deve prometer presença profissional e captação de contatos, sem prometer resultados clínicos ou volume garantido de pacientes.
+- A home será estática e rápida; não depende do banco nem da resolução de tenant.
+- O primeiro CTA para visitantes novos será “Quero conhecer o Acolha”; inicialmente pode apontar para contato via WhatsApp/e-mail configurado por variável de ambiente. O CTA “Entrar” aponta para `/login` no domínio do painel.
+- Não haverá página de preços, checkout ou auto-onboarding neste primeiro recorte; isso depende da definição comercial de planos.
+
+### Arquitetura proposta
+
+- Criar grupo de rotas para a plataforma, separado das rotas públicas de tenant.
+- Extrair a landing page de tenant atual para uma rota/componente explícito, renderizado somente depois que o host for identificado como domínio de tenant.
+- Criar componentes específicos da plataforma em `src/components/features/marketing/`; componentes genéricos permanecem em `src/components/ui/`.
+- Definir metadata própria para a marca Acolha, sem misturar SEO do produto com SEO dos psicólogos.
+- Variáveis esperadas: `NEXT_PUBLIC_APP_URL` e `NEXT_PUBLIC_SALES_CONTACT_URL`.
+
+### Critérios de aceite
+
+- Acessar o domínio da plataforma mostra a home do Acolha.
+- Acessar `/login` no domínio da plataforma preserva o login atual.
+- Acessar um domínio de tenant ativo continua mostrando sua landing page personalizada.
+- Nenhuma consulta ao banco é feita para renderizar a home institucional.
+- A página é responsiva, acessível e passa pelo build de produção.
+
+### Direção de UI/UX e bibliotecas
+
+**Decisão recomendada:** manter **Tailwind CSS 4** como base visual, adicionar **shadcn/ui** seletivamente e usar **Lucide React** para ícones. Não adotar uma biblioteca visual completa, como Material UI, para preservar a identidade própria do Acolha e evitar CSS/temas concorrentes.
+
+| Recurso | Papel no Acolha | Decisão |
+|---|---|---|
+| Tailwind CSS | Layout, responsividade, tokens e acabamento visual | Manter |
+| shadcn/ui | Componentes acessíveis com código no próprio repositório | Adotar seletivamente |
+| Lucide React | Ícones leves e consistentes | Adotar |
+| Motion for React | Animações mais elaboradas | Adiar; usar transições CSS no primeiro corte |
+| Base UI / Radix | Primitivas headless para interações complexas | Não instalar diretamente agora; avaliar somente se um componente do shadcn/ui exigir |
+
+O shadcn/ui é particularmente adequado porque entrega o código dos componentes ao projeto, permitindo que o design seja ajustado sem camadas de override. Para a home inicial, os componentes previstos são `Button`, `Card`, `Badge`, `Accordion` e, se necessário, `Sheet` para a navegação mobile.
+
+Motion for React é uma opção madura para animações declarativas, mas não é requisito para uma primeira página confortável. O Acolha deve começar com transições CSS discretas e respeitar `prefers-reduced-motion`; Motion será considerado somente se animações de entrada e scroll trouxerem ganho claro de comunicação.
+
+### Princípios de experiência para a home
+
+- Priorizar clareza e acolhimento sobre efeitos visuais excessivos.
+- Usar uma paleta calma, com alto contraste e uma única cor de destaque para CTAs.
+- Trabalhar em mobile-first, com espaçamento generoso e largura de leitura limitada.
+- Manter no máximo dois CTAs visuais no hero: interesse no produto e acesso para cliente existente.
+- Usar ícones apenas como apoio à compreensão, nunca como única forma de comunicar uma ação.
+- Garantir áreas clicáveis confortáveis, estados de foco visíveis, navegação por teclado e respeito à redução de movimento.
+
+### Andamento da Fase 0 - Atualizado (21/08/2026)
+
+- ✅ Projeto Next.js criado em `saas-psicologos/`, com Next.js 16, React 19, TypeScript 5, Tailwind CSS 4, ESLint e App Router.
+- ✅ Estrutura com `src/` e alias de importação `@/*`.
+- ✅ Dependências instaladas e ESLint validado.
+- ✅ Prisma 7.9.1 configurado com PostgreSQL (Neon)
+- ✅ Schema multi-tenant completo implementado (8 tabelas, enums, índices, soft delete)
+- ✅ Migration inicial criada e aplicada no banco Neon
+- ✅ Camada de backend implementada:
+  - Repository Pattern com tenant-aware (BaseRepository)
+  - Services para todas as entidades (Tenant, User, Domain, Profile, Lead, FAQ, Settings, AuditLog)
+  - DTOs com Zod para validação
+  - Factory para repositories com contexto de tenant
+- ✅ Middleware de resolução de tenant por host
+- ✅ TenantContext para acesso ao contexto de tenant
+- ✅ Sistema de autenticação com Auth.js v5 (Credentials provider)
+- ✅ Hash de senhas com bcrypt
+- ✅ Script de seed para dados de teste
+- ✅ Páginas de login e dashboard básicas
+- ✅ Variáveis de ambiente configuradas
+- ✅ **Login funcional** (email/senha autenticados corretamente)
+- 🔄 **EM PROGRESSO**: Implementação das telas do painel administrativo
+
+### Problemas Conhecidos e Soluções
+
+1. **Email de teste inválido**: Zod rejeitava `admin@localhost` como email inválido
+   - **Solução**: Alterado para `admin@psicologos.test` e ajustado validador para permitir emails locais
+2. **Edge Runtime com Prisma**: Middleware não pode usar Prisma diretamente
+   - **Solução**: Usar API interna `/api/tenant-resolve` para resolver tenant
+3. **Contexto de tenant no login**: Middleware não injetava contexto para rotas de login
+   - **Solução**: Middleware agora resolve tenant para rotas de login e injeta headers apropriados
+4. **Índice único composto no Prisma**: `findUnique` não aceitava apenas `email` devido ao índice `tenantId_email`
+   - **Solução**: Alterado para `findFirst` que funciona com filtros normais
+5. **Auth.js v5 authorize callback**: Não tem acesso fácil ao contexto de request do middleware
+   - **Solução**: Buscar usuário globalmente pelo email e validar tenant status dentro do próprio callback
+
+### Credenciais de Teste Atuais
+
+- **Email:** admin@psicologos.test
+- **Senha:** password123
+- **Domínio:** localhost
+- **Tenant ID:** cmt3gfd810000esty7e875mqj
+
+## Próximas Etapas do Projeto
+
+### Fase 3 - Painel Administrativo (Próxima Fase)
+
+1. **Tela de Edição de Perfil**
+   - Formulário para editar nome, CRP, especialidades, cidade, descrição, endereço
+   - Upload de foto profissional (Vercel Blob)
+   - Configuração de tipo de atendimento (presencial, online, ambos)
+   - Validação com Zod DTOs existentes
+
+2. **Tela de Gestão de FAQ**
+   - Lista de perguntas e respostas
+   - CRUD completo (criar, editar, excluir, reordenar)
+   - Preview de como aparece na landing page
+
+3. **Tela de Configurações**
+   - Número de WhatsApp
+   - Handle do Instagram
+   - URL do Google Maps Embed
+   - IDs de analytics (GTM, GA4, Google Ads, Meta Pixel)
+
+4. **Tela de Domínios**
+   - Listar domínios configurados
+   - Adicionar novo domínio
+   - Mostrar status de DNS e SSL
+   - Instruções de configuração DNS
+   - Integração com Vercel Domains API
+
+5. **Tela de Leads**
+   - Lista de leads recebidos
+   - Filtros por data e origem
+   - Detalhes do lead
+   - Exportação simples
+
+### Fase 4 - Landing Page Pública
+
+1. **Componentes da Landing Page**
+   - Hero section com foto, nome, especialidade e CTA de WhatsApp
+   - Seção de credibilidade (CRP, experiência, abordagem)
+   - Seção de especialidades
+   - Seção sobre o profissional
+   - Como funciona o atendimento
+   - Localização/mapa
+   - FAQ pública
+   - CTA final e botão flutuante de WhatsApp
+
+2. **Formulário de Contato**
+   - Captura de nome, telefone e mensagem
+   - Consentimento de privacidade
+   - Validação e rate limiting
+   - Criação de lead no banco
+
+3. **Tracking de Conversão**
+   - Integração com GTM
+   - Eventos de tracking (click_whatsapp, form_submit, click_maps, page_view)
+   - Injeção de scripts por tenant
+
+### Fase 5 - Domínios Personalizados e SSL
+
+1. **Integração Vercel Domains API**
+   - Adicionar domínio ao projeto Vercel
+   - Validar configuração DNS
+   - Monitorar status de SSL
+   - Renovação automática
+
+2. **Validação de DNS**
+   - Verificar registros configurados
+   - Mostrar instruções ao usuário
+   - Status em tempo real
+
+### Fase 6 - Analytics e Tracking
+
+1. **Implementação de Tracking**
+   - dataLayer por tenant
+   - Injeção condicional de scripts
+   - Eventos de conversão personalizados
+
+2. **Configuração por Tenant**
+   - Interface para configurar IDs
+   - Preview de scripts injetados
+   - Validação de formatos
+
+### Fase 7 - Segurança e LGPD
+
+1. **Segurança**
+   - Rate limiting em rotas públicas
+   - Validação de uploads
+   - Headers de segurança
+   - Proteção contra CSRF
+
+2. **LGPD**
+   - Política de privacidade
+   - Fluxo de exclusão de dados
+   - Consentimento explícito
+   - Auditoria de ações sensíveis
+
+### Fase 8 - Preparação para Produção
+
+1. **Ambiente de Produção**
+   - Configuração de variáveis de ambiente
+   - Setup de domínio principal
+   - Backup e restore
+   - Monitoramento
+
+2. **Onboarding Manual**
+   - Processo para novos clientes
+   - Checklist de configuração
+   - Documentação de suporte
+   - Soft launch com 2-5 clientes

@@ -1,0 +1,164 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Tenant {
+  id           String          @id @default(cuid())
+  name         String
+  crp          String
+  contactEmail String
+  status       TenantStatus    @default(TRIAL)
+  plan         String?
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+  deletedAt    DateTime?
+  auditLogs    AuditLog[]
+  domains      Domain[]
+  faqs         Faq[]
+  leads        Lead[]
+  profile      TenantProfile?
+  settings     TenantSettings?
+  users        User[]
+
+  @@index([status])
+}
+
+model Domain {
+  id        String          @id @default(cuid())
+  tenantId  String
+  domain    String          @unique
+  dnsStatus DomainDnsStatus @default(PENDING)
+  sslStatus DomainSslStatus @default(PENDING)
+  isPrimary Boolean         @default(false)
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+  deletedAt DateTime?
+  tenant    Tenant          @relation(fields: [tenantId], references: [id])
+
+  @@index([tenantId, createdAt])
+  @@index([tenantId, isPrimary])
+}
+
+model TenantSettings {
+  id                 String   @id @default(cuid())
+  tenantId           String   @unique
+  whatsappNumber     String?
+  instagramHandle    String?
+  googleMapsEmbedUrl String?
+  googleTagManagerId String?
+  googleAnalyticsId  String?
+  googleAdsId        String?
+  metaPixelId        String?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  tenant             Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+}
+
+model TenantProfile {
+  id              String    @id @default(cuid())
+  tenantId        String    @unique
+  displayName     String
+  specialties     String[]
+  city            String
+  description     String
+  address         String?
+  profileImageUrl String?
+  attendanceType  String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  deletedAt       DateTime?
+  tenant          Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id           String     @id @default(cuid())
+  tenantId     String
+  email        String
+  passwordHash String
+  role         UserRole   @default(OWNER)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  deletedAt    DateTime?
+  auditLogs    AuditLog[]
+  tenant       Tenant     @relation(fields: [tenantId], references: [id])
+
+  @@unique([tenantId, email])
+  @@index([tenantId, createdAt])
+}
+
+model Faq {
+  id        String    @id @default(cuid())
+  tenantId  String
+  question  String
+  answer    String
+  position  Int
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+  tenant    Tenant    @relation(fields: [tenantId], references: [id])
+
+  @@unique([tenantId, position])
+  @@index([tenantId, createdAt])
+}
+
+model Lead {
+  id          String     @id @default(cuid())
+  tenantId    String
+  name        String
+  phone       String
+  message     String?
+  source      LeadSource @default(FORMULARIO)
+  consentedAt DateTime
+  createdAt   DateTime   @default(now())
+  deletedAt   DateTime?
+  tenant      Tenant     @relation(fields: [tenantId], references: [id])
+
+  @@index([tenantId, createdAt])
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  tenantId  String
+  userId    String?
+  action    String
+  resource  String
+  metadata  Json?
+  createdAt DateTime @default(now())
+  tenant    Tenant   @relation(fields: [tenantId], references: [id])
+  user      User?    @relation(fields: [userId], references: [id])
+
+  @@index([tenantId, createdAt])
+  @@index([userId, createdAt])
+}
+
+enum TenantStatus {
+  TRIAL
+  ACTIVE
+  SUSPENDED
+}
+
+enum DomainDnsStatus {
+  PENDING
+  VERIFIED
+  ERROR
+}
+
+enum DomainSslStatus {
+  PENDING
+  ACTIVE
+  ERROR
+}
+
+enum UserRole {
+  OWNER
+  ADMIN
+}
+
+enum LeadSource {
+  FORMULARIO
+}

@@ -2,11 +2,11 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { signOut } from 'next-auth/react';
 import { Input, Textarea, Select, Button, FieldGroup } from '@/components/ui';
 import { PreviewWrapper } from '@/components/features/preview/PreviewWrapper';
 import { LivePreview } from '@/components/features/preview/LivePreview';
 import { usePreviewStateManager } from '@/components/features/preview/PreviewStateManager';
+import { useProfile, useFaqs } from '@/hooks/useApi';
 
 interface ProfileData {
   displayName: string;
@@ -26,7 +26,10 @@ interface SettingsData {
 
 export default function ProfilePage() {
   const router = useRouter();
-  const [loading, setLoading] = useState(true);
+  const { profile: fetchedProfile, settings: fetchedSettings, loading: profileLoading } = useProfile();
+  const { faqs, loading: faqsLoading } = useFaqs();
+  const loading = profileLoading || faqsLoading;
+
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   
@@ -47,7 +50,6 @@ export default function ProfilePage() {
   });
 
   const [specialtyInput, setSpecialtyInput] = useState('');
-  const [faqs, setFaqs] = useState<{ id: string; question: string; answer: string }[]>([]);
   const [previewData, setPreviewData] = useState({ profile, settings, faqs });
 
   const { debouncedUpdate } = usePreviewStateManager({
@@ -55,42 +57,23 @@ export default function ProfilePage() {
     debounceMs: 300,
   });
 
+  // Sincroniza estado local quando os dados da API chegam
   useEffect(() => {
-    fetchProfile();
-  }, []);
-
-  const fetchProfile = async () => {
-    try {
-      const response = await fetch('/api/profile');
-      if (!response.ok) throw new Error('Failed to fetch profile');
-      
-      const data = await response.json();
-      
-      if (data.profile) {
-        setProfile(data.profile);
-      }
-      if (data.settings) {
-        setSettings(data.settings);
-      }
-
-      // Fetch FAQs for preview
-      const faqResponse = await fetch('/api/faq');
-      if (faqResponse.ok) {
-        const faqData = await faqResponse.json();
-        setFaqs(faqData.faqs || []);
-        setPreviewData({
-          profile: data.profile || profile,
-          settings: data.settings || settings,
-          faqs: faqData.faqs || [],
-        });
-      }
-    } catch (error) {
-      console.error('Error fetching profile:', error);
-      setMessage({ type: 'error', text: 'Erro ao carregar perfil' });
-    } finally {
-      setLoading(false);
+    if (fetchedProfile) {
+      setProfile({
+        ...fetchedProfile,
+        attendanceType: fetchedProfile.attendanceType as ProfileData['attendanceType'],
+      });
     }
-  };
+    if (fetchedSettings) {
+      setSettings(fetchedSettings);
+    }
+  }, [fetchedProfile, fetchedSettings]);
+
+  useEffect(() => {
+    setPreviewData({ profile, settings, faqs });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [faqs]);
 
   const addSpecialty = () => {
     if (specialtyInput.trim() && !profile.specialties.includes(specialtyInput.trim())) {
@@ -146,10 +129,6 @@ export default function ProfilePage() {
     const updatedSettings = { ...settings, [field]: value };
     setSettings(updatedSettings);
     debouncedUpdate({ profile, settings: updatedSettings, faqs });
-  };
-
-  const handleLogout = async () => {
-    await signOut({ callbackUrl: '/login' });
   };
 
   if (loading) {

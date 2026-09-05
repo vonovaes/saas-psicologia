@@ -1,6 +1,7 @@
 import { auth } from '@/server/lib/auth';
 import { redirect } from 'next/navigation';
 import { Button } from '@/components/ui';
+import { AdminLayout } from '@/components/layout/AdminLayout';
 import Link from 'next/link';
 
 export default async function DashboardPage() {
@@ -11,38 +12,20 @@ export default async function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-gray-900">Painel Administrativo</h1>
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-gray-700">
-              {session.user.email}
-            </span>
-            <Link href="/profile">
-              <Button variant="secondary" size="sm">
-                Editar Perfil
-              </Button>
-            </Link>
-            <form action="/api/auth/signout" method="POST">
-              <Button type="submit" variant="danger" size="sm">
-                Sair
-              </Button>
-            </form>
-          </div>
-        </div>
-      </header>
-
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-8">
-          <h2 className="text-3xl font-bold text-gray-900">Dashboard</h2>
-          <p className="mt-2 text-gray-600">Bem-vindo ao painel administrativo</p>
-        </div>
-
-        {/* Quick Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+    <AdminLayout
+      title="Dashboard"
+      subtitle="Bem-vindo ao painel administrativo"
+      userEmail={session.user.email}
+      actions={
+        <Link href="/profile">
+          <Button variant="secondary" size="sm">
+            Editar Perfil
+          </Button>
+        </Link>
+      }
+    >
+      {/* Quick Actions */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           <Link href="/profile" className="block">
             <div className="bg-white shadow rounded-lg p-6 hover:shadow-lg transition-shadow cursor-pointer">
               <div className="flex items-center justify-between mb-4">
@@ -126,7 +109,6 @@ export default async function DashboardPage() {
             </div>
           </div>
         </div>
-      </main>
-    </div>
+    </AdminLayout>
   );
 }

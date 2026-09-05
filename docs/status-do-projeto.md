@@ -244,96 +244,36 @@
 
 ## Próximos Passos Imediatos
 
-### Prioridade 1: Preview em Tempo Real e Landing Page Flexível
+### Prioridade 1: Editor Visual de Templates
 
-**Objetivo:** Melhorar experiência do psicólogo com preview visual durante edição e permitir customização da landing page.
+**Objetivo:** Substituir o modelo "formulário + preview" por edição visual direta — o psicólogo escolhe um template pronto e edita a página real clicando nas seções (modelo Shopify Customizer adaptado).
 
-**Status:** ✅ Fase 1 Completa (Preview Básico Implementado)
+**Plano completo:** ver `docs/plano-editor-visual.md`
 
-**Progresso Atual:**
-- ✅ PreviewWrapper component (container split-screen)
-- ✅ LivePreview component básico (renderiza landing page com dados do form)
-- ✅ Integração com página de perfil (/profile)
-- ✅ Toggle de preview (mostrar/ocultar)
-- ✅ Layout responsivo desktop/tablet/mobile
-- ✅ PreviewStateManager com debounce (300ms)
-- ✅ Build testado e funcionando
-- ✅ Dev server rodando sem erros
+**Status:** ✅ Editor Visual completo — todas as fases entregues
 
-**Arquivos Criados:**
-- `src/components/features/preview/PreviewWrapper.tsx` - Container split-screen com toggle
-- `src/components/features/preview/LivePreview.tsx` - Preview simplificado da landing page
-- `src/components/features/preview/PreviewStateManager.tsx` - Hook para debounce de atualizações
+**Roadmap:**
+- ✅ E-1 Higiene Frontend (4-6h) — AdminLayout, custom hooks, design tokens
+- ✅ E0 Fundação de Tema (6-8h) — TenantTheme + /api/theme + ThemeProvider
+- ✅ E1 Modularização (10-12h) — seções com schema + SiteRenderer
+- ✅ E2 Templates (6-8h) — 5 presets (Noite, Acolhimento, Sereno, Essencial, Vital) + galeria
+- ✅ E3 Editor Visual (12-16h) — click-to-select + inspector + draft/publish
+- ✅ E4 Seções/Listas (6-8h) — reordenação, FAQ no editor, Depoimentos, Mapa
+- ✅ E5 Polish (6-8h) — undo/redo, autosave, device preview, a11y
 
-**Arquivos Modificados:**
-- `src/app/profile/page.tsx` - Integrado com preview wrapper e state manager
-- `next.config.ts` - Adicionado `allowedDevOrigins: ['127.0.0.1']` para desenvolvimento
+**Pendente (validação com usuário):** retirar ou redirecionar `/profile` antigo após confirmação de que o editor cobre todos os casos de uso.
+- ⏳ E1 Modularização (10-12h) — seções com schema + SiteRenderer
+- ⏳ E2 Templates (6-8h) — 5 presets (Noite, Acolhimento, Sereno, Essencial, Vital) + galeria
+- ⏳ E3 Editor Visual (12-16h) — click-to-select + inspector + draft/publish
+- ⏳ E4 Seções/Listas (6-8h) — reordenação, FAQ no editor, Depoimentos, Mapa
+- ⏳ E5 Polish (6-8h) — undo/redo, autosave, device preview, a11y
 
-**Funcionalidades Implementadas:**
-- Preview em tempo real com debounce (300ms)
-- Layout responsivo (desktop split-screen, mobile modal)
-- Toggle de preview (mostrar/ocultar)
-- Atualização automática ao modificar campos do formulário
-- Preview mostra dados do formulário (não apenas do banco)
-- Indicador visual de "Modo Preview"
+**Total estimado:** 50-66h
 
-**Próximas Fases:**
-
-#### Fase 2: Preview Avançado (3-4 horas)
-- DevicePreview component (Mobile/Tablet/Desktop)
-- PreviewStateManager otimizado
-- Performance optimizations (memoization, virtual scroll)
-- Mobile preview modal
-- Preview de FAQ e contatos
-
-#### Fase 3: Sistema de Aparência (6-8 horas)
-- Nova tabela TenantAppearance no schema (cores, estilos, layout)
-- Migration Prisma
-- DTOs e Services de aparência
-- Edição de cores e estilos no painel
-- Preview com customizações
-
-#### Fase 4: Sistema de Temas (4-6 horas)
-- Paletas de cores predefinidas (premium_dark, warm_professional, calm_clinical, professional_blue)
-- Variants de layout (centered, split, minimalist, modern)
-- Presets de design
-- Editor visual de temas
-- Salvamento de customizações
-
-#### Fase 5: Componentes Modulares (8-10 horas)
-- Refatorar TenantLandingPage em slots configuráveis
-- Componentes configuráveis (Hero, About, Specialties, Contact, CTA)
-- Variant system
-- Preview de variantes
-- Foundation para A/B testing
-
-#### Fase 6: Polish e UX (4-6 horas)
-- Micro-interactions e animações
-- Loading states otimizados
-- Error handling
-- Acessibilidade
-
-**Arquitetura Proposta:**
-```
-src/components/features/preview/ (novo)
-├── PreviewWrapper.tsx ✅
-├── LivePreview.tsx ✅
-├── PreviewStateManager.tsx ✅
-├── DevicePreview.tsx (próxima fase)
-└── ThemeEditor.tsx (fase 4)
-
-src/components/features/tenant/TenantLandingPageComponents/ (novo)
-├── HeroComponent.tsx (fase 5)
-├── AboutComponent.tsx (fase 5)
-├── SpecialtiesComponent.tsx (fase 5)
-├── ContactComponent.tsx (fase 5)
-└── CTAComponent.tsx (fase 5)
-
-src/app/customization/ (novo)
-└── page.tsx (edição de customizações - fase 3)
-```
-
-**Estimativa Total:** 29-40 horas (Fase 1: ~6 horas completada)
+**Legado já aproveitável:**
+- PreviewWrapper → base do EditorShell
+- LivePreview → será substituído pelo SiteRenderer único
+- PreviewStateManager → base do debounce/autosave do draft
 
 ### Prioridade 2: Completar Fase 7 - Segurança e LGPD
 1. Implementar fluxo de exclusão de dados automatizado

@@ -18,6 +18,33 @@
   --color-acolha-accent-hover: #183f32;
   --color-acolha-mist: #eaf4ee;
   --color-acolha-line: #dce7e0;
+
+  /* ── Design tokens do site do tenant ─────────────────────────
+     Escopo: apenas dentro de .tenant-site (a landing pública do
+     psicólogo). O editor e os templates injetam esses valores via
+     CSS variables — trocar tema = trocar as variáveis. */
+  --color-site-primary: var(--site-primary);
+  --color-site-accent: var(--site-accent);
+  --color-site-surface: var(--site-surface);
+  --color-site-bg: var(--site-bg);
+  --color-site-text: var(--site-text);
+  --color-site-text-muted: var(--site-text-muted);
+}
+
+/* Valores padrão = template "Noite" (tema atual). Serão
+   sobrescritos pelo ThemeProvider conforme o tema do tenant. */
+.tenant-site {
+  --site-primary: #f59e0b;
+  --site-accent: #f59e0b;
+  --site-surface: #1a1b1e;
+  --site-bg: #0a0b0c;
+  --site-text: #ffffff;
+  --site-text-muted: #9ca3af;
+  --site-radius: 1rem;
+  /* Container queries: as seções usam @sm/@md/@lg que respondem
+     à largura DESTE container — não do viewport. Na página pública
+     equivale ao viewport; no editor, equivale ao frame do device. */
+  container-type: inline-size;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -27,13 +54,6 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
-  }
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
   }
 }
 

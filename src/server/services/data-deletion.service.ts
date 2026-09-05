@@ -26,7 +26,7 @@ export class DataDeletionService {
         tx.faq.updateMany({ where: { tenantId: this.tenantId, deletedAt: null }, data: { deletedAt: now } }),
       ]);
       await tx.user.update({ where: { id: owner.id }, data: { email: `closed-${owner.id}@invalid.local` } });
-      await tx.tenantProfile.updateMany({ where: { tenantId: this.tenantId, deletedAt: null }, data: { displayName: 'Perfil removido', specialties: [], city: 'Removido', description: 'Conteúdo removido', address: null, profileImageUrl: null, attendanceType: null, deletedAt: now } });
+      await tx.tenantProfile.updateMany({ where: { tenantId: this.tenantId, deletedAt: null }, data: { displayName: 'Perfil removido', specialties: [], approaches: [], city: 'Removido', description: 'Conteúdo removido', address: null, profileImageUrl: null, attendanceType: null, deletedAt: now } });
       await tx.tenantSettings.updateMany({ where: { tenantId: this.tenantId }, data: { whatsappNumber: null, instagramHandle: null, googleMapsEmbedUrl: null, googleTagManagerId: null, googleAnalyticsId: null, googleAdsId: null, metaPixelId: null } });
       await tx.tenant.update({ where: { id: this.tenantId }, data: { status: 'SUSPENDED', deletedAt: now, name: 'Conta encerrada', crp: 'REMOVIDO', contactEmail: `closed-${this.tenantId}@invalid.local` } });
       await tx.auditLog.create({ data: { tenantId: this.tenantId, userId: owner.id, action: 'TENANT_ACCOUNT_CLOSED', resource: 'Tenant', metadata: { leads: leads.count, users: users.count, domains: domains.count, faqs: faqs.count } } });

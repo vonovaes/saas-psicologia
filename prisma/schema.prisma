@@ -23,6 +23,7 @@ model Tenant {
   leads        Lead[]
   profile      TenantProfile?
   settings     TenantSettings?
+  theme        TenantTheme?
   users        User[]
 
   @@index([status])
@@ -64,6 +65,7 @@ model TenantProfile {
   tenantId        String    @unique
   displayName     String
   specialties     String[]
+  approaches      String[]  @default([])
   city            String
   description     String
   address         String?
@@ -75,10 +77,24 @@ model TenantProfile {
   tenant          Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 }
 
+model TenantTheme {
+  id          String    @id @default(cuid())
+  tenantId    String    @unique
+  templateId  String    @default("noite")
+  tokens      Json      @default("{}")
+  sections    Json      @default("[]")
+  draft       Json?
+  publishedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  tenant      Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+}
+
 model User {
   id           String     @id @default(cuid())
   tenantId     String
   email        String
+  name         String?
   passwordHash String
   role         UserRole   @default(OWNER)
   createdAt    DateTime   @default(now())

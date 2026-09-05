@@ -100,7 +100,7 @@ export function AcolhaHome({ loginHref, salesContactUrl }: AcolhaHomeProps) {
               <p id="acolha-cta-note" className="mt-4 text-sm text-acolha-muted">
                 {salesContactUrl
                   ? 'Conversa inicial para entender se o Acolha faz sentido para o seu consultório.'
-                  : 'O convite para conhecer o Acolha ainda é uma prévia visual nesta fase.'}
+                  : 'Comece com 14 dias grátis. Sem cartão de crédito.'}
               </p>
             </div>
 
@@ -242,7 +242,9 @@ export function AcolhaHome({ loginHref, salesContactUrl }: AcolhaHomeProps) {
               </MarketingButton>
             </div>
             <p id="acolha-cta-final" className="mt-4 text-sm text-[#d7ebe0]">
-              Ainda não há autosserviço de planos nesta versão.
+              {salesContactUrl
+                ? 'Ainda não há autosserviço de planos nesta versão.'
+                : '14 dias grátis, sem cartão. Cancele quando quiser.'}
             </p>
           </div>
         </section>

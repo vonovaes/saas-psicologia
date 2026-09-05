@@ -26,7 +26,7 @@ export function KnowAcolhaCta({
   }
 
   return (
-    <MarketingButton size={size} variant={variant} aria-describedby={describedBy} onClick={onClick}>
+    <MarketingButton href="/signup" size={size} variant={variant} aria-describedby={describedBy} onClick={onClick}>
       {label}
     </MarketingButton>
   );

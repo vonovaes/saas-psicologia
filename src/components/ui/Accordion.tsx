@@ -21,9 +21,9 @@ export const AccordionItem: React.FC<AccordionItemProps> = ({
         onClick={onToggle}
         className="w-full flex items-center justify-between py-6 text-left focus:outline-none"
       >
-        <span className="text-lg font-light text-gray-200">{title}</span>
+        <span className="text-lg font-semibold text-site-text">{title}</span>
         <svg
-          className={`w-5 h-5 text-amber-400 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}
+          className={`w-5 h-5 text-site-primary transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -32,7 +32,7 @@ export const AccordionItem: React.FC<AccordionItemProps> = ({
         </svg>
       </button>
       {isOpen && (
-        <div className="pb-6 text-gray-400 font-light leading-relaxed">
+        <div className="pb-6 text-site-text-muted font-light leading-relaxed">
           {children}
         </div>
       )}

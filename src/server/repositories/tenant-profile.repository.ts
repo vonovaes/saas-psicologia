@@ -12,6 +12,7 @@ export class TenantProfileRepository extends BaseRepository {
   async create(data: {
     displayName: string;
     specialties: string[];
+    approaches?: string[];
     city: string;
     description: string;
     address?: string;
@@ -36,6 +37,7 @@ export class TenantProfileRepository extends BaseRepository {
   async upsert(data: {
     displayName: string;
     specialties: string[];
+    approaches?: string[];
     city: string;
     description: string;
     address?: string;

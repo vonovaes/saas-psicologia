@@ -5,4 +5,5 @@ export { LeadService } from './lead.service';
 export { FaqService } from './faq.service';
 export { TenantProfileService } from './tenant-profile.service';
 export { TenantSettingsService } from './tenant-settings.service';
+export { TenantThemeService } from './tenant-theme.service';
 export { TenantResolutionService } from './tenant-resolution.service';

@@ -17,6 +17,7 @@ export class TenantProfileService {
   async createProfile(data: {
     displayName: string;
     specialties: string[];
+    approaches?: string[];
     city: string;
     description: string;
     address?: string;
@@ -49,6 +50,7 @@ export class TenantProfileService {
   async upsertProfile(data: {
     displayName: string;
     specialties: string[];
+    approaches?: string[];
     city: string;
     description: string;
     address?: string;

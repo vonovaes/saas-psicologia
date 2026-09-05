@@ -138,7 +138,7 @@ export function StringListField({ field, value, onChange }: FieldProps) {
         {items.map((item, i) => (
           <span
             key={i}
-            className="inline-flex items-center gap-1 px-3 py-1 bg-gray-100 rounded-full text-sm"
+            className="inline-flex items-center gap-1 px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-sm"
           >
             {item}
             <button

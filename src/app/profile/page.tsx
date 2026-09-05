@@ -165,6 +165,15 @@ export default function ProfilePage() {
         <p className="mt-2 text-gray-600">Atualize as informações do seu perfil profissional. As alterações aparecem no preview em tempo real.</p>
       </div>
 
+      <div className="mb-6 bg-blue-50 border border-blue-200 rounded-lg p-4 flex items-center justify-between">
+        <p className="text-sm text-blue-800">
+          <strong>Novo!</strong> Agora você pode editar sua página visualmente: clique nas seções, mude cores, adicione depoimentos e muito mais.
+        </p>
+        <Button variant="primary" size="sm" onClick={() => router.push('/editor')}>
+          Abrir Editor Visual
+        </Button>
+      </div>
+
       {message && (
         <div className={`mb-6 p-4 rounded ${
           message.type === 'success' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'

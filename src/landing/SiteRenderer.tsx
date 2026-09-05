@@ -62,7 +62,17 @@ export function SiteRenderer({
               <div
                 key={`${section.type}-${originalIndex}`}
                 onClick={() => onSelectSection?.(originalIndex)}
-                className={`relative cursor-pointer transition-shadow ${
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    onSelectSection?.(originalIndex);
+                  }
+                }}
+                role="button"
+                tabIndex={0}
+                aria-label={`Editar seção: ${entry.schema.name}`}
+                aria-pressed={isSelected}
+                className={`relative cursor-pointer transition-shadow focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                   isSelected
                     ? 'ring-2 ring-blue-500 ring-offset-2 ring-offset-transparent'
                     : 'hover:ring-2 hover:ring-blue-400/50'

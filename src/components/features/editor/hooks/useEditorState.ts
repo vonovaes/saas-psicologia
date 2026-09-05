@@ -9,6 +9,12 @@ import {
   DEFAULT_THEME,
 } from '@/landing/themes/tokens';
 import { SiteData } from '@/landing/types';
+import { useRef } from 'react';
+
+interface HistoryEntry {
+  theme: TenantThemeData;
+  contentEdits: Record<string, unknown>;
+}
 
 /**
  * Estado completo do editor visual.
@@ -44,18 +50,59 @@ function setByPath(obj: Record<string, unknown>, path: string, value: unknown): 
   return clone;
 }
 
-export function useEditorState(initialTheme: TenantThemeData | null) {
+export function useEditorState(initialTheme: TenantThemeData | null, initialContentEdits: Record<string, unknown> = {}) {
   const [theme, setTheme] = useState<TenantThemeData>(initialTheme ?? DEFAULT_THEME);
-  const [contentEdits, setContentEdits] = useState<Record<string, unknown>>({});
-  const [isDirty, setIsDirty] = useState(false);
+  const [contentEdits, setContentEdits] = useState<Record<string, unknown>>(initialContentEdits);
+  const [isDirty, setIsDirty] = useState(Object.keys(initialContentEdits).length > 0);
   const [saving, setSaving] = useState(false);
   const [publishing, setPublishing] = useState(false);
   const [lastSavedAt, setLastSavedAt] = useState<Date | null>(null);
+
+  // ── Undo/Redo ─────────────────────────────────────────────────
+  const pastRef = useRef<HistoryEntry[]>([]);
+  const futureRef = useRef<HistoryEntry[]>([]);
+  const [canUndo, setCanUndo] = useState(false);
+  const [canRedo, setCanRedo] = useState(false);
+  const themeRef = useRef(theme);
+  const editsRef = useRef(contentEdits);
+  themeRef.current = theme;
+  editsRef.current = contentEdits;
+
+  const pushHistory = useCallback(() => {
+    pastRef.current.push({ theme: themeRef.current, contentEdits: editsRef.current });
+    if (pastRef.current.length > 50) pastRef.current.shift();
+    futureRef.current = [];
+    setCanUndo(true);
+    setCanRedo(false);
+  }, []);
+
+  const undo = useCallback(() => {
+    const prev = pastRef.current.pop();
+    if (!prev) return;
+    futureRef.current.push({ theme: themeRef.current, contentEdits: editsRef.current });
+    setTheme(prev.theme);
+    setContentEdits(prev.contentEdits);
+    setIsDirty(true);
+    setCanUndo(pastRef.current.length > 0);
+    setCanRedo(true);
+  }, []);
+
+  const redo = useCallback(() => {
+    const next = futureRef.current.pop();
+    if (!next) return;
+    pastRef.current.push({ theme: themeRef.current, contentEdits: editsRef.current });
+    setTheme(next.theme);
+    setContentEdits(next.contentEdits);
+    setIsDirty(true);
+    setCanUndo(true);
+    setCanRedo(futureRef.current.length > 0);
+  }, []);
 
   // ── Tokens ────────────────────────────────────────────────────
 
   const updateTokens = useCallback((patch: Partial<ThemeTokens>) => {
     setTheme((prev) => ({ ...prev, tokens: { ...prev.tokens, ...patch } }));
+    pushHistory();
     setIsDirty(true);
   }, []);
 
@@ -67,6 +114,7 @@ export function useEditorState(initialTheme: TenantThemeData | null) {
         colors: { ...prev.tokens.colors, ...colors },
       },
     }));
+    pushHistory();
     setIsDirty(true);
   }, []);
 
@@ -77,6 +125,7 @@ export function useEditorState(initialTheme: TenantThemeData | null) {
       ...prev,
       sections: prev.sections.map((s, i) => (i === index ? { ...s, ...patch } : s)),
     }));
+    pushHistory();
     setIsDirty(true);
   }, []);
 
@@ -87,11 +136,13 @@ export function useEditorState(initialTheme: TenantThemeData | null) {
         i === index ? { ...s, overrides: { ...s.overrides, [key]: value } } : s
       ),
     }));
+    pushHistory();
     setIsDirty(true);
   }, []);
 
   const applyTemplate = useCallback((template: TenantThemeData) => {
     setTheme(template);
+    pushHistory();
     setIsDirty(true);
   }, []);
 
@@ -106,6 +157,7 @@ export function useEditorState(initialTheme: TenantThemeData | null) {
       };
       return { ...prev, sections: [...prev.sections, newSection] };
     });
+    pushHistory();
     setIsDirty(true);
   }, []);
 
@@ -117,6 +169,7 @@ export function useEditorState(initialTheme: TenantThemeData | null) {
         .map((s, i) => ({ ...s, order: i }));
       return { ...prev, sections: reordered };
     });
+    pushHistory();
     setIsDirty(true);
   }, []);
 
@@ -134,6 +187,7 @@ export function useEditorState(initialTheme: TenantThemeData | null) {
         sections: swapped.map((s, i) => ({ ...s, order: i })),
       };
     });
+    pushHistory();
     setIsDirty(true);
   }, []);
 
@@ -141,6 +195,7 @@ export function useEditorState(initialTheme: TenantThemeData | null) {
 
   const updateContent = useCallback((source: string, value: unknown) => {
     setContentEdits((prev) => setByPath(prev, source, value));
+    pushHistory();
     setIsDirty(true);
   }, []);
 
@@ -187,7 +242,10 @@ export function useEditorState(initialTheme: TenantThemeData | null) {
       const response = await fetch('/api/theme', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'draft', draft: theme }),
+        body: JSON.stringify({
+          action: 'draft',
+          draft: { ...theme, contentEdits: editsRef.current },
+        }),
       });
       if (!response.ok) throw new Error('Failed to save draft');
       setLastSavedAt(new Date());
@@ -257,12 +315,16 @@ export function useEditorState(initialTheme: TenantThemeData | null) {
       saveDraft,
       publish,
       setTheme,
+      undo,
+      redo,
+      canUndo,
+      canRedo,
     }),
     [
       theme, contentEdits, isDirty, saving, publishing, lastSavedAt,
       updateTokens, updateColors, updateSection, updateSectionOverride,
       updateContent, applyTemplate, addSection, removeSection, moveSection,
-      getPreviewData, getFieldValue, saveDraft, publish,
+      getPreviewData, getFieldValue, saveDraft, publish, undo, redo, canUndo, canRedo,
     ]
   );
 }

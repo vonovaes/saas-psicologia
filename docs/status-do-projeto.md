@@ -250,13 +250,16 @@
 
 **Plano completo:** ver `docs/plano-editor-visual.md`
 
-**Status:** 🔄 Em andamento — Fase E2 (Templates)
+**Status:** 🔄 Em andamento — Fase E5 (Polish)
 
 **Roadmap:**
 - ✅ E-1 Higiene Frontend (4-6h) — AdminLayout, custom hooks, design tokens
 - ✅ E0 Fundação de Tema (6-8h) — TenantTheme + /api/theme + ThemeProvider
 - ✅ E1 Modularização (10-12h) — seções com schema + SiteRenderer
-- 🔄 E2 Templates (6-8h) — 5 presets (Noite, Acolhimento, Sereno, Essencial, Vital) + galeria
+- ✅ E2 Templates (6-8h) — 5 presets (Noite, Acolhimento, Sereno, Essencial, Vital) + galeria
+- ✅ E3 Editor Visual (12-16h) — click-to-select + inspector + draft/publish
+- ✅ E4 Seções/Listas (6-8h) — reordenação, FAQ no editor, Depoimentos, Mapa
+- 🔄 E5 Polish (6-8h) — undo/redo, autosave, device preview, a11y
 - ⏳ E1 Modularização (10-12h) — seções com schema + SiteRenderer
 - ⏳ E2 Templates (6-8h) — 5 presets (Noite, Acolhimento, Sereno, Essencial, Vital) + galeria
 - ⏳ E3 Editor Visual (12-16h) — click-to-select + inspector + draft/publish

@@ -72,6 +72,7 @@ export const themeDraftSchema = z.object({
   templateId: z.string().min(1).optional(),
   tokens: themeTokensSchema.partial().optional(),
   sections: z.array(sectionConfigSchema).optional(),
+  contentEdits: z.record(z.string(), z.any()).optional(),
 });
 
 export type ThemeDraft = z.infer<typeof themeDraftSchema>;

@@ -23,6 +23,7 @@ model Tenant {
   leads        Lead[]
   profile      TenantProfile?
   settings     TenantSettings?
+  theme        TenantTheme?
   users        User[]
 
   @@index([status])
@@ -73,6 +74,19 @@ model TenantProfile {
   updatedAt       DateTime  @updatedAt
   deletedAt       DateTime?
   tenant          Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+}
+
+model TenantTheme {
+  id          String    @id @default(cuid())
+  tenantId    String    @unique
+  templateId  String    @default("noite")
+  tokens      Json      @default("{}")
+  sections    Json      @default("[]")
+  draft       Json?
+  publishedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  tenant      Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 }
 
 model User {

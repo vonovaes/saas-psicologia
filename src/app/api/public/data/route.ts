@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { TenantProfileService } from '@/server/services/tenant-profile.service';
 import { TenantSettingsService } from '@/server/services/tenant-settings.service';
+import { TenantThemeService } from '@/server/services/tenant-theme.service';
 import { FaqService } from '@/server/services/faq.service';
 import { TenantResolutionService } from '@/server/services/tenant-resolution.service';
 import { publicApiRateLimiter } from '@/server/lib/rate-limit';
@@ -60,10 +61,11 @@ export async function GET(request: NextRequest) {
     const tenantId = resolution.tenant.id;
 
     // Buscar dados do tenant
-    const [profile, settings, faqs] = await Promise.all([
+    const [profile, settings, faqs, theme] = await Promise.all([
       new TenantProfileService(tenantId).getProfile(),
       new TenantSettingsService(tenantId).getSettings(),
       new FaqService(tenantId).getAllFaqs(),
+      new TenantThemeService(tenantId).getTheme(),
     ]);
 
     const response = NextResponse.json({
@@ -82,6 +84,7 @@ export async function GET(request: NextRequest) {
         googleMapsEmbedUrl: settings.googleMapsEmbedUrl,
       } : null,
       faqs: faqs || [],
+      theme,
     });
 
     return addCSRFHeaders(response);

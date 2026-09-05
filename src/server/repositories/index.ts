@@ -6,4 +6,5 @@ export { TenantProfileRepository } from './tenant-profile.repository';
 export { LeadRepository } from './lead.repository';
 export { FaqRepository } from './faq.repository';
 export { TenantSettingsRepository } from './tenant-settings.repository';
+export { TenantThemeRepository } from './tenant-theme.repository';
 export { AuditLogRepository } from './audit-log.repository';

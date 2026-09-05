@@ -11,13 +11,13 @@ export function FaqSection({ data, config }: SectionProps) {
   const variant = config.variant;
 
   return (
-    <section className="py-16 sm:py-24 lg:py-32 px-4 bg-site-bg">
+    <section className="py-16 @sm:py-24 @lg:py-32 px-4 bg-site-bg">
       <div className="max-w-4xl mx-auto">
-        <div className="text-center mb-12 lg:mb-20">
+        <div className="text-center mb-12 @lg:mb-20">
           <p className="text-site-primary/80 tracking-[0.3em] uppercase text-sm font-medium mb-4">
             Dúvidas
           </p>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-light tracking-tight text-site-text">
+          <h2 className="text-3xl @sm:text-4xl @lg:text-5xl font-light tracking-tight text-site-text">
             {title}
           </h2>
         </div>
@@ -29,7 +29,7 @@ export function FaqSection({ data, config }: SectionProps) {
                 key={faq.id || index}
                 className="bg-gradient-to-br from-site-surface to-site-bg rounded-2xl p-6 backdrop-blur-xl border border-white/5 hover:border-site-primary/30 transition-all duration-300"
               >
-                <h3 className="text-lg font-medium mb-2 text-site-text">{faq.question}</h3>
+                <h3 className="text-lg font-semibold mb-2 text-site-text">{faq.question}</h3>
                 <p className="text-site-text-muted font-light leading-relaxed">{faq.answer}</p>
               </div>
             ))}

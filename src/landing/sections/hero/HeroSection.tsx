@@ -18,15 +18,15 @@ export function HeroSection({ data, config }: SectionProps) {
   if (variant === 'minimal') {
     return (
       <section className="relative min-h-[70vh] flex items-center overflow-hidden bg-site-bg">
-        <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-20">
+        <div className="relative z-10 max-w-4xl mx-auto px-4 @sm:px-6 @lg:px-8 py-12 @sm:py-20">
           <p className="text-site-primary/80 tracking-[0.3em] uppercase text-sm font-medium mb-6">
             {eyebrow}
           </p>
-          <h1 className="text-4xl sm:text-5xl lg:text-7xl font-light tracking-tight leading-tight text-site-text mb-6">
+          <h1 className="text-4xl @sm:text-5xl @lg:text-7xl font-light tracking-tight leading-tight text-site-text mb-6">
             {profile.displayName}
           </h1>
-          <p className="text-base sm:text-xl text-site-text-muted font-light mb-8">{profile.city}</p>
-          <p className="text-lg sm:text-2xl text-site-text-muted font-light leading-relaxed max-w-2xl mb-10">
+          <p className="text-base @sm:text-xl text-site-text-muted font-light mb-8">{profile.city}</p>
+          <p className="text-lg @sm:text-2xl text-site-text-muted font-light leading-relaxed max-w-2xl mb-10">
             {profile.description}
           </p>
           <button
@@ -43,9 +43,9 @@ export function HeroSection({ data, config }: SectionProps) {
   // ── Variant: centered ────────────────────────────────────────
   if (variant === 'centered') {
     return (
-      <section className="relative min-h-[70vh] sm:min-h-screen flex items-center justify-center overflow-hidden bg-site-bg">
+      <section className="relative min-h-[70vh] @sm:min-h-screen flex items-center justify-center overflow-hidden bg-site-bg">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-site-primary/15 via-transparent to-transparent" />
-        <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-20 text-center">
+        <div className="relative z-10 max-w-4xl mx-auto px-4 @sm:px-6 @lg:px-8 py-12 @sm:py-20 text-center">
           <div className="w-40 h-40 bg-site-primary/20 rounded-full mx-auto mb-8 flex items-center justify-center border border-site-primary/20 overflow-hidden">
             {profile.profileImageUrl ? (
               <div
@@ -61,11 +61,11 @@ export function HeroSection({ data, config }: SectionProps) {
           <p className="text-site-primary/80 tracking-[0.3em] uppercase text-sm font-medium mb-4">
             {eyebrow}
           </p>
-          <h1 className="text-4xl sm:text-5xl lg:text-7xl font-light tracking-tight leading-tight text-site-text mb-4">
+          <h1 className="text-4xl @sm:text-5xl @lg:text-7xl font-light tracking-tight leading-tight text-site-text mb-4">
             {profile.displayName}
           </h1>
-          <p className="text-base sm:text-xl text-site-text-muted font-light mb-8">{profile.city}</p>
-          <p className="text-lg sm:text-2xl text-site-text-muted font-light leading-relaxed max-w-2xl mx-auto mb-10">
+          <p className="text-base @sm:text-xl text-site-text-muted font-light mb-8">{profile.city}</p>
+          <p className="text-lg @sm:text-2xl text-site-text-muted font-light leading-relaxed max-w-2xl mx-auto mb-10">
             {profile.description}
           </p>
           <div className="flex flex-wrap justify-center gap-3 mb-10">
@@ -91,24 +91,24 @@ export function HeroSection({ data, config }: SectionProps) {
 
   // ── Variant: split (padrão — visual atual) ───────────────────
   return (
-    <section className="relative min-h-[70vh] sm:min-h-screen flex items-center justify-center overflow-hidden bg-site-bg">
+    <section className="relative min-h-[70vh] @sm:min-h-screen flex items-center justify-center overflow-hidden bg-site-bg">
       <div className="absolute inset-0 bg-gradient-to-br from-site-bg via-site-surface to-site-bg" />
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-site-primary/15 via-transparent to-transparent" />
 
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-20">
-        <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
-          <div className="space-y-6 sm:space-y-8">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 @sm:px-6 @lg:px-8 py-12 @sm:py-20">
+        <div className="grid @lg:grid-cols-2 gap-10 @lg:gap-16 items-center">
+          <div className="space-y-6 @sm:space-y-8">
             <div className="space-y-4">
               <p className="text-site-primary/80 tracking-[0.3em] uppercase text-sm font-medium">
                 {eyebrow}
               </p>
-              <h1 className="text-4xl sm:text-5xl lg:text-7xl font-light tracking-tight leading-tight text-site-text">
+              <h1 className="text-4xl @sm:text-5xl @lg:text-7xl font-light tracking-tight leading-tight text-site-text">
                 {profile.displayName}
               </h1>
-              <p className="text-base sm:text-xl text-site-text-muted font-light">{profile.city}</p>
+              <p className="text-base @sm:text-xl text-site-text-muted font-light">{profile.city}</p>
             </div>
 
-            <p className="text-lg sm:text-2xl text-site-text-muted font-light leading-relaxed max-w-xl">
+            <p className="text-lg @sm:text-2xl text-site-text-muted font-light leading-relaxed max-w-xl">
               {profile.description}
             </p>
 
@@ -133,7 +133,7 @@ export function HeroSection({ data, config }: SectionProps) {
 
           <div className="relative">
             <div className="aspect-square bg-site-primary/20 rounded-full blur-3xl absolute inset-0" />
-            <div className="relative bg-gradient-to-br from-site-surface to-site-bg rounded-3xl p-6 sm:p-12 backdrop-blur-xl border border-white/5">
+            <div className="relative bg-gradient-to-br from-site-surface to-site-bg rounded-3xl p-6 @sm:p-12 backdrop-blur-xl border border-white/5">
               <div className="text-center">
                 <div className="w-32 h-32 bg-site-primary/20 rounded-full mx-auto mb-6 flex items-center justify-center backdrop-blur-sm overflow-hidden">
                   {profile.profileImageUrl ? (

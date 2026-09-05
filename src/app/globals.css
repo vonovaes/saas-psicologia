@@ -41,6 +41,10 @@
   --site-text: #ffffff;
   --site-text-muted: #9ca3af;
   --site-radius: 1rem;
+  /* Container queries: as seções usam @sm/@md/@lg que respondem
+     à largura DESTE container — não do viewport. Na página pública
+     equivale ao viewport; no editor, equivale ao frame do device. */
+  container-type: inline-size;
 }
 
 @media (prefers-reduced-motion: reduce) {

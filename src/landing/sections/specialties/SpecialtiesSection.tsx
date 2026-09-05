@@ -10,13 +10,13 @@ export function SpecialtiesSection({ data, config }: SectionProps) {
   const variant = config.variant;
 
   return (
-    <section className="py-32 px-4 bg-site-bg">
+    <section className="py-16 sm:py-24 lg:py-32 px-4 bg-site-bg">
       <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-20">
+        <div className="text-center mb-12 lg:mb-20">
           <p className="text-site-primary/80 tracking-[0.3em] uppercase text-sm font-medium mb-4">
             Especialidades
           </p>
-          <h2 className="text-4xl md:text-5xl font-light tracking-tight text-site-text">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-light tracking-tight text-site-text">
             {title}
           </h2>
         </div>

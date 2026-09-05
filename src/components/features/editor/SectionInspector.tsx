@@ -23,6 +23,7 @@ interface SectionInspectorProps {
   onUpdateOverride: (index: number, key: string, value: unknown) => void;
   onUpdateContent: (source: string, value: unknown) => void;
   onRefreshData: () => void;
+  onBack: () => void;
 }
 
 /**
@@ -38,6 +39,7 @@ export function SectionInspector({
   onUpdateOverride,
   onUpdateContent,
   onRefreshData,
+  onBack,
 }: SectionInspectorProps) {
   const entry = SECTION_REGISTRY[section.type];
   if (!entry) return <p className="text-sm text-gray-500">Seção desconhecida.</p>;
@@ -77,6 +79,12 @@ export function SectionInspector({
   return (
     <div className="space-y-6">
       <div>
+        <button
+          onClick={onBack}
+          className="mb-3 inline-flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800"
+        >
+          ← Voltar às seções
+        </button>
         <h3 className="text-sm font-semibold text-gray-900">{schema.name}</h3>
         <p className="text-xs text-gray-500 mt-1">{schema.description}</p>
       </div>

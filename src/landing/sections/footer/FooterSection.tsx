@@ -9,7 +9,7 @@ export function FooterSection({ data }: { data: SiteData }) {
   return (
     <footer className="bg-site-bg border-t border-white/5 py-16 px-4">
       <div className="max-w-7xl mx-auto">
-        <div className="grid md:grid-cols-3 gap-12 mb-12">
+        <div className="grid md:grid-cols-3 gap-6 sm:p-12 mb-12">
           <div>
             <h3 className="text-2xl font-light mb-4 text-site-text">{profile.displayName}</h3>
             <p className="text-site-text-muted font-light">{profile.city}</p>

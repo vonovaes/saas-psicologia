@@ -10,17 +10,17 @@ export function AboutSection({ data, config }: SectionProps) {
   const minimal = config.variant === 'minimal';
 
   return (
-    <section className="py-32 px-4 bg-site-bg">
+    <section className="py-16 sm:py-24 lg:py-32 px-4 bg-site-bg">
       <div className="max-w-7xl mx-auto">
-        <div className={`grid ${minimal ? 'lg:grid-cols-1 max-w-3xl' : 'lg:grid-cols-2'} gap-20 items-center`}>
-          <div className="space-y-8">
+        <div className={`grid ${minimal ? 'lg:grid-cols-1 max-w-3xl' : 'lg:grid-cols-2'} gap-6 sm:p-12 lg:gap-20 items-center`}>
+          <div className="space-y-6 sm:space-y-8">
             <p className="text-site-primary/80 tracking-[0.3em] uppercase text-sm font-medium">
               Sobre Mim
             </p>
-            <h2 className="text-4xl md:text-5xl font-light tracking-tight text-site-text">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-light tracking-tight text-site-text">
               {title}
             </h2>
-            <p className="text-xl text-site-text-muted font-light leading-relaxed">
+            <p className="text-base sm:text-xl text-site-text-muted font-light leading-relaxed">
               {profile.description}
             </p>
           </div>

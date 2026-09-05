@@ -22,9 +22,15 @@ type SidePanel = 'sections' | 'design';
 type DeviceMode = 'desktop' | 'tablet' | 'mobile';
 
 const DEVICE_WIDTHS: Record<DeviceMode, string> = {
-  desktop: 'max-w-6xl',
-  tablet: 'max-w-3xl',
-  mobile: 'max-w-sm',
+  desktop: 'max-w-6xl w-full',
+  tablet: 'w-[768px] max-w-full',
+  mobile: 'w-[390px] max-w-full',
+};
+
+const DEVICE_FRAME: Record<DeviceMode, string> = {
+  desktop: 'rounded-xl',
+  tablet: 'rounded-2xl ring-8 ring-gray-800',
+  mobile: 'rounded-[2.5rem] ring-[10px] ring-gray-800 my-4',
 };
 
 /**
@@ -191,10 +197,16 @@ export function EditorShell({
 
       <div className="flex flex-1 overflow-hidden">
         {/* Canvas */}
-        <div className="flex-1 overflow-y-auto bg-gray-200 p-4">
+        <div className="flex-1 overflow-y-auto bg-gray-200 p-4 flex justify-center">
           <div
-            className={`mx-auto bg-white rounded-xl shadow-2xl overflow-hidden transition-all duration-300 ${DEVICE_WIDTHS[device]}`}
+            className={`bg-white shadow-2xl overflow-hidden transition-all duration-300 self-start ${DEVICE_WIDTHS[device]} ${DEVICE_FRAME[device]}`}
           >
+            {/* Notch do celular */}
+            {device === 'mobile' && (
+              <div className="bg-gray-800 flex justify-center py-2">
+                <div className="w-24 h-5 bg-gray-900 rounded-full" />
+              </div>
+            )}
             <SiteRenderer
               data={previewData}
               theme={editor.theme}
@@ -255,6 +267,7 @@ export function EditorShell({
                 onUpdateOverride={editor.updateSectionOverride}
                 onUpdateContent={editor.updateContent}
                 onRefreshData={onRefreshData}
+                onBack={() => setSelectedIndex(null)}
               />
             ) : (
               <SectionList

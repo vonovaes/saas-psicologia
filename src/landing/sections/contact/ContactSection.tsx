@@ -59,21 +59,21 @@ export function ContactSection({ data, config }: SectionProps) {
     : null;
 
   return (
-    <section id="contact" className="py-32 px-4 bg-site-bg">
+    <section id="contact" className="py-16 sm:py-24 lg:py-32 px-4 bg-site-bg">
       <div className="max-w-4xl mx-auto">
-        <div className="text-center mb-20">
+        <div className="text-center mb-12 lg:mb-20">
           <p className="text-site-primary/80 tracking-[0.3em] uppercase text-sm font-medium mb-4">
             Contato
           </p>
-          <h2 className="text-4xl md:text-5xl font-light tracking-tight mb-4 text-site-text">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-light tracking-tight mb-4 text-site-text">
             {title}
           </h2>
-          <p className="text-xl text-site-text-muted font-light">{subtitle}</p>
+          <p className="text-base sm:text-xl text-site-text-muted font-light">{subtitle}</p>
         </div>
 
-        <div className="bg-gradient-to-br from-site-surface to-site-bg rounded-3xl p-12 backdrop-blur-xl border border-white/5">
+        <div className="bg-gradient-to-br from-site-surface to-site-bg rounded-3xl p-6 sm:p-12 backdrop-blur-xl border border-white/5">
           {whatsappOnly ? (
-            <div className="text-center space-y-8">
+            <div className="text-center space-y-6 sm:space-y-8">
               {whatsappLink ? (
                 <a
                   href={whatsappLink}
@@ -119,7 +119,7 @@ export function ContactSection({ data, config }: SectionProps) {
               </Button>
             </div>
           ) : (
-            <form onSubmit={handleSubmit} className="space-y-8">
+            <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8">
               {submitError && (
                 <div className="bg-red-500/10 border border-red-500/20 text-red-400 px-6 py-4 rounded-xl backdrop-blur-sm">
                   {submitError}

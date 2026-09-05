@@ -78,9 +78,9 @@ export function HeroSection({ data, config }: SectionProps) {
               </span>
             ))}
           </div>
-          {profile.approaches.length > 0 && (
+          {(profile.approaches ?? []).length > 0 && (
             <div className="flex flex-wrap justify-center gap-2 mb-10">
-              {profile.approaches.map((approach, index) => (
+              {(profile.approaches ?? []).map((approach, index) => (
                 <span
                   key={index}
                   className="px-3 py-1.5 rounded-full text-xs font-medium bg-site-surface text-site-text-muted border border-white/10"
@@ -135,9 +135,9 @@ export function HeroSection({ data, config }: SectionProps) {
               ))}
             </div>
 
-            {profile.approaches.length > 0 && (
+            {(profile.approaches ?? []).length > 0 && (
               <div className="flex flex-wrap gap-2">
-                {profile.approaches.map((approach, index) => (
+                {(profile.approaches ?? []).map((approach, index) => (
                   <span
                     key={index}
                     className="px-3 py-1.5 rounded-full text-xs font-medium bg-site-surface text-site-text-muted border border-white/10"

@@ -39,7 +39,9 @@ export function AdminLayout({
   const router = useRouter();
 
   const handleLogout = async () => {
-    await signOut({ callbackUrl: '/' });
+    // Usa a origem atual do navegador — não pode depender de NEXTAUTH_URL,
+    // que pode apontar para localhost em produção se a env não estiver configurada.
+    await signOut({ callbackUrl: `${window.location.origin}/` });
   };
 
   return (

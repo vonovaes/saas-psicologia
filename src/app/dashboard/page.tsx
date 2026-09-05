@@ -25,7 +25,23 @@ export default async function DashboardPage() {
       }
     >
       {/* Quick Actions */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6 mb-8">
+          <Link href="/editor" className="block">
+            <div className="bg-gradient-to-br from-blue-500 to-indigo-600 shadow rounded-lg p-6 hover:shadow-lg transition-shadow cursor-pointer text-white">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-medium">Editor de Página</h3>
+                <div className="bg-white/20 p-2 rounded-full">
+                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                  </svg>
+                </div>
+              </div>
+              <p className="text-blue-100 text-sm">
+                Escolha um template e personalize sua landing page visualmente.
+              </p>
+            </div>
+          </Link>
+
           <Link href="/profile" className="block">
             <div className="bg-white shadow rounded-lg p-6 hover:shadow-lg transition-shadow cursor-pointer">
               <div className="flex items-center justify-between mb-4">

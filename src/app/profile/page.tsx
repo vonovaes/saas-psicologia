@@ -6,7 +6,8 @@ import { Input, Textarea, Select, Button, FieldGroup } from '@/components/ui';
 import { PreviewWrapper } from '@/components/features/preview/PreviewWrapper';
 import { LivePreview } from '@/components/features/preview/LivePreview';
 import { usePreviewStateManager } from '@/components/features/preview/PreviewStateManager';
-import { useProfile, useFaqs } from '@/hooks/useApi';
+import { useProfile, useFaqs, useTheme } from '@/hooks/useApi';
+import { TenantThemeData } from '@/landing/themes/tokens';
 
 interface ProfileData {
   displayName: string;
@@ -28,6 +29,7 @@ export default function ProfilePage() {
   const router = useRouter();
   const { profile: fetchedProfile, settings: fetchedSettings, loading: profileLoading } = useProfile();
   const { faqs, loading: faqsLoading } = useFaqs();
+  const { theme } = useTheme();
   const loading = profileLoading || faqsLoading;
 
   const [saving, setSaving] = useState(false);
@@ -142,7 +144,7 @@ export default function ProfilePage() {
   return (
     <PreviewWrapper
       title="Editar Perfil"
-      preview={<LivePreview profile={previewData.profile} settings={previewData.settings} faqs={previewData.faqs} />}
+      preview={<LivePreview profile={previewData.profile} settings={previewData.settings} faqs={previewData.faqs} theme={theme as TenantThemeData | undefined} />}
     >
       {/* Breadcrumb */}
       <div className="mb-6">

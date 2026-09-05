@@ -29,6 +29,7 @@ const PROTECTED_ROUTES = [
   '/faq',
   '/leads',
   '/data-rights',
+  '/editor',
   '/api/upload',
   '/api/data-delete',
   '/api/theme',

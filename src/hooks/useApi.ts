@@ -85,6 +85,12 @@ export interface LeadItem {
   createdAt: string;
 }
 
+export interface ThemeData {
+  templateId: string;
+  tokens: unknown;
+  sections: unknown;
+}
+
 // ─── Hooks de domínio ───────────────────────────────────────────
 
 interface ProfileResponse {
@@ -137,6 +143,24 @@ export function useLeads(filters?: { startDate?: string; endDate?: string }) {
 
   return {
     leads: data?.leads ?? [],
+    loading,
+    error,
+    refetch,
+  };
+}
+
+/**
+ * Busca o tema publicado e o rascunho do tenant autenticado.
+ */
+export function useTheme() {
+  const { data, loading, error, refetch } = useApiData<{
+    theme?: ThemeData;
+    draft?: ThemeData | null;
+  }>('/api/theme');
+
+  return {
+    theme: data?.theme ?? null,
+    draft: data?.draft ?? null,
     loading,
     error,
     refetch,

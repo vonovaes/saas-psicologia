@@ -131,7 +131,7 @@ export function ContactSection({ data, config }: SectionProps) {
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 placeholder="Seu nome completo"
                 required
-                className="bg-site-surface border-white/10 text-site-text placeholder-site-text-muted"
+                className="bg-site-surface! border-white/10! text-site-text! placeholder-site-text-muted!"
               />
               <Input
                 label="Telefone"
@@ -140,7 +140,7 @@ export function ContactSection({ data, config }: SectionProps) {
                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                 placeholder="(11) 99999-9999"
                 required
-                className="bg-site-surface border-white/10 text-site-text placeholder-site-text-muted"
+                className="bg-site-surface! border-white/10! text-site-text! placeholder-site-text-muted!"
               />
               <Textarea
                 label="Mensagem"
@@ -149,7 +149,7 @@ export function ContactSection({ data, config }: SectionProps) {
                 placeholder="Como posso ajudar?"
                 rows={4}
                 required
-                className="bg-site-surface border-white/10 text-site-text placeholder-site-text-muted"
+                className="bg-site-surface! border-white/10! text-site-text! placeholder-site-text-muted!"
               />
               <div className="flex items-start gap-3">
                 <input

@@ -19,8 +19,8 @@ const signupSchema = z.object({
     .regex(/[A-Z]/, 'Senha precisa de uma letra maiúscula')
     .regex(/[a-z]/, 'Senha precisa de uma letra minúscula')
     .regex(/[0-9]/, 'Senha precisa de um número'),
-  lgpdConsent: z.literal(true, {
-    error: () => ({ message: 'É necessário aceitar os termos' }),
+  lgpdConsent: z.boolean().refine((v) => v === true, {
+    message: 'É necessário aceitar os termos',
   }),
 });
 

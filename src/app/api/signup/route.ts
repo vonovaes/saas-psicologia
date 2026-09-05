@@ -12,7 +12,13 @@ const signupSchema = z.object({
   name: z.string().min(2, 'Nome deve ter no mínimo 2 caracteres').max(100),
   crp: z.string().min(3, 'CRP inválido').max(20),
   email: z.string().email('Email inválido').max(255).transform((v) => v.toLowerCase().trim()),
-  password: z.string().min(8, 'Senha deve ter no mínimo 8 caracteres').max(100),
+  password: z
+    .string()
+    .min(8, 'Senha deve ter no mínimo 8 caracteres')
+    .max(100)
+    .regex(/[A-Z]/, 'Senha precisa de uma letra maiúscula')
+    .regex(/[a-z]/, 'Senha precisa de uma letra minúscula')
+    .regex(/[0-9]/, 'Senha precisa de um número'),
   lgpdConsent: z.literal(true, {
     error: () => ({ message: 'É necessário aceitar os termos' }),
   }),

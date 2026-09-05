@@ -30,6 +30,7 @@ const PROTECTED_ROUTES = [
   '/leads',
   '/data-rights',
   '/editor',
+  '/onboarding',
   '/api/upload',
   '/api/data-delete',
   '/api/theme',

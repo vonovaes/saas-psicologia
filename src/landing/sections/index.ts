@@ -8,8 +8,12 @@ import { AboutSection } from './about/AboutSection';
 import { aboutSchema } from './about/schema';
 import { SpecialtiesSection } from './specialties/SpecialtiesSection';
 import { specialtiesSchema } from './specialties/schema';
+import { TestimonialsSection } from './testimonials/TestimonialsSection';
+import { testimonialsSchema } from './testimonials/schema';
 import { FaqSection } from './faq/FaqSection';
 import { faqSchema } from './faq/schema';
+import { MapSection } from './map/MapSection';
+import { mapSchema } from './map/schema';
 import { ContactSection } from './contact/ContactSection';
 import { contactSchema } from './contact/schema';
 
@@ -26,7 +30,8 @@ export const SECTION_REGISTRY: Partial<Record<SectionType, SectionModule>> = {
   hero: { component: HeroSection, schema: heroSchema },
   about: { component: AboutSection, schema: aboutSchema },
   specialties: { component: SpecialtiesSection, schema: specialtiesSchema },
+  testimonials: { component: TestimonialsSection, schema: testimonialsSchema },
   faq: { component: FaqSection, schema: faqSchema },
+  map: { component: MapSection, schema: mapSchema },
   contact: { component: ContactSection, schema: contactSchema },
-  // testimonials e map: adicionados na Fase E4
 };

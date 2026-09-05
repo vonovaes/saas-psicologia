@@ -6,8 +6,8 @@ import { TenantThemeData } from '@/landing/themes/tokens';
 import { SiteData } from '@/landing/types';
 
 export default function EditorPage() {
-  const { profile, settings, loading: profileLoading } = useProfile();
-  const { faqs, loading: faqsLoading } = useFaqs();
+  const { profile, settings, loading: profileLoading, refetch: refetchProfile } = useProfile();
+  const { faqs, loading: faqsLoading, refetch: refetchFaqs } = useFaqs();
   const { theme, loading: themeLoading } = useTheme();
 
   const loading = profileLoading || faqsLoading || themeLoading;
@@ -30,6 +30,10 @@ export default function EditorPage() {
     <EditorShell
       baseData={baseData}
       initialTheme={theme as TenantThemeData | null}
+      onRefreshData={() => {
+        refetchProfile();
+        refetchFaqs();
+      }}
     />
   );
 }

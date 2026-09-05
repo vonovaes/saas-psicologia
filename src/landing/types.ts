@@ -46,6 +46,8 @@ export interface SettingField {
   source?: string;
   default?: unknown;
   options?: { value: string; label: string }[];
+  /** Para list: chaves dos itens de objeto (ex: name/text em depoimentos) */
+  listFields?: { key: string; label: string }[];
 }
 
 export interface SectionSchema {

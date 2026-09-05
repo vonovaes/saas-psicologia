@@ -4,6 +4,7 @@ import { useState, useCallback, useMemo } from 'react';
 import {
   TenantThemeData,
   SectionConfig,
+  SectionType,
   ThemeTokens,
   DEFAULT_THEME,
 } from '@/landing/themes/tokens';
@@ -91,6 +92,48 @@ export function useEditorState(initialTheme: TenantThemeData | null) {
 
   const applyTemplate = useCallback((template: TenantThemeData) => {
     setTheme(template);
+    setIsDirty(true);
+  }, []);
+
+  const addSection = useCallback((type: SectionType, variant: string) => {
+    setTheme((prev) => {
+      const newSection: SectionConfig = {
+        type,
+        variant,
+        visible: true,
+        order: prev.sections.length,
+        overrides: {},
+      };
+      return { ...prev, sections: [...prev.sections, newSection] };
+    });
+    setIsDirty(true);
+  }, []);
+
+  const removeSection = useCallback((index: number) => {
+    setTheme((prev) => {
+      const remaining = prev.sections.filter((_, i) => i !== index);
+      const reordered = [...remaining]
+        .sort((a, b) => a.order - b.order)
+        .map((s, i) => ({ ...s, order: i }));
+      return { ...prev, sections: reordered };
+    });
+    setIsDirty(true);
+  }, []);
+
+  const moveSection = useCallback((index: number, direction: 'up' | 'down') => {
+    setTheme((prev) => {
+      const sorted = [...prev.sections].sort((a, b) => a.order - b.order);
+      const section = prev.sections[index];
+      const sortedPos = sorted.indexOf(section);
+      const target = direction === 'up' ? sortedPos - 1 : sortedPos + 1;
+      if (target < 0 || target >= sorted.length) return prev;
+      const swapped = [...sorted];
+      [swapped[sortedPos], swapped[target]] = [swapped[target], swapped[sortedPos]];
+      return {
+        ...prev,
+        sections: swapped.map((s, i) => ({ ...s, order: i })),
+      };
+    });
     setIsDirty(true);
   }, []);
 
@@ -206,6 +249,9 @@ export function useEditorState(initialTheme: TenantThemeData | null) {
       updateSectionOverride,
       updateContent,
       applyTemplate,
+      addSection,
+      removeSection,
+      moveSection,
       getPreviewData,
       getFieldValue,
       saveDraft,
@@ -215,7 +261,8 @@ export function useEditorState(initialTheme: TenantThemeData | null) {
     [
       theme, contentEdits, isDirty, saving, publishing, lastSavedAt,
       updateTokens, updateColors, updateSection, updateSectionOverride,
-      updateContent, applyTemplate, getPreviewData, getFieldValue, saveDraft, publish,
+      updateContent, applyTemplate, addSection, removeSection, moveSection,
+      getPreviewData, getFieldValue, saveDraft, publish,
     ]
   );
 }

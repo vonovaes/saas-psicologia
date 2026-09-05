@@ -9,7 +9,9 @@ import {
   SelectField,
   ColorField,
   ImageField,
-  ListField,
+  StringListField,
+  ObjectListField,
+  FaqListField,
 } from './fields';
 
 interface SectionInspectorProps {
@@ -20,6 +22,7 @@ interface SectionInspectorProps {
   onUpdateSection: (index: number, patch: Partial<SectionConfig>) => void;
   onUpdateOverride: (index: number, key: string, value: unknown) => void;
   onUpdateContent: (source: string, value: unknown) => void;
+  onRefreshData: () => void;
 }
 
 /**
@@ -34,6 +37,7 @@ export function SectionInspector({
   onUpdateSection,
   onUpdateOverride,
   onUpdateContent,
+  onRefreshData,
 }: SectionInspectorProps) {
   const entry = SECTION_REGISTRY[section.type];
   if (!entry) return <p className="text-sm text-gray-500">Seção desconhecida.</p>;
@@ -57,7 +61,15 @@ export function SectionInspector({
       case 'select': return <SelectField key={field.id} {...props} />;
       case 'color': return <ColorField key={field.id} {...props} />;
       case 'image': return <ImageField key={field.id} {...props} />;
-      case 'list': return <ListField key={field.id} field={field} />;
+      case 'list': {
+        if (field.source === 'faqs') {
+          return <FaqListField key={field.id} faqs={data.faqs} onRefresh={onRefreshData} />;
+        }
+        if (field.listFields?.length) {
+          return <ObjectListField key={field.id} {...props} />;
+        }
+        return <StringListField key={field.id} {...props} />;
+      }
       default: return null;
     }
   };

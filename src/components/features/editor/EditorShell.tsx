@@ -8,11 +8,13 @@ import { SiteData } from '@/landing/types';
 import { TenantThemeData } from '@/landing/themes/tokens';
 import { useEditorState } from './hooks/useEditorState';
 import { SectionInspector } from './SectionInspector';
+import { SectionList } from './SectionList';
 import { ThemePanel } from './ThemePanel';
 
 interface EditorShellProps {
   baseData: SiteData;
   initialTheme: TenantThemeData | null;
+  onRefreshData: () => void;
 }
 
 type SidePanel = 'sections' | 'design';
@@ -21,7 +23,7 @@ type SidePanel = 'sections' | 'design';
  * Shell do editor visual: toolbar superior, canvas com o
  * SiteRenderer em modo edição e painel lateral contextual.
  */
-export function EditorShell({ baseData, initialTheme }: EditorShellProps) {
+export function EditorShell({ baseData, initialTheme, onRefreshData }: EditorShellProps) {
   const router = useRouter();
   const editor = useEditorState(initialTheme);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
@@ -146,32 +148,23 @@ export function EditorShell({ baseData, initialTheme }: EditorShellProps) {
                 onUpdateSection={editor.updateSection}
                 onUpdateOverride={editor.updateSectionOverride}
                 onUpdateContent={editor.updateContent}
+                onRefreshData={onRefreshData}
               />
             ) : (
-              <div className="space-y-3">
-                <p className="text-sm text-gray-500">
-                  Clique numa seção do preview para editá-la.
-                </p>
-                <div className="divide-y divide-gray-200 border border-gray-200 rounded-lg">
-                  {editor.theme.sections
-                    .map((s, i) => ({ s, i }))
-                    .sort((a, b) => a.s.order - b.s.order)
-                    .map(({ s, i }) => (
-                      <button
-                        key={i}
-                        onClick={() => setSelectedIndex(i)}
-                        className="w-full flex items-center justify-between px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 text-left"
-                      >
-                        <span className={!s.visible ? 'opacity-50' : ''}>
-                          {SECTION_NAME[s.type] ?? s.type}
-                        </span>
-                        {!s.visible && (
-                          <span className="text-xs text-gray-400">oculta</span>
-                        )}
-                      </button>
-                    ))}
-                </div>
-              </div>
+              <SectionList
+                sections={editor.theme.sections}
+                selectedIndex={selectedIndex}
+                onSelect={setSelectedIndex}
+                onMove={editor.moveSection}
+                onRemove={(i) => {
+                  editor.removeSection(i);
+                  if (selectedIndex === i) setSelectedIndex(null);
+                }}
+                onToggleVisible={(i, visible) =>
+                  editor.updateSection(i, { visible })
+                }
+                onAdd={editor.addSection}
+              />
             )}
           </div>
         </aside>
@@ -179,13 +172,3 @@ export function EditorShell({ baseData, initialTheme }: EditorShellProps) {
     </div>
   );
 }
-
-const SECTION_NAME: Record<string, string> = {
-  hero: 'Cabeçalho',
-  about: 'Sobre Mim',
-  specialties: 'Especialidades',
-  testimonials: 'Depoimentos',
-  faq: 'Perguntas Frequentes',
-  map: 'Mapa',
-  contact: 'Contato',
-};

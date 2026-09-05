@@ -33,6 +33,7 @@ const PROTECTED_ROUTES = [
   '/api/upload',
   '/api/data-delete',
   '/api/theme',
+  '/api/account',
 ];
 
 function validateHost(host: string): boolean {
@@ -150,6 +151,6 @@ export const config = {
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
      */
-    '/((?!^$|privacy|api/health|api/public|api/tenant-resolve|api/test-tenant-resolution|api/test-resolve|api/test-db|api/debug-tenant|api/auth|api/profile|api/faq|api/lead|api/upload|api/data-delete|api/theme|_next/static|_next/image|favicon.ico).*)',
+    '/((?!^$|privacy|api/health|api/public|api/tenant-resolve|api/test-tenant-resolution|api/test-resolve|api/test-db|api/debug-tenant|api/auth|api/profile|api/faq|api/lead|api/upload|api/data-delete|api/theme|api/account|_next/static|_next/image|favicon.ico).*)',
   ],
 };

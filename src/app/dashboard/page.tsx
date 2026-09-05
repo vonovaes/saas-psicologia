@@ -19,7 +19,7 @@ export default async function DashboardPage() {
       actions={
         <Link href="/profile">
           <Button variant="secondary" size="sm">
-            Editar Perfil
+            Minha Conta
           </Button>
         </Link>
       }
@@ -45,7 +45,7 @@ export default async function DashboardPage() {
           <Link href="/profile" className="block">
             <div className="bg-white shadow rounded-lg p-6 hover:shadow-lg transition-shadow cursor-pointer">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-medium text-gray-900">Editar Perfil</h3>
+                <h3 className="text-lg font-medium text-gray-900">Minha Conta</h3>
                 <div className="bg-blue-100 p-2 rounded-full">
                   <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -53,7 +53,7 @@ export default async function DashboardPage() {
                 </div>
               </div>
               <p className="text-gray-600 text-sm">
-                Atualize suas informações profissionais, especialidades e configurações de contato.
+                Atualize seus dados de acesso, nome e senha da conta.
               </p>
             </div>
           </Link>

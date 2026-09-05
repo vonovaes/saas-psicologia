@@ -1,138 +1,102 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { Input, Textarea, Select, Button, FieldGroup } from '@/components/ui';
-import { PreviewWrapper } from '@/components/features/preview/PreviewWrapper';
-import { LivePreview } from '@/components/features/preview/LivePreview';
-import { usePreviewStateManager } from '@/components/features/preview/PreviewStateManager';
-import { useProfile, useFaqs, useTheme } from '@/hooks/useApi';
-import { TenantThemeData } from '@/landing/themes/tokens';
+import { Button, Input, FieldGroup } from '@/components/ui';
+import { AdminLayout } from '@/components/layout/AdminLayout';
 
-interface ProfileData {
-  displayName: string;
-  specialties: string[];
-  approaches: string[];
-  city: string;
-  description: string;
-  address: string;
-  attendanceType: 'Presencial' | 'Online' | 'Presencial e Online';
-  profileImageUrl: string | null;
-}
-
-interface SettingsData {
-  whatsappNumber: string;
-  instagramHandle: string;
-  googleMapsEmbedUrl: string;
+interface AccountData {
+  id: string;
+  email: string;
+  name: string | null;
+  role: string;
+  createdAt: string;
+  tenant: { name: string };
 }
 
 export default function ProfilePage() {
-  const router = useRouter();
-  const { profile: fetchedProfile, settings: fetchedSettings, loading: profileLoading } = useProfile();
-  const { faqs, loading: faqsLoading } = useFaqs();
-  const { theme } = useTheme();
-  const loading = profileLoading || faqsLoading;
-
+  const [account, setAccount] = useState<AccountData | null>(null);
+  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
-  
-  const [profile, setProfile] = useState<ProfileData>({
-    displayName: '',
-    specialties: [],
-    approaches: [],
-    city: '',
-    description: '',
-    address: '',
-    attendanceType: 'Presencial e Online',
-    profileImageUrl: null,
-  });
 
-  const [settings, setSettings] = useState<SettingsData>({
-    whatsappNumber: '',
-    instagramHandle: '',
-    googleMapsEmbedUrl: '',
-  });
-
-  const [specialtyInput, setSpecialtyInput] = useState('');
-  const [previewData, setPreviewData] = useState({ profile, settings, faqs });
-
-  const { debouncedUpdate } = usePreviewStateManager({
-    onDataChange: (data) => setPreviewData(data),
-    debounceMs: 300,
-  });
-
-  // Sincroniza estado local quando os dados da API chegam
-  useEffect(() => {
-    if (fetchedProfile) {
-      setProfile({
-        ...fetchedProfile,
-        attendanceType: fetchedProfile.attendanceType as ProfileData['attendanceType'],
-      });
-    }
-    if (fetchedSettings) {
-      setSettings(fetchedSettings);
-    }
-  }, [fetchedProfile, fetchedSettings]);
+  const [name, setName] = useState('');
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
 
   useEffect(() => {
-    setPreviewData({ profile, settings, faqs });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [faqs]);
-
-  const addSpecialty = () => {
-    if (specialtyInput.trim() && !profile.specialties.includes(specialtyInput.trim())) {
-      const updatedProfile = {
-        ...profile,
-        specialties: [...profile.specialties, specialtyInput.trim()],
-      };
-      setProfile(updatedProfile);
-      setSpecialtyInput('');
-      debouncedUpdate({ profile: updatedProfile, settings, faqs });
-    }
-  };
-
-  const removeSpecialty = (index: number) => {
-    const updatedProfile = {
-      ...profile,
-      specialties: profile.specialties.filter((_, i) => i !== index),
+    const fetchAccount = async () => {
+      try {
+        const response = await fetch('/api/account');
+        if (!response.ok) throw new Error('Failed to fetch account');
+        const data = await response.json();
+        setAccount(data.user);
+        setName(data.user.name ?? '');
+      } catch (error) {
+        console.error('Error fetching account:', error);
+        setMessage({ type: 'error', text: 'Erro ao carregar dados da conta' });
+      } finally {
+        setLoading(false);
+      }
     };
-    setProfile(updatedProfile);
-    debouncedUpdate({ profile: updatedProfile, settings, faqs });
-  };
+    fetchAccount();
+  }, []);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSaveName = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
     setMessage(null);
 
     try {
-      const response = await fetch('/api/profile', {
+      const response = await fetch('/api/account', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ profile, settings }),
+        body: JSON.stringify({ name }),
       });
 
-      if (!response.ok) throw new Error('Failed to update profile');
-
-      setMessage({ type: 'success', text: 'Perfil atualizado com sucesso!' });
+      if (!response.ok) throw new Error('Failed to update');
+      setMessage({ type: 'success', text: 'Nome atualizado com sucesso!' });
     } catch (error) {
-      console.error('Error updating profile:', error);
-      setMessage({ type: 'error', text: 'Erro ao atualizar perfil' });
+      console.error('Error updating name:', error);
+      setMessage({ type: 'error', text: 'Erro ao atualizar nome' });
     } finally {
       setSaving(false);
     }
   };
 
-  const updateProfileField = (field: keyof typeof profile, value: any) => {
-    const updatedProfile = { ...profile, [field]: value };
-    setProfile(updatedProfile);
-    debouncedUpdate({ profile: updatedProfile, settings, faqs });
-  };
+  const handleChangePassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setMessage(null);
 
-  const updateSettingsField = (field: keyof typeof settings, value: any) => {
-    const updatedSettings = { ...settings, [field]: value };
-    setSettings(updatedSettings);
-    debouncedUpdate({ profile, settings: updatedSettings, faqs });
+    if (newPassword !== confirmPassword) {
+      setMessage({ type: 'error', text: 'As senhas não coincidem' });
+      return;
+    }
+
+    setSaving(true);
+    try {
+      const response = await fetch('/api/account', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ currentPassword, newPassword }),
+      });
+
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || 'Failed to change password');
+
+      setMessage({ type: 'success', text: 'Senha alterada com sucesso!' });
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+    } catch (error) {
+      console.error('Error changing password:', error);
+      setMessage({
+        type: 'error',
+        text: error instanceof Error ? error.message : 'Erro ao alterar senha',
+      });
+    } finally {
+      setSaving(false);
+    }
   };
 
   if (loading) {
@@ -144,38 +108,12 @@ export default function ProfilePage() {
   }
 
   return (
-    <PreviewWrapper
-      title="Editar Perfil"
-      preview={<LivePreview profile={previewData.profile} settings={previewData.settings} faqs={previewData.faqs} theme={theme as TenantThemeData | undefined} />}
+    <AdminLayout
+      title="Minha Conta"
+      subtitle="Gerencie seus dados de acesso e informações da conta"
+      breadcrumb={[{ label: 'Minha Conta' }]}
+      maxWidth="lg"
     >
-      {/* Breadcrumb */}
-      <div className="mb-6">
-        <nav className="flex items-center space-x-2 text-sm">
-          <button
-            onClick={() => router.push('/dashboard')}
-            className="text-gray-500 hover:text-gray-700"
-          >
-            Dashboard
-          </button>
-          <span className="text-gray-400">/</span>
-          <span className="text-gray-900">Editar Perfil</span>
-        </nav>
-      </div>
-
-      <div className="mb-6">
-        <h2 className="text-3xl font-bold text-gray-900">Editar Perfil</h2>
-        <p className="mt-2 text-gray-600">Atualize as informações do seu perfil profissional. As alterações aparecem no preview em tempo real.</p>
-      </div>
-
-      <div className="mb-6 bg-blue-50 border border-blue-200 rounded-lg p-4 flex items-center justify-between">
-        <p className="text-sm text-blue-800">
-          <strong>Novo!</strong> Agora você pode editar sua página visualmente: clique nas seções, mude cores, adicione depoimentos e muito mais.
-        </p>
-        <Button variant="primary" size="sm" onClick={() => router.push('/editor')}>
-          Abrir Editor Visual
-        </Button>
-      </div>
-
       {message && (
         <div className={`mb-6 p-4 rounded ${
           message.type === 'success' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'
@@ -184,162 +122,89 @@ export default function ProfilePage() {
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-8">
-        {/* Informações Básicas */}
-        <div className="bg-white shadow rounded-lg p-6">
-          <h3 className="text-lg font-medium text-gray-900 mb-4">Informações Básicas</h3>
-          
+      {/* Dados da Conta */}
+      <div className="bg-white shadow rounded-lg p-6 mb-6">
+        <h3 className="text-lg font-medium text-gray-900 mb-4">Dados da Conta</h3>
+        <form onSubmit={handleSaveName} className="space-y-4">
           <FieldGroup>
             <Input
-              id="displayName"
-              label="Nome de Exibição"
-              value={profile.displayName}
-              onChange={(e) => updateProfileField('displayName', e.target.value)}
-              required
+              label="Nome"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Seu nome"
             />
-
             <Input
-              id="city"
-              label="Cidade"
-              value={profile.city}
-              onChange={(e) => updateProfileField('city', e.target.value)}
-              required
-            />
-
-            <Select
-              id="attendanceType"
-              label="Tipo de Atendimento"
-              value={profile.attendanceType}
-              onChange={(e) => updateProfileField('attendanceType', e.target.value as any)}
-              options={[
-                { value: 'Presencial', label: 'Presencial' },
-                { value: 'Online', label: 'Online' },
-                { value: 'Presencial e Online', label: 'Presencial e Online' },
-              ]}
-              required
+              label="Email"
+              value={account?.email ?? ''}
+              disabled
+              title="O email de acesso não pode ser alterado"
             />
           </FieldGroup>
-        </div>
-
-        {/* Especialidades */}
-        <div className="bg-white shadow rounded-lg p-6">
-          <h3 className="text-lg font-medium text-gray-900 mb-4">Especialidades</h3>
-          
-          <div className="space-y-4">
-            <div className="flex gap-2">
-              <Input
-                value={specialtyInput}
-                onChange={(e) => setSpecialtyInput(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addSpecialty())}
-                placeholder="Adicionar especialidade"
-                className="flex-1"
-              />
-              <Button
-                type="button"
-                onClick={addSpecialty}
-                variant="primary"
-              >
-                Adicionar
-              </Button>
-            </div>
-
-            <div className="flex flex-wrap gap-2">
-              {profile.specialties.map((specialty, index) => (
-                <span
-                  key={index}
-                  className="inline-flex items-center bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm"
-                >
-                  {specialty}
-                  <button
-                    type="button"
-                    onClick={() => removeSpecialty(index)}
-                    className="ml-2 text-blue-600 hover:text-blue-800"
-                  >
-                    ×
-                  </button>
-                </span>
-              ))}
-            </div>
+          <div className="flex justify-end">
+            <Button type="submit" variant="primary" loading={saving} disabled={saving}>
+              Salvar
+            </Button>
           </div>
-        </div>
+        </form>
+      </div>
 
-        {/* Descrição */}
-        <div className="bg-white shadow rounded-lg p-6">
-          <h3 className="text-lg font-medium text-gray-900 mb-4">Descrição Profissional</h3>
-          
-          <Textarea
-            id="description"
-            label="Sobre Você"
-            value={profile.description}
-            onChange={(e) => updateProfileField('description', e.target.value)}
-            rows={6}
+      {/* Alterar Senha */}
+      <div className="bg-white shadow rounded-lg p-6 mb-6">
+        <h3 className="text-lg font-medium text-gray-900 mb-4">Alterar Senha</h3>
+        <form onSubmit={handleChangePassword} className="space-y-4">
+          <Input
+            label="Senha atual"
+            type="password"
+            value={currentPassword}
+            onChange={(e) => setCurrentPassword(e.target.value)}
             required
           />
-        </div>
-
-        {/* Endereço */}
-        <div className="bg-white shadow rounded-lg p-6">
-          <h3 className="text-lg font-medium text-gray-900 mb-4">Endereço</h3>
-          
-          <Input
-            id="address"
-            label="Endereço Completo"
-            value={profile.address}
-            onChange={(e) => updateProfileField('address', e.target.value)}
-          />
-        </div>
-
-        {/* Configurações de Contato */}
-        <div className="bg-white shadow rounded-lg p-6">
-          <h3 className="text-lg font-medium text-gray-900 mb-4">Configurações de Contato</h3>
-          
           <FieldGroup>
             <Input
-              id="whatsappNumber"
-              label="WhatsApp"
-              value={settings.whatsappNumber}
-              onChange={(e) => updateSettingsField('whatsappNumber', e.target.value)}
-              placeholder="+5511999999999"
+              label="Nova senha"
+              type="password"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              required
             />
-
             <Input
-              id="instagramHandle"
-              label="Instagram"
-              value={settings.instagramHandle}
-              onChange={(e) => updateSettingsField('instagramHandle', e.target.value)}
-              placeholder="@seuinstagram"
-            />
-
-            <Input
-              id="googleMapsEmbedUrl"
-              label="URL do Google Maps Embed"
-              type="url"
-              value={settings.googleMapsEmbedUrl}
-              onChange={(e) => updateSettingsField('googleMapsEmbedUrl', e.target.value)}
-              placeholder="https://maps.google.com/?q=seu+endereco"
+              label="Confirmar nova senha"
+              type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              required
             />
           </FieldGroup>
-        </div>
+          <div className="flex justify-end">
+            <Button type="submit" variant="primary" loading={saving} disabled={saving}>
+              Alterar senha
+            </Button>
+          </div>
+        </form>
+      </div>
 
-        {/* Botões de Ação */}
-        <div className="flex justify-end gap-4">
-          <Button
-            type="button"
-            onClick={() => router.push('/dashboard')}
-            variant="outline"
-          >
-            Cancelar
-          </Button>
-          <Button
-            type="submit"
-            variant="primary"
-            loading={saving}
-            disabled={saving}
-          >
-            {saving ? 'Salvando...' : 'Salvar Alterações'}
-          </Button>
+      {/* Informações da Conta */}
+      <div className="bg-white shadow rounded-lg p-6">
+        <h3 className="text-lg font-medium text-gray-900 mb-4">Informações</h3>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <p className="text-sm text-gray-500">Papel</p>
+            <p className="text-gray-900 font-medium">{account?.role}</p>
+          </div>
+          <div>
+            <p className="text-sm text-gray-500">Conta criada em</p>
+            <p className="text-gray-900 font-medium">
+              {account?.createdAt
+                ? new Date(account.createdAt).toLocaleDateString('pt-BR')
+                : '—'}
+            </p>
+          </div>
+          <div>
+            <p className="text-sm text-gray-500">Consultório</p>
+            <p className="text-gray-900 font-medium">{account?.tenant.name}</p>
+          </div>
         </div>
-      </form>
-    </PreviewWrapper>
+      </div>
+    </AdminLayout>
   );
 }

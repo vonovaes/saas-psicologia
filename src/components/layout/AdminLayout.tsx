@@ -39,7 +39,7 @@ export function AdminLayout({
   const router = useRouter();
 
   const handleLogout = async () => {
-    await signOut({ callbackUrl: '/login' });
+    await signOut({ callbackUrl: '/' });
   };
 
   return (

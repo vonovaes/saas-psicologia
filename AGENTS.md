@@ -7,3 +7,10 @@ This version has breaking changes — APIs, conventions, and file structure may 
 This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
 
 <!-- END:nextjs-agent-rules -->
+
+<!-- BEGIN:project-rules -->
+# Regras do projeto
+
+- SEMPRE trabalhar em branch de feature a partir de `origin/development` (ex: `feat/...`, `fix/...`), commitar nela, dar push e abrir PR para `development`. Nunca commitar direto em `development` ou `main`.
+- Ap�s qualquer migration do Prisma, rodar `npx prisma generate` (o client fica em `src/generated/prisma`).
+<!-- END:project-rules -->

@@ -21,16 +21,18 @@ interface EditorShellProps {
 type SidePanel = 'sections' | 'design';
 type DeviceMode = 'desktop' | 'tablet' | 'mobile';
 
+// Larguras do frame simulado — só aplicadas em telas lg+; num celular
+// real o canvas ocupa a largura toda (o dispositivo já é mobile).
 const DEVICE_WIDTHS: Record<DeviceMode, string> = {
-  desktop: 'max-w-6xl w-full',
-  tablet: 'w-[768px] max-w-full',
-  mobile: 'w-[390px] max-w-full',
+  desktop: 'w-full lg:max-w-6xl',
+  tablet: 'w-full lg:w-[768px] lg:max-w-full',
+  mobile: 'w-full lg:w-[390px] lg:max-w-full',
 };
 
 const DEVICE_FRAME: Record<DeviceMode, string> = {
   desktop: 'rounded-xl',
-  tablet: 'rounded-2xl ring-8 ring-gray-800',
-  mobile: 'rounded-[2.5rem] ring-[10px] ring-gray-800 my-4',
+  tablet: 'rounded-xl lg:rounded-2xl lg:ring-8 lg:ring-gray-800',
+  mobile: 'rounded-xl lg:rounded-[2.5rem] lg:ring-[10px] lg:ring-gray-800 lg:my-4',
 };
 
 /**
@@ -106,19 +108,19 @@ export function EditorShell({
   return (
     <div className="h-screen flex flex-col bg-gray-100">
       {/* Toolbar */}
-      <header className="bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between shrink-0">
-        <div className="flex items-center gap-4">
-          <button onClick={handleBack} className="text-gray-600 hover:text-gray-900 text-sm">
-            ← Dashboard
+      <header className="bg-white border-b border-gray-200 px-3 sm:px-4 py-2 sm:py-3 flex items-center justify-between gap-2 shrink-0 flex-wrap">
+        <div className="flex items-center gap-2 sm:gap-4 min-w-0">
+          <button onClick={handleBack} className="text-gray-600 hover:text-gray-900 text-sm whitespace-nowrap">
+            ← <span className="hidden sm:inline">Dashboard</span>
           </button>
-          <h1 className="text-lg font-semibold text-gray-900">Editor de Página</h1>
+          <h1 className="text-base sm:text-lg font-semibold text-gray-900 truncate">Editor de Página</h1>
           {editor.isDirty && (
-            <span className="text-xs text-amber-700 bg-amber-100 px-2 py-1 rounded-full">
-              Alterações não publicadas
+            <span className="text-xs text-amber-700 bg-amber-100 px-2 py-1 rounded-full hidden sm:inline">
+              Não publicado
             </span>
           )}
           {editor.saving && (
-            <span className="text-xs text-gray-500">Salvando rascunho...</span>
+            <span className="text-xs text-gray-500 hidden sm:inline">Salvando...</span>
           )}
           {feedback && (
             <span className="text-xs text-green-700 bg-green-100 px-2 py-1 rounded-full">
@@ -127,9 +129,9 @@ export function EditorShell({
           )}
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
           {/* Undo/Redo */}
-          <div className="flex items-center gap-1 border-r border-gray-200 pr-3">
+          <div className="flex items-center gap-1 border-r border-gray-200 pr-2 sm:pr-3">
             <button
               onClick={editor.undo}
               disabled={!editor.canUndo}
@@ -150,8 +152,8 @@ export function EditorShell({
             </button>
           </div>
 
-          {/* Device preview */}
-          <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1" role="group" aria-label="Modo de visualização">
+          {/* Device preview — só faz sentido em telas grandes */}
+          <div className="hidden lg:flex items-center gap-1 bg-gray-100 rounded-lg p-1" role="group" aria-label="Modo de visualização">
             {(['desktop', 'tablet', 'mobile'] as DeviceMode[]).map((mode) => (
               <button
                 key={mode}
@@ -170,7 +172,7 @@ export function EditorShell({
           </div>
 
           {editor.lastSavedAt && (
-            <span className="text-xs text-gray-400">
+            <span className="text-xs text-gray-400 hidden xl:inline">
               Salvo {editor.lastSavedAt.toLocaleTimeString('pt-BR')}
             </span>
           )}
@@ -180,6 +182,7 @@ export function EditorShell({
             onClick={editor.saveDraft}
             loading={editor.saving}
             disabled={editor.saving}
+            className="hidden sm:inline-flex"
           >
             Salvar rascunho
           </Button>
@@ -195,34 +198,11 @@ export function EditorShell({
         </div>
       </header>
 
-      <div className="flex flex-1 overflow-hidden">
-        {/* Canvas */}
-        <div className="flex-1 overflow-y-auto bg-gray-200 p-4 flex justify-center">
-          <div
-            className={`bg-white shadow-2xl overflow-hidden transition-all duration-300 self-start ${DEVICE_WIDTHS[device]} ${DEVICE_FRAME[device]}`}
-          >
-            {/* Notch do celular */}
-            {device === 'mobile' && (
-              <div className="bg-gray-800 flex justify-center py-2">
-                <div className="w-24 h-5 bg-gray-900 rounded-full" />
-              </div>
-            )}
-            <SiteRenderer
-              data={previewData}
-              theme={editor.theme}
-              editable
-              selectedIndex={selectedIndex}
-              onSelectSection={(i) => {
-                setSelectedIndex(i);
-                setPanel('sections');
-              }}
-            />
-          </div>
-        </div>
-
-        {/* Painel lateral */}
-        <aside className="w-80 bg-white border-l border-gray-200 flex flex-col shrink-0">
-          <div className="flex border-b border-gray-200" role="tablist">
+      {/* Mobile: painel em cima, preview embaixo | Desktop: preview à esquerda, painel à direita */}
+      <div className="flex flex-1 flex-col lg:flex-row overflow-hidden">
+        {/* Painel de edição */}
+        <aside className="order-first lg:order-none w-full lg:w-80 bg-white border-b lg:border-b-0 lg:border-l border-gray-200 flex flex-col shrink-0 max-h-[45vh] lg:max-h-none">
+          <div className="flex border-b border-gray-200 shrink-0" role="tablist">
             <button
               role="tab"
               aria-selected={panel === 'sections'}
@@ -287,6 +267,30 @@ export function EditorShell({
             )}
           </div>
         </aside>
+
+        {/* Canvas */}
+        <div className="flex-1 overflow-y-auto bg-gray-200 p-2 sm:p-4 flex justify-center">
+          <div
+            className={`bg-white shadow-2xl overflow-hidden transition-all duration-300 self-start ${DEVICE_WIDTHS[device]} ${DEVICE_FRAME[device]}`}
+          >
+            {/* Notch do celular — apenas no simulador (desktop) */}
+            {device === 'mobile' && (
+              <div className="hidden lg:flex bg-gray-800 justify-center py-2">
+                <div className="w-24 h-5 bg-gray-900 rounded-full" />
+              </div>
+            )}
+            <SiteRenderer
+              data={previewData}
+              theme={editor.theme}
+              editable
+              selectedIndex={selectedIndex}
+              onSelectSection={(i) => {
+                setSelectedIndex(i);
+                setPanel('sections');
+              }}
+            />
+          </div>
+        </div>
       </div>
     </div>
   );

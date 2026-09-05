@@ -72,6 +72,7 @@ export async function GET(request: NextRequest) {
       profile: profile ? {
         displayName: profile.displayName,
         specialties: profile.specialties,
+        approaches: profile.approaches,
         city: profile.city,
         description: profile.description,
         address: profile.address,

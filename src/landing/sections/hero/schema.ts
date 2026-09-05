@@ -14,7 +14,7 @@ export const heroSchema: SectionSchema = {
     { id: 'city', type: 'text', label: 'Cidade', source: 'profile.city' },
     { id: 'description', type: 'textarea', label: 'Descrição', source: 'profile.description' },
     { id: 'photo', type: 'image', label: 'Foto profissional', source: 'profile.profileImageUrl' },
-    { id: 'attendanceType', type: 'select', label: 'Tipo de atendimento', source: 'profile.attendanceType' },
+    { id: 'approaches', type: 'list', label: 'Tipos de abordagem', source: 'profile.approaches' },
     { id: 'ctaText', type: 'text', label: 'Texto do botão', default: 'Agendar Consulta' },
     { id: 'eyebrow', type: 'text', label: 'Rótulo superior', default: 'Psicologia Clínica' },
   ],

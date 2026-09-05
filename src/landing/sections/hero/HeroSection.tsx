@@ -78,6 +78,18 @@ export function HeroSection({ data, config }: SectionProps) {
               </span>
             ))}
           </div>
+          {profile.approaches.length > 0 && (
+            <div className="flex flex-wrap justify-center gap-2 mb-10">
+              {profile.approaches.map((approach, index) => (
+                <span
+                  key={index}
+                  className="px-3 py-1.5 rounded-full text-xs font-medium bg-site-surface text-site-text-muted border border-white/10"
+                >
+                  {approach}
+                </span>
+              ))}
+            </div>
+          )}
           <button
             onClick={scrollToContact}
             className="bg-site-primary text-site-bg font-medium px-8 py-4 rounded-full hover:opacity-90 transition-opacity"
@@ -122,6 +134,19 @@ export function HeroSection({ data, config }: SectionProps) {
                 </span>
               ))}
             </div>
+
+            {profile.approaches.length > 0 && (
+              <div className="flex flex-wrap gap-2">
+                {profile.approaches.map((approach, index) => (
+                  <span
+                    key={index}
+                    className="px-3 py-1.5 rounded-full text-xs font-medium bg-site-surface text-site-text-muted border border-white/10"
+                  >
+                    {approach}
+                  </span>
+                ))}
+              </div>
+            )}
 
             <button
               onClick={scrollToContact}

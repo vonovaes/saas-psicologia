@@ -65,6 +65,7 @@ model TenantProfile {
   tenantId        String    @unique
   displayName     String
   specialties     String[]
+  approaches      String[]  @default([])
   city            String
   description     String
   address         String?

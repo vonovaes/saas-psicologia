@@ -12,6 +12,7 @@ import { TenantThemeData } from '@/landing/themes/tokens';
 interface ProfileData {
   displayName: string;
   specialties: string[];
+  approaches: string[];
   city: string;
   description: string;
   address: string;
@@ -38,6 +39,7 @@ export default function ProfilePage() {
   const [profile, setProfile] = useState<ProfileData>({
     displayName: '',
     specialties: [],
+    approaches: [],
     city: '',
     description: '',
     address: '',

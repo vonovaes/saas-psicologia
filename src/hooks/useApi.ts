@@ -55,6 +55,7 @@ function useApiData<T>(url: string | null) {
 export interface ProfileData {
   displayName: string;
   specialties: string[];
+  approaches: string[];
   city: string;
   description: string;
   address: string;

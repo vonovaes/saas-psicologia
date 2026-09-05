@@ -5,6 +5,7 @@ import { SectionConfig, SectionType } from './themes/tokens';
 export interface SiteProfile {
   displayName: string;
   specialties: string[];
+  approaches: string[];
   city: string;
   description: string;
   address: string;

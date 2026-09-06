@@ -10,7 +10,7 @@ interface AccountData {
   name: string | null;
   role: string;
   createdAt: string;
-  tenant: { name: string };
+  tenant: { name: string; slug: string };
 }
 
 export default function ProfilePage() {
@@ -204,6 +204,27 @@ export default function ProfilePage() {
             <p className="text-gray-900 font-medium">{account?.tenant.name}</p>
           </div>
         </div>
+        {account?.tenant.slug && (
+          <div className="mt-4 pt-4 border-t border-gray-100">
+            <p className="text-sm text-gray-500">Sua página pública</p>
+            <div className="flex items-center gap-2 mt-1">
+              <code className="text-sm text-blue-700 bg-blue-50 px-2 py-1 rounded">
+                /p/{account.tenant.slug}
+              </code>
+              <button
+                type="button"
+                onClick={() => {
+                  navigator.clipboard.writeText(
+                    `${window.location.origin}/p/${account.tenant.slug}`
+                  );
+                }}
+                className="text-xs text-blue-600 hover:text-blue-800"
+              >
+                Copiar link
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </AdminLayout>
   );

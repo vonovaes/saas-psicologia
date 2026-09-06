@@ -28,7 +28,7 @@ export async function GET() {
         name: true,
         role: true,
         createdAt: true,
-        tenant: { select: { name: true } },
+        tenant: { select: { name: true, slug: true } },
       },
     });
 

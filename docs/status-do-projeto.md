@@ -244,51 +244,52 @@
 
 ## Próximos Passos Imediatos
 
-### Prioridade 1: Editor Visual de Templates
+### ✅ Entregue — Editor Visual + Cadastro (PR #7 + fix/editor-mobile-e-logout)
 
-**Objetivo:** Substituir o modelo "formulário + preview" por edição visual direta — o psicólogo escolhe um template pronto e edita a página real clicando nas seções (modelo Shopify Customizer adaptado).
+**Editor Visual (E-1 a E5):**
+- ✅ E-1 Higiene Frontend — AdminLayout, custom hooks, design tokens
+- ✅ E0 Fundação de Tema — TenantTheme + /api/theme + ThemeProvider
+- ✅ E1 Modularização — 7 seções com schema + SiteRenderer único
+- ✅ E2 Templates — 5 presets + galeria
+- ✅ E3 Editor Visual — click-to-select + inspector + draft/publish
+- ✅ E4 Seções/Listas — reordenação, catálogo de seções, Depoimentos, Mapa, listas (chips/objetos/FAQ)
+- ✅ E5 Polish — undo/redo, autosave, device preview, a11y
+- ✅ Container queries (@sm/@md/@lg) — preview mobile fiel ao real
+- ✅ Editor responsivo — painel colapsável no topo, preview tela cheia no celular
 
-**Plano completo:** ver `docs/plano-editor-visual.md`
+**Conta e Aquisição:**
+- ✅ /signup público — validação, senha com regras + visibilidade, LGPD
+- ✅ /api/signup — transação cria Tenant TRIAL + User + Settings + Profile + Theme
+- ✅ /onboarding — wizard 4 passos pós-cadastro
+- ✅ /profile repurposed — "Minha Conta" (nome, senha, info) + /api/account
+- ✅ Login redesenhado — branding, sem credenciais hardcoded, redirect se logado
+- ✅ Logout → home (origem atual, sem depender de NEXTAUTH_URL)
+- ✅ User.name + TenantProfile.approaches + TenantTheme (3 migrations aplicadas)
 
-**Status:** ✅ Editor Visual completo — todas as fases entregues
+### Prioridade 1: Configuração de produção
+1. Ajustar `NEXTAUTH_URL` e `NEXTAUTH_SECRET` nas envs da Vercel
+2. Validar fluxo completo em produção: signup → onboarding → editor → publicar → landing pública
+3. Configurar `PLATFORM_HOSTS` com o domínio real da plataforma
 
-**Roadmap:**
-- ✅ E-1 Higiene Frontend (4-6h) — AdminLayout, custom hooks, design tokens
-- ✅ E0 Fundação de Tema (6-8h) — TenantTheme + /api/theme + ThemeProvider
-- ✅ E1 Modularização (10-12h) — seções com schema + SiteRenderer
-- ✅ E2 Templates (6-8h) — 5 presets (Noite, Acolhimento, Sereno, Essencial, Vital) + galeria
-- ✅ E3 Editor Visual (12-16h) — click-to-select + inspector + draft/publish
-- ✅ E4 Seções/Listas (6-8h) — reordenação, FAQ no editor, Depoimentos, Mapa
-- ✅ E5 Polish (6-8h) — undo/redo, autosave, device preview, a11y
+### Prioridade 2: Gestão de domínios
+1. Fluxo self-service de domínio próprio (integração Vercel API já existe parcialmente em /dashboard/dominio)
+2. Provisionamento automático de domínio padrão por tenant no signup
 
-**Pendente (validação com usuário):** retirar ou redirecionar `/profile` antigo após confirmação de que o editor cobre todos os casos de uso.
-- ⏳ E1 Modularização (10-12h) — seções com schema + SiteRenderer
-- ⏳ E2 Templates (6-8h) — 5 presets (Noite, Acolhimento, Sereno, Essencial, Vital) + galeria
-- ⏳ E3 Editor Visual (12-16h) — click-to-select + inspector + draft/publish
-- ⏳ E4 Seções/Listas (6-8h) — reordenação, FAQ no editor, Depoimentos, Mapa
-- ⏳ E5 Polish (6-8h) — undo/redo, autosave, device preview, a11y
+### Prioridade 3: Produto
+1. Recuperação de senha ("Esqueci minha senha" com email)
+2. Verificação de email no cadastro
+3. Analytics de visitas por tenant (Fase 8 do plano original)
+4. Novos tipos de seção: preços/planos, galeria de fotos, CTA customizado
+5. Imagem de capa (og:image) gerada por tenant para compartilhamento
 
-**Total estimado:** 50-66h
-
-**Legado já aproveitável:**
-- PreviewWrapper → base do EditorShell
-- LivePreview → será substituído pelo SiteRenderer único
-- PreviewStateManager → base do debounce/autosave do draft
-
-### Prioridade 2: Completar Fase 7 - Segurança e LGPD
-1. Implementar fluxo de exclusão de dados automatizado
-2. Implementar auditoria de ações sensíveis
-
-### Prioridade 3: Fases Futuras
-1. Implementar gestão de domínios personalizados (integração Vercel API)
-2. Implementar sistema de analytics e tracking
-3. Testar fluxo completo end-to-end
-4. Preparar para produção
+### Prioridade 4: Qualidade
+1. Migrar `middleware.ts` → `proxy.ts` (deprecado no Next 16)
+2. Testes automatizados (unit + e2e do fluxo signup→publish)
+3. Revisar LGPD: consentimento no signup já existe; adicionar termos de uso
 
 ## Observações Importantes
 
+- Workflow agora é **feature branches + PR para development** (registrado em AGENTS.md)
+- Banco único Neon sa-east-1 compartilhado entre dev e produção — considerar separar
+- Após migration de schema, rodar `npx prisma generate`
 - O projeto está em desenvolvimento solo em horas vagas
-- Foco em funcionalidades core do MVP
-- Decisões técnicas priorizam baixo custo operacional
-- Documentação mantida atualizada para facilitar retomada
-- Branch principal único (sem feature branches ainda)

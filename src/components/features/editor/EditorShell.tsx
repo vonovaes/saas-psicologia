@@ -51,6 +51,7 @@ export function EditorShell({
   const [panel, setPanel] = useState<SidePanel>('sections');
   const [device, setDevice] = useState<DeviceMode>('desktop');
   const [feedback, setFeedback] = useState('');
+  const [panelOpen, setPanelOpen] = useState(true);
 
   const previewData = editor.getPreviewData(baseData);
   const selectedSection = selectedIndex !== null ? editor.theme.sections[selectedIndex] : null;
@@ -200,8 +201,12 @@ export function EditorShell({
 
       {/* Mobile: painel em cima, preview embaixo | Desktop: preview à esquerda, painel à direita */}
       <div className="flex flex-1 flex-col lg:flex-row overflow-hidden">
-        {/* Painel de edição */}
-        <aside className="order-first lg:order-none w-full lg:w-80 bg-white border-b lg:border-b-0 lg:border-l border-gray-200 flex flex-col shrink-0 max-h-[45vh] lg:max-h-none">
+        {/* Painel de edição — colapsável no mobile */}
+        <aside
+          className={`order-first lg:order-none w-full lg:w-80 bg-white border-b lg:border-b-0 lg:border-l border-gray-200 flex flex-col shrink-0 max-h-[45vh] lg:max-h-none ${
+            panelOpen ? '' : 'hidden lg:flex'
+          }`}
+        >
           <div className="flex border-b border-gray-200 shrink-0" role="tablist">
             <button
               role="tab"
@@ -226,6 +231,16 @@ export function EditorShell({
               }`}
             >
               Design
+            </button>
+            {/* Recolher painel — só no mobile */}
+            <button
+              onClick={() => setPanelOpen(false)}
+              aria-label="Recolher painel"
+              className="lg:hidden px-4 text-gray-400 hover:text-gray-700"
+            >
+              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
+              </svg>
             </button>
           </div>
 
@@ -269,7 +284,16 @@ export function EditorShell({
         </aside>
 
         {/* Canvas */}
-        <div className="flex-1 overflow-y-auto bg-gray-200 p-2 sm:p-4 flex justify-center">
+        <div className="relative flex-1 overflow-y-auto bg-gray-200 p-2 sm:p-4 flex justify-center">
+          {/* Botão flutuante para reabrir o painel — só mobile, só quando recolhido */}
+          {!panelOpen && (
+            <button
+              onClick={() => setPanelOpen(true)}
+              className="lg:hidden fixed bottom-4 right-4 z-50 rounded-full bg-gray-900 px-5 py-3 text-sm font-semibold text-white shadow-lg"
+            >
+              ☰ Editar
+            </button>
+          )}
           <div
             className={`bg-white shadow-2xl overflow-hidden transition-all duration-300 self-start ${DEVICE_WIDTHS[device]} ${DEVICE_FRAME[device]}`}
           >

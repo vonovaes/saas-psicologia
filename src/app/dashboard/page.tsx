@@ -2,6 +2,7 @@ import { auth } from '@/server/lib/auth';
 import { redirect } from 'next/navigation';
 import { Button } from '@/components/ui';
 import { AdminLayout } from '@/components/layout/AdminLayout';
+import { prisma } from '@/server/lib/prisma';
 import Link from 'next/link';
 
 export default async function DashboardPage() {
@@ -10,6 +11,11 @@ export default async function DashboardPage() {
   if (!session) {
     redirect('/login');
   }
+
+  const tenant = await prisma.tenant.findUnique({
+    where: { id: session.user.tenantId },
+    select: { slug: true, name: true },
+  });
 
   return (
     <AdminLayout
@@ -24,6 +30,21 @@ export default async function DashboardPage() {
         </Link>
       }
     >
+      {/* Link público da página do tenant */}
+      {tenant?.slug && (
+        <div className="mb-8 bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-lg p-4 flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <p className="text-sm font-medium text-green-900">Sua página pública está no ar</p>
+            <code className="text-sm text-green-700">/p/{tenant.slug}</code>
+          </div>
+          <div className="flex gap-2">
+            <Link href={`/p/${tenant.slug}`} target="_blank">
+              <Button variant="outline" size="sm">Abrir página</Button>
+            </Link>
+          </div>
+        </div>
+      )}
+
       {/* Quick Actions */}
       <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6 mb-8">
           <Link href="/editor" className="block">

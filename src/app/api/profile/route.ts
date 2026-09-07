@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/server/lib/auth';
 import { TenantProfileService } from '@/server/services/tenant-profile.service';
 import { TenantSettingsService } from '@/server/services/tenant-settings.service';
+import { prisma } from '@/server/lib/prisma';
 
 export async function GET(request: NextRequest) {
   try {
@@ -19,12 +20,14 @@ export async function GET(request: NextRequest) {
     const profileService = new TenantProfileService(tenantId);
     const settingsService = new TenantSettingsService(tenantId);
 
-    const [profile, settings] = await Promise.all([
+    const [profile, settings, tenant] = await Promise.all([
       profileService.getProfile(),
       settingsService.getSettings(),
+      prisma.tenant.findUnique({ where: { id: tenantId }, select: { slug: true } }),
     ]);
 
     return NextResponse.json({
+      tenantSlug: tenant?.slug,
       profile: profile ? {
         displayName: profile.displayName,
         specialties: profile.specialties,

@@ -26,6 +26,7 @@ export class TenantRepository extends BaseRepository {
 
   async create(data: {
     name: string;
+    slug: string;
     crp: string;
     contactEmail: string;
     plan?: string;

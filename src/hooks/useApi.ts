@@ -97,6 +97,7 @@ export interface ThemeData {
 interface ProfileResponse {
   profile?: ProfileData;
   settings?: SettingsData;
+  tenantSlug?: string;
 }
 
 /**
@@ -109,6 +110,7 @@ export function useProfile() {
   return {
     profile: data?.profile ?? null,
     settings: data?.settings ?? null,
+    tenantSlug: data?.tenantSlug ?? null,
     loading,
     error,
     refetch,

@@ -5,6 +5,7 @@ import { prisma } from '@/server/lib/prisma';
 import { RateLimiter } from '@/server/lib/rate-limit';
 import { validatePublicRequest, addCSRFHeaders } from '@/server/lib/csrf-public';
 import { DEFAULT_THEME } from '@/landing/themes/tokens';
+import { generateUniqueSlug } from '@/lib/slug';
 
 const signupRateLimiter = new RateLimiter(10 * 60 * 1000, 5); // 5 cadastros por IP a cada 10min
 
@@ -69,10 +70,17 @@ export async function POST(request: NextRequest) {
 
     const passwordHash = await bcrypt.hash(password, 12);
 
+    // Slug único para a URL pública /p/[slug]
+    const slug = await generateUniqueSlug(name, async (s) => {
+      const found = await prisma.tenant.findUnique({ where: { slug: s } });
+      return !!found;
+    });
+
     const tenant = await prisma.$transaction(async (tx) => {
       const created = await tx.tenant.create({
         data: {
           name,
+          slug,
           crp,
           contactEmail: email,
           status: 'TRIAL',
@@ -126,7 +134,7 @@ export async function POST(request: NextRequest) {
     });
 
     const response = NextResponse.json(
-      { success: true, tenantId: tenant.id },
+      { success: true, tenantId: tenant.id, slug },
       { status: 201 }
     );
     return addCSRFHeaders(response);

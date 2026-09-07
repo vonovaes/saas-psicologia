@@ -28,6 +28,7 @@ async function main() {
   const tenant = await prisma.tenant.create({
     data: {
       name: 'Dr. João Silva',
+      slug: 'dr-joao-silva',
       crp: '12345/SP',
       contactEmail: 'joao.silva@example.com',
       status: 'TRIAL',

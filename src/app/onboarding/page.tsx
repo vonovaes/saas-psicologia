@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { TEMPLATES } from '@/landing/themes/presets';
 
@@ -89,6 +89,17 @@ export default function OnboardingPage() {
   const [whatsapp, setWhatsapp] = useState('');
   const [instagram, setInstagram] = useState('');
   const [templateId, setTemplateId] = useState('acolhimento');
+  const [done, setDone] = useState(false);
+  const [tenantSlug, setTenantSlug] = useState<string | null>(null);
+  const [linkCopied, setLinkCopied] = useState(false);
+
+  // Busca o slug do tenant para mostrar a URL pública na tela final
+  useEffect(() => {
+    fetch('/api/profile')
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => setTenantSlug(d?.tenantSlug ?? null))
+      .catch(() => {});
+  }, []);
 
   const canContinue =
     step === 0 ? city.trim().length > 0 && description.trim().length >= 20 :
@@ -118,12 +129,75 @@ export default function OnboardingPage() {
       });
       if (!themeRes.ok) throw new Error('Erro ao aplicar template');
 
-      router.push('/editor');
+      setDone(true);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erro ao finalizar');
       setSaving(false);
     }
   };
+
+  const publicUrl = tenantSlug
+    ? `${typeof window !== 'undefined' ? window.location.origin : ''}/p/${tenantSlug}`
+    : null;
+
+  // ── Tela de sucesso: página publicada ──────────────────────
+  if (done) {
+    return (
+      <div className="min-h-screen bg-acolha-bg flex flex-col">
+        <header className="px-6 py-6">
+          <div className="mx-auto max-w-3xl">
+            <span className="text-xl font-semibold tracking-tight text-acolha-ink">Acolha</span>
+          </div>
+        </header>
+        <main className="flex flex-1 items-center justify-center px-6 py-10">
+          <div className="w-full max-w-xl text-center">
+            <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-green-100 text-3xl">
+              🎉
+            </div>
+            <h1 className="text-3xl font-medium text-acolha-ink">Sua página está no ar!</h1>
+            <p className="mt-3 text-acolha-body">
+              Este é o endereço para divulgar aos seus pacientes:
+            </p>
+            {publicUrl && (
+              <div className="mt-6 rounded-[1.4rem] border border-white/80 bg-white/90 p-6 shadow-[0_28px_80px_-35px_rgba(24,49,43,0.25)]">
+                <code className="block break-all text-sm font-medium text-acolha-accent">
+                  {publicUrl}
+                </code>
+                <div className="mt-4 flex flex-wrap justify-center gap-2">
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      await navigator.clipboard.writeText(publicUrl);
+                      setLinkCopied(true);
+                      setTimeout(() => setLinkCopied(false), 2000);
+                    }}
+                    className="rounded-full bg-acolha-accent px-5 py-2.5 text-sm font-semibold text-white hover:bg-acolha-accent-hover"
+                  >
+                    {linkCopied ? '✓ Copiado!' : 'Copiar link'}
+                  </button>
+                  <a
+                    href={publicUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="rounded-full border border-acolha-line px-5 py-2.5 text-sm font-medium text-acolha-ink hover:bg-acolha-bg"
+                  >
+                    Abrir minha página ↗
+                  </a>
+                </div>
+              </div>
+            )}
+            <button
+              type="button"
+              onClick={() => router.push('/editor')}
+              className="mt-6 text-sm font-medium text-acolha-muted hover:text-acolha-ink"
+            >
+              Continuar personalizando no editor →
+            </button>
+          </div>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-acolha-bg flex flex-col">

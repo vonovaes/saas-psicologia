@@ -15,6 +15,7 @@ interface EditorShellProps {
   baseData: SiteData;
   initialTheme: TenantThemeData | null;
   initialContentEdits?: Record<string, unknown>;
+  publicSlug?: string | null;
   onRefreshData: () => void;
 }
 
@@ -43,6 +44,7 @@ export function EditorShell({
   baseData,
   initialTheme,
   initialContentEdits,
+  publicSlug,
   onRefreshData,
 }: EditorShellProps) {
   const router = useRouter();
@@ -196,6 +198,17 @@ export function EditorShell({
           >
             Publicar
           </Button>
+          {publicSlug && (
+            <a
+              href={`/p/${publicSlug}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm text-blue-600 hover:text-blue-800 whitespace-nowrap"
+              title="Abrir página pública"
+            >
+              Ver página ↗
+            </a>
+          )}
         </div>
       </header>
 

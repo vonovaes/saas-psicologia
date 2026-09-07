@@ -32,6 +32,15 @@
   --color-site-text-muted: var(--site-text-muted);
 }
 
+/* ── Menu mobile hamburger (AcolhaHeader) ─────────────────────── */
+.mobile-menu::backdrop {
+  background-color: rgba(24, 49, 43, 0.6);
+}
+
+body:has(.mobile-menu[open]) {
+  overflow: hidden;
+}
+
 /* Valores padrão = template "Noite" (tema atual). Serão
    sobrescritos pelo ThemeProvider conforme o tema do tenant. */
 .tenant-site {

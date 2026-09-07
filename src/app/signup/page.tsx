@@ -91,6 +91,7 @@ export default function SignupPage() {
         <div className="mx-auto flex max-w-6xl items-center justify-between">
           <Link href="/" className="text-xl font-semibold tracking-tight text-acolha-ink">
             Acolha
+            <span className="text-acolha-accent">.</span>
           </Link>
           <MarketingButton href="/login" variant="ghost" size="sm">
             Já tenho conta

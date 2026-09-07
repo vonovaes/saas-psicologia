@@ -146,7 +146,10 @@ export default function OnboardingPage() {
       <div className="min-h-screen bg-acolha-bg flex flex-col">
         <header className="px-6 py-6">
           <div className="mx-auto max-w-3xl">
-            <span className="text-xl font-semibold tracking-tight text-acolha-ink">Acolha</span>
+            <span className="text-xl font-semibold tracking-tight text-acolha-ink">
+              Acolha
+              <span className="text-acolha-accent">.</span>
+            </span>
           </div>
         </header>
         <main className="flex flex-1 items-center justify-center px-6 py-10">

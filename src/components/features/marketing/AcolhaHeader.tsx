@@ -44,7 +44,7 @@ export function AcolhaHeader({ loginHref, salesContactUrl }: AcolhaHeaderProps) 
     <header className="sticky top-0 z-40 border-b border-transparent bg-[#fcfcfa]/90 backdrop-blur-md">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-4 lg:px-8">
         <a href="#conteudo" className="text-2xl font-semibold tracking-tight text-acolha-ink">
-          acolha<span className="text-acolha-accent">.</span>
+          Acolha<span className="text-acolha-accent">.</span>
         </a>
 
         <nav className="hidden items-center gap-7 text-sm text-acolha-muted md:flex" aria-label="Navegação principal">
@@ -83,7 +83,7 @@ export function AcolhaHeader({ loginHref, salesContactUrl }: AcolhaHeaderProps) 
           type="button"
           tabIndex={open ? 0 : -1}
           className={cn(
-            'absolute inset-0 bg-acolha-ink/25 transition-opacity duration-200',
+            'absolute inset-0 bg-acolha-ink/60 transition-opacity duration-200',
             open ? 'opacity-100' : 'opacity-0',
           )}
           aria-label="Fechar menu"
@@ -95,12 +95,12 @@ export function AcolhaHeader({ loginHref, salesContactUrl }: AcolhaHeaderProps) 
           aria-modal="true"
           aria-label="Menu"
           className={cn(
-            'absolute right-0 top-0 flex h-full w-[min(100%,20rem)] flex-col bg-[#fcfcfa] px-6 py-5 shadow-xl transition-transform duration-200 ease-out',
+            'fixed inset-y-0 right-0 flex w-full flex-col bg-acolha-canvas px-6 py-5 shadow-2xl transition-transform duration-200 ease-out',
             open ? 'translate-x-0' : 'translate-x-full',
           )}
         >
           <div className="flex items-center justify-between">
-            <span className="text-xl font-semibold">acolha.</span>
+            <span className="text-xl font-semibold tracking-tight text-acolha-ink">Acolha<span className="text-acolha-accent">.</span></span>
             <button
               type="button"
               className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-full border border-acolha-line focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-acolha-accent"

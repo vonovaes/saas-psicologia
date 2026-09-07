@@ -83,9 +83,10 @@ export function AcolhaHeader({ loginHref, salesContactUrl }: AcolhaHeaderProps) 
           type="button"
           tabIndex={open ? 0 : -1}
           className={cn(
-            'absolute inset-0 z-0 bg-[#18312b]/60 transition-opacity duration-200',
+            'absolute inset-0 z-0 transition-opacity duration-200',
             open ? 'opacity-100' : 'opacity-0',
           )}
+          style={{ backgroundColor: 'rgba(24, 49, 43, 0.6)' }}
           aria-label="Fechar menu"
           onClick={() => setOpen(false)}
         />
@@ -95,9 +96,10 @@ export function AcolhaHeader({ loginHref, salesContactUrl }: AcolhaHeaderProps) 
           aria-modal="true"
           aria-label="Menu"
           className={cn(
-            'absolute inset-0 z-10 flex flex-col bg-[#fcfcfa] px-6 py-5 shadow-2xl transition-transform duration-200 ease-out',
+            'absolute inset-0 z-10 flex flex-col px-6 py-5 shadow-2xl transition-transform duration-200 ease-out',
             open ? 'translate-x-0' : 'translate-x-full',
           )}
+          style={{ backgroundColor: '#fcfcfa' }}
         >
           <div className="flex items-center justify-between">
             <span className="text-xl font-semibold tracking-tight text-acolha-ink">Acolha<span className="text-acolha-accent">.</span></span>

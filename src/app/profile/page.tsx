@@ -20,6 +20,9 @@ export default function ProfilePage() {
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   const [name, setName] = useState('');
+  const [slug, setSlug] = useState('');
+  const [slugSaving, setSlugSaving] = useState(false);
+  const [linkCopied, setLinkCopied] = useState(false);
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -32,6 +35,7 @@ export default function ProfilePage() {
         const data = await response.json();
         setAccount(data.user);
         setName(data.user.name ?? '');
+        setSlug(data.user.tenant?.slug ?? '');
       } catch (error) {
         console.error('Error fetching account:', error);
         setMessage({ type: 'error', text: 'Erro ao carregar dados da conta' });
@@ -97,6 +101,55 @@ export default function ProfilePage() {
     } finally {
       setSaving(false);
     }
+  };
+
+  const publicUrl = `${typeof window !== 'undefined' ? window.location.origin : ''}/p/${slug}`;
+
+  const handleSaveSlug = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSlugSaving(true);
+    setMessage(null);
+    try {
+      const response = await fetch('/api/account', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ slug }),
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || 'Failed to update slug');
+      setAccount((prev) =>
+        prev ? { ...prev, tenant: { ...prev.tenant, slug } } : prev
+      );
+      setMessage({ type: 'success', text: 'Endereço da página atualizado!' });
+    } catch (error) {
+      setMessage({
+        type: 'error',
+        text: error instanceof Error ? error.message : 'Erro ao atualizar endereço',
+      });
+    } finally {
+      setSlugSaving(false);
+    }
+  };
+
+  const handleCopyLink = async () => {
+    await navigator.clipboard.writeText(publicUrl);
+    setLinkCopied(true);
+    setTimeout(() => setLinkCopied(false), 2000);
+  };
+
+  const handleShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'Minha página profissional',
+          url: publicUrl,
+        });
+        return;
+      } catch {
+        // usuário cancelou ou share indisponível → cai no copy
+      }
+    }
+    handleCopyLink();
   };
 
   if (loading) {
@@ -183,6 +236,60 @@ export default function ProfilePage() {
         </form>
       </div>
 
+      {/* Página pública — link editável + compartilhamento */}
+      <div className="bg-white shadow rounded-lg p-6 mb-6">
+        <h3 className="text-lg font-medium text-gray-900 mb-1">Sua página pública</h3>
+        <p className="text-sm text-gray-500 mb-4">
+          Este é o endereço que você pode divulgar para pacientes.
+        </p>
+        <form onSubmit={handleSaveSlug} className="flex flex-wrap items-end gap-3">
+          <div className="flex-1 min-w-[220px]">
+            <label htmlFor="slug" className="block text-sm font-medium text-gray-700 mb-1">
+              Endereço
+            </label>
+            <div className="flex items-center">
+              <span className="text-sm text-gray-500 bg-gray-50 border border-r-0 border-gray-300 rounded-l px-3 py-2">
+                /p/
+              </span>
+              <input
+                id="slug"
+                value={slug}
+                onChange={(e) => setSlug(e.target.value)}
+                className="flex-1 border border-gray-300 rounded-r px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="seu-nome"
+              />
+            </div>
+          </div>
+          <Button type="submit" variant="outline" size="sm" loading={slugSaving} disabled={slugSaving}>
+            Salvar endereço
+          </Button>
+        </form>
+        <div className="mt-4 flex flex-wrap items-center gap-2">
+          <button
+            type="button"
+            onClick={handleCopyLink}
+            className="px-3 py-2 text-sm rounded bg-gray-100 text-gray-700 hover:bg-gray-200"
+          >
+            {linkCopied ? '✓ Copiado!' : 'Copiar link'}
+          </button>
+          <button
+            type="button"
+            onClick={handleShare}
+            className="px-3 py-2 text-sm rounded bg-blue-600 text-white hover:bg-blue-700"
+          >
+            Compartilhar
+          </button>
+          <a
+            href={`/p/${slug}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="px-3 py-2 text-sm rounded border border-gray-300 text-gray-700 hover:bg-gray-50"
+          >
+            Abrir página ↗
+          </a>
+        </div>
+      </div>
+
       {/* Informações da Conta */}
       <div className="bg-white shadow rounded-lg p-6">
         <h3 className="text-lg font-medium text-gray-900 mb-4">Informações</h3>
@@ -204,27 +311,6 @@ export default function ProfilePage() {
             <p className="text-gray-900 font-medium">{account?.tenant.name}</p>
           </div>
         </div>
-        {account?.tenant.slug && (
-          <div className="mt-4 pt-4 border-t border-gray-100">
-            <p className="text-sm text-gray-500">Sua página pública</p>
-            <div className="flex items-center gap-2 mt-1">
-              <code className="text-sm text-blue-700 bg-blue-50 px-2 py-1 rounded">
-                /p/{account.tenant.slug}
-              </code>
-              <button
-                type="button"
-                onClick={() => {
-                  navigator.clipboard.writeText(
-                    `${window.location.origin}/p/${account.tenant.slug}`
-                  );
-                }}
-                className="text-xs text-blue-600 hover:text-blue-800"
-              >
-                Copiar link
-              </button>
-            </div>
-          </div>
-        )}
       </div>
     </AdminLayout>
   );

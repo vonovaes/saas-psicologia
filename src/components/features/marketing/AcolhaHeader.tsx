@@ -83,7 +83,7 @@ export function AcolhaHeader({ loginHref, salesContactUrl }: AcolhaHeaderProps) 
           type="button"
           tabIndex={open ? 0 : -1}
           className={cn(
-            'absolute inset-0 bg-acolha-ink/60 transition-opacity duration-200',
+            'absolute inset-0 z-0 bg-acolha-ink/60 transition-opacity duration-200',
             open ? 'opacity-100' : 'opacity-0',
           )}
           aria-label="Fechar menu"
@@ -95,7 +95,7 @@ export function AcolhaHeader({ loginHref, salesContactUrl }: AcolhaHeaderProps) 
           aria-modal="true"
           aria-label="Menu"
           className={cn(
-            'fixed inset-y-0 right-0 flex w-full flex-col bg-acolha-canvas px-6 py-5 shadow-2xl transition-transform duration-200 ease-out',
+            'absolute inset-0 z-10 flex flex-col bg-acolha-canvas px-6 py-5 shadow-2xl transition-transform duration-200 ease-out',
             open ? 'translate-x-0' : 'translate-x-full',
           )}
         >

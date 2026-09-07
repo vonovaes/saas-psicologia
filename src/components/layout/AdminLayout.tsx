@@ -3,7 +3,6 @@
 import { ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
 import { signOut } from 'next-auth/react';
-import { Button } from '@/components/ui';
 
 interface BreadcrumbItem {
   label: string;
@@ -45,55 +44,65 @@ export function AdminLayout({
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-acolha-bg">
       {/* Header */}
-      <header className="bg-white shadow">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+      <header className="sticky top-0 z-40 border-b border-acolha-line/60 bg-white/80 backdrop-blur-md">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex justify-between items-center">
           <button
             onClick={() => router.push('/dashboard')}
-            className="text-2xl font-bold text-gray-900 hover:text-gray-700 transition-colors"
+            className="flex items-baseline gap-2 transition-opacity hover:opacity-70"
           >
-            Painel Administrativo
+            <span className="text-xl font-semibold tracking-tight text-acolha-ink">
+              Acolha
+            </span>
+            <span className="hidden sm:inline text-xs font-medium uppercase tracking-wider text-acolha-muted">
+              Painel
+            </span>
           </button>
-          <div className="flex items-center gap-4">
+          <nav className="flex items-center gap-2 sm:gap-4">
             {userEmail && (
-              <span className="text-sm text-gray-700 hidden sm:inline">{userEmail}</span>
+              <span className="hidden md:inline max-w-[180px] truncate text-sm text-acolha-muted">
+                {userEmail}
+              </span>
             )}
             <button
               onClick={() => router.push('/dashboard')}
-              className="text-gray-600 hover:text-gray-900"
+              className="rounded-full px-3 py-1.5 text-sm font-medium text-acolha-body transition-colors hover:bg-acolha-mist hover:text-acolha-ink"
             >
-              Dashboard
+              Início
             </button>
-            <Button onClick={handleLogout} variant="danger" size="sm">
+            <button
+              onClick={handleLogout}
+              className="rounded-full border border-acolha-line px-3.5 py-1.5 text-sm font-medium text-acolha-body transition-colors hover:border-red-200 hover:bg-red-50 hover:text-red-700"
+            >
               Sair
-            </Button>
-          </div>
+            </button>
+          </nav>
         </div>
       </header>
 
       {/* Breadcrumb */}
       {breadcrumb && breadcrumb.length > 0 && (
-        <div className={`${MAX_WIDTHS[maxWidth]} mx-auto px-4 sm:px-6 lg:px-8 py-4`}>
+        <div className={`${MAX_WIDTHS[maxWidth]} mx-auto px-4 sm:px-6 lg:px-8 pt-5`}>
           <nav className="flex items-center space-x-2 text-sm">
             <button
               onClick={() => router.push('/dashboard')}
-              className="text-gray-500 hover:text-gray-700"
+              className="text-acolha-muted hover:text-acolha-ink"
             >
-              Dashboard
+              Início
             </button>
             {breadcrumb.map((item, index) => (
               <span key={index} className="flex items-center space-x-2">
-                <span className="text-gray-400">/</span>
+                <span className="text-acolha-line">/</span>
                 {item.href ? (
                   <button
                     onClick={() => router.push(item.href!)}
-                    className="text-gray-500 hover:text-gray-700"
+                    className="text-acolha-muted hover:text-acolha-ink"
                   >
                     {item.label}
                   </button>
                 ) : (
-                  <span className="text-gray-900">{item.label}</span>
+                  <span className="text-acolha-ink">{item.label}</span>
                 )}
               </span>
             ))}
@@ -103,10 +112,12 @@ export function AdminLayout({
 
       {/* Page Title */}
       <main className={`${MAX_WIDTHS[maxWidth]} mx-auto px-4 sm:px-6 lg:px-8 py-8`}>
-        <div className="mb-8 flex justify-between items-start">
+        <div className="mb-8 flex flex-wrap justify-between items-start gap-3">
           <div>
-            <h2 className="text-3xl font-bold text-gray-900">{title}</h2>
-            {subtitle && <p className="mt-2 text-gray-600">{subtitle}</p>}
+            <h2 className="text-2xl sm:text-3xl font-semibold tracking-tight text-acolha-ink">
+              {title}
+            </h2>
+            {subtitle && <p className="mt-1.5 text-acolha-body">{subtitle}</p>}
           </div>
           {actions && <div className="flex items-center gap-3">{actions}</div>}
         </div>

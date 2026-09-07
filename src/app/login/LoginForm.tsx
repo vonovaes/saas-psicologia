@@ -49,6 +49,7 @@ export default function LoginForm() {
         <div className="mx-auto flex max-w-6xl items-center justify-between">
           <Link href="/" className="text-xl font-semibold tracking-tight text-acolha-ink">
             Acolha
+            <span className="text-acolha-accent">.</span>
           </Link>
           <MarketingButton href="/signup" variant="ghost" size="sm">
             Criar conta

@@ -54,6 +54,7 @@ export function AdminLayout({
           >
             <span className="text-xl font-semibold tracking-tight text-acolha-ink">
               Acolha
+              <span className="text-acolha-accent">.</span>
             </span>
             <span className="hidden sm:inline text-xs font-medium uppercase tracking-wider text-acolha-muted">
               Painel

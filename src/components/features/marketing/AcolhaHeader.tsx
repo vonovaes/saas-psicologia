@@ -83,7 +83,7 @@ export function AcolhaHeader({ loginHref, salesContactUrl }: AcolhaHeaderProps) 
           type="button"
           tabIndex={open ? 0 : -1}
           className={cn(
-            'absolute inset-0 z-0 bg-black/60 transition-opacity duration-200',
+            'absolute inset-0 z-0 bg-[#18312b]/60 transition-opacity duration-200',
             open ? 'opacity-100' : 'opacity-0',
           )}
           aria-label="Fechar menu"

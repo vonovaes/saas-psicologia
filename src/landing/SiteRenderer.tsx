@@ -14,6 +14,8 @@ interface SiteRendererProps {
   /** Índice (em theme.sections) da seção selecionada no editor */
   selectedIndex?: number | null;
   onSelectSection?: (index: number) => void;
+  /** Callback para edição inline de conteúdo (source: 'profile.displayName') */
+  onUpdateContent?: (source: string, value: unknown) => void;
 }
 
 /**
@@ -29,6 +31,7 @@ export function SiteRenderer({
   editable = false,
   selectedIndex = null,
   onSelectSection,
+  onUpdateContent,
 }: SiteRendererProps) {
   const tokens = theme?.tokens ?? DEFAULT_TOKENS;
   const ordered = [...(theme?.sections ?? DEFAULT_SECTIONS)];
@@ -53,6 +56,8 @@ export function SiteRenderer({
                 key={`${section.type}-${originalIndex}`}
                 data={data}
                 config={section}
+                editable={editable}
+                onUpdateContent={onUpdateContent}
               />
             );
 

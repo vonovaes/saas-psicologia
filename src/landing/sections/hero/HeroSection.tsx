@@ -1,14 +1,19 @@
 'use client';
 
 import { SectionProps } from '@/landing/types';
+import { InlineText } from '@/components/features/editor/inline/InlineText';
 
-export function HeroSection({ data, config }: SectionProps) {
+export function HeroSection({ data, config, editable, onUpdateContent }: SectionProps) {
   const profile = data.profile;
   if (!profile) return null;
 
   const eyebrow = (config.overrides.eyebrow as string) || 'Psicologia Clínica';
   const ctaText = (config.overrides.ctaText as string) || 'Agendar Consulta';
   const variant = config.variant;
+
+  const handleChange = (source: string) => (value: string) => {
+    onUpdateContent?.(source, value);
+  };
 
   const scrollToContact = () => {
     document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
@@ -22,13 +27,31 @@ export function HeroSection({ data, config }: SectionProps) {
           <p className="text-site-primary/80 tracking-[0.3em] uppercase text-sm font-medium mb-6">
             {eyebrow}
           </p>
-          <h1 className="text-4xl @sm:text-5xl @lg:text-7xl font-light tracking-tight leading-tight text-site-text mb-6">
-            {profile.displayName}
-          </h1>
-          <p className="text-base @sm:text-xl text-site-text-muted font-light mb-8">{profile.city}</p>
-          <p className="text-lg @sm:text-2xl text-site-text-muted font-light leading-relaxed max-w-2xl mb-10">
-            {profile.description}
-          </p>
+          <InlineText
+            as="h1"
+            className="text-4xl @sm:text-5xl @lg:text-7xl font-light tracking-tight leading-tight text-site-text mb-6"
+            value={profile.displayName}
+            editable={editable}
+            onChange={handleChange('profile.displayName')}
+            placeholder="Nome do profissional"
+          />
+          <InlineText
+            as="p"
+            className="text-base @sm:text-xl text-site-text-muted font-light mb-8"
+            value={profile.city}
+            editable={editable}
+            onChange={handleChange('profile.city')}
+            placeholder="Cidade"
+          />
+          <InlineText
+            as="p"
+            className="text-lg @sm:text-2xl text-site-text-muted font-light leading-relaxed max-w-2xl mb-10"
+            value={profile.description}
+            editable={editable}
+            multiline
+            onChange={handleChange('profile.description')}
+            placeholder="Descrição profissional"
+          />
           <button
             onClick={scrollToContact}
             className="bg-site-primary text-site-bg font-medium px-8 py-4 rounded-full hover:opacity-90 transition-opacity"
@@ -61,13 +84,31 @@ export function HeroSection({ data, config }: SectionProps) {
           <p className="text-site-primary/80 tracking-[0.3em] uppercase text-sm font-medium mb-4">
             {eyebrow}
           </p>
-          <h1 className="text-4xl @sm:text-5xl @lg:text-7xl font-light tracking-tight leading-tight text-site-text mb-4">
-            {profile.displayName}
-          </h1>
-          <p className="text-base @sm:text-xl text-site-text-muted font-light mb-8">{profile.city}</p>
-          <p className="text-lg @sm:text-2xl text-site-text-muted font-light leading-relaxed max-w-2xl mx-auto mb-10">
-            {profile.description}
-          </p>
+          <InlineText
+            as="h1"
+            className="text-4xl @sm:text-5xl @lg:text-7xl font-light tracking-tight leading-tight text-site-text mb-4"
+            value={profile.displayName}
+            editable={editable}
+            onChange={handleChange('profile.displayName')}
+            placeholder="Nome do profissional"
+          />
+          <InlineText
+            as="p"
+            className="text-base @sm:text-xl text-site-text-muted font-light mb-8"
+            value={profile.city}
+            editable={editable}
+            onChange={handleChange('profile.city')}
+            placeholder="Cidade"
+          />
+          <InlineText
+            as="p"
+            className="text-lg @sm:text-2xl text-site-text-muted font-light leading-relaxed max-w-2xl mx-auto mb-10"
+            value={profile.description}
+            editable={editable}
+            multiline
+            onChange={handleChange('profile.description')}
+            placeholder="Descrição profissional"
+          />
           <div className="flex flex-wrap justify-center gap-3 mb-10">
             {profile.specialties.map((specialty, index) => (
               <span
@@ -114,15 +155,33 @@ export function HeroSection({ data, config }: SectionProps) {
               <p className="text-site-primary/80 tracking-[0.3em] uppercase text-sm font-medium">
                 {eyebrow}
               </p>
-              <h1 className="text-4xl @sm:text-5xl @lg:text-7xl font-light tracking-tight leading-tight text-site-text">
-                {profile.displayName}
-              </h1>
-              <p className="text-base @sm:text-xl text-site-text-muted font-light">{profile.city}</p>
+              <InlineText
+                as="h1"
+                className="text-4xl @sm:text-5xl @lg:text-7xl font-light tracking-tight leading-tight text-site-text"
+                value={profile.displayName}
+                editable={editable}
+                onChange={handleChange('profile.displayName')}
+                placeholder="Nome do profissional"
+              />
+              <InlineText
+                as="p"
+                className="text-base @sm:text-xl text-site-text-muted font-light"
+                value={profile.city}
+                editable={editable}
+                onChange={handleChange('profile.city')}
+                placeholder="Cidade"
+              />
             </div>
 
-            <p className="text-lg @sm:text-2xl text-site-text-muted font-light leading-relaxed max-w-xl">
-              {profile.description}
-            </p>
+            <InlineText
+              as="p"
+              className="text-lg @sm:text-2xl text-site-text-muted font-light leading-relaxed max-w-xl"
+              value={profile.description}
+              editable={editable}
+              multiline
+              onChange={handleChange('profile.description')}
+              placeholder="Descrição profissional"
+            />
 
             <div className="flex flex-wrap gap-3">
               {profile.specialties.map((specialty, index) => (

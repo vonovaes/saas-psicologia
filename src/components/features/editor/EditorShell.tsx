@@ -325,6 +325,7 @@ export function EditorShell({
                 setSelectedIndex(i);
                 setPanel('sections');
               }}
+              onUpdateContent={editor.updateContent}
             />
           </div>
         </div>

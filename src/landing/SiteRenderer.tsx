@@ -61,7 +61,7 @@ export function SiteRenderer({
 
   return (
     <ThemeProvider tokens={tokens}>
-      <div className="min-h-screen bg-site-bg text-site-text">
+      <div className="min-h-screen w-full overflow-x-hidden bg-site-bg text-site-text">
         {sorted
           .filter(({ section }) => editable || section.visible)
           .map(({ section, originalIndex }, sortedIndex) => {

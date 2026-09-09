@@ -10,6 +10,7 @@ import { useEditorState } from './hooks/useEditorState';
 import { SectionInspector } from './SectionInspector';
 import { SectionList } from './SectionList';
 import { ThemePanel } from './ThemePanel';
+import { PersonalizePanel } from './PersonalizePanel';
 
 interface EditorShellProps {
   baseData: SiteData;
@@ -54,6 +55,7 @@ export function EditorShell({
   const [device, setDevice] = useState<DeviceMode>('desktop');
   const [feedback, setFeedback] = useState('');
   const [panelOpen, setPanelOpen] = useState(true);
+  const [personalizeOpen, setPersonalizeOpen] = useState(false);
 
   const previewData = editor.getPreviewData(baseData);
   const selectedSection = selectedIndex !== null ? editor.theme.sections[selectedIndex] : null;
@@ -179,6 +181,13 @@ export function EditorShell({
               Salvo {editor.lastSavedAt.toLocaleTimeString('pt-BR')}
             </span>
           )}
+          <button
+            type="button"
+            onClick={() => setPersonalizeOpen(true)}
+            className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-2.5 py-1.5 text-xs font-medium text-gray-700 transition-colors hover:bg-gray-50 sm:px-3 sm:text-sm"
+          >
+            🎨 <span className="hidden sm:inline">Personalizar</span>
+          </button>
           <Button
             variant="outline"
             size="sm"
@@ -325,10 +334,29 @@ export function EditorShell({
                 setSelectedIndex(i);
                 setPanel('sections');
               }}
+              onUpdateContent={editor.updateContent}
+              onUpdateSectionOverride={editor.updateSectionOverride}
+              onMoveSection={editor.moveSection}
+              onUpdateSection={editor.updateSection}
+              onRemoveSection={(i) => {
+                if (!window.confirm('Tem certeza que deseja remover esta seção?')) return;
+                editor.removeSection(i);
+                if (selectedIndex === i) setSelectedIndex(null);
+              }}
+              onReorderSections={editor.reorderSections}
             />
           </div>
         </div>
       </div>
+
+      <PersonalizePanel
+        open={personalizeOpen}
+        onClose={() => setPersonalizeOpen(false)}
+        theme={editor.theme}
+        onUpdateColors={editor.updateColors}
+        onUpdateTokens={editor.updateTokens}
+        onApplyTemplate={editor.applyTemplate}
+      />
     </div>
   );
 }

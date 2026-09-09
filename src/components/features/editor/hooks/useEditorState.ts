@@ -191,6 +191,21 @@ export function useEditorState(initialTheme: TenantThemeData | null, initialCont
     setIsDirty(true);
   }, []);
 
+  const reorderSections = useCallback((from: number, to: number) => {
+    setTheme((prev) => {
+      const sorted = [...prev.sections].sort((a, b) => a.order - b.order);
+      if (from === to || from < 0 || from >= sorted.length || to < 0 || to > sorted.length) return prev;
+      const moved = sorted.splice(from, 1)[0];
+      sorted.splice(Math.min(to, sorted.length), 0, moved);
+      return {
+        ...prev,
+        sections: sorted.map((s, i) => ({ ...s, order: i })),
+      };
+    });
+    pushHistory();
+    setIsDirty(true);
+  }, []);
+
   // ── Conteúdo (campos com source) ──────────────────────────────
 
   const updateContent = useCallback((source: string, value: unknown) => {
@@ -310,6 +325,7 @@ export function useEditorState(initialTheme: TenantThemeData | null, initialCont
       addSection,
       removeSection,
       moveSection,
+      reorderSections,
       getPreviewData,
       getFieldValue,
       saveDraft,
@@ -323,7 +339,7 @@ export function useEditorState(initialTheme: TenantThemeData | null, initialCont
     [
       theme, contentEdits, isDirty, saving, publishing, lastSavedAt,
       updateTokens, updateColors, updateSection, updateSectionOverride,
-      updateContent, applyTemplate, addSection, removeSection, moveSection,
+      updateContent, applyTemplate, addSection, removeSection, moveSection, reorderSections,
       getPreviewData, getFieldValue, saveDraft, publish, undo, redo, canUndo, canRedo,
     ]
   );

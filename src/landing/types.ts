@@ -36,6 +36,14 @@ export interface SiteData {
 export interface SectionProps {
   data: SiteData;
   config: SectionConfig;
+  /** Índice da seção no array de seções do tema (necessário para overrides) */
+  sectionIndex: number;
+  /** Ativa edição inline no editor */
+  editable?: boolean;
+  /** Callback para atualizar uma fonte de dado (ex: 'profile.displayName') */
+  onUpdateContent?: (source: string, value: unknown) => void;
+  /** Callback para atualizar um override de seção */
+  onUpdateSectionOverride?: (sectionIndex: number, key: string, value: unknown) => void;
 }
 
 /** Descriptor de um campo editável de uma seção (modelo Shopify). */

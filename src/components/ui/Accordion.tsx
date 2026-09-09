@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 
 interface AccordionItemProps {
-  title: string;
+  title: React.ReactNode;
   children: React.ReactNode;
   isOpen?: boolean;
   onToggle?: () => void;
@@ -42,8 +42,8 @@ export const AccordionItem: React.FC<AccordionItemProps> = ({
 
 interface AccordionProps {
   items: {
-    title: string;
-    content: string;
+    title: React.ReactNode;
+    content: React.ReactNode;
   }[];
 }
 

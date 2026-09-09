@@ -59,15 +59,17 @@ export function InlineImage({
       const formData = new FormData();
       formData.append('file', file);
       const response = await fetch('/api/upload', { method: 'POST', body: formData });
-      if (!response.ok) throw new Error('Upload failed');
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
+        throw new Error(data.error || `Upload failed: ${response.status}`);
+      }
       const data = await response.json();
       onChange(data.url);
     } catch (error) {
       console.error('Error uploading image:', error);
-      setError('Erro ao enviar. Tente novamente.');
+      setError(error instanceof Error ? error.message : 'Erro ao enviar. Tente novamente.');
     } finally {
       setUploading(false);
-      setOpen(false);
     }
   };
 

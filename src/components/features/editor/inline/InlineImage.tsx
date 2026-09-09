@@ -1,8 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { useIsMobile } from '@/hooks/useIsMobile';
-import { Pencil, Trash2, X } from 'lucide-react';
+import { Pencil, Trash2 } from 'lucide-react';
 
 interface InlineImageProps {
   src: string | null;
@@ -32,7 +31,7 @@ export function InlineImage({
   const [open, setOpen] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState('');
-  const isMobile = useIsMobile();
+  const [pos, setPos] = useState<{ top: number; left: number } | null>(null);
 
   // Fecha em clique fora e ao pressionar Escape
   useEffect(() => {
@@ -45,12 +44,25 @@ export function InlineImage({
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') setOpen(false);
     };
+    const handleScroll = () => setOpen(false);
     document.addEventListener('mousedown', handleClick);
     document.addEventListener('keydown', handleKey);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => {
       document.removeEventListener('mousedown', handleClick);
       document.removeEventListener('keydown', handleKey);
+      window.removeEventListener('scroll', handleScroll);
     };
+  }, [open]);
+
+  useEffect(() => {
+    if (open && rootRef.current) {
+      const rect = rootRef.current.getBoundingClientRect();
+      setPos({
+        top: rect.bottom + window.scrollY + 8,
+        left: rect.left + window.scrollX + rect.width / 2 - 112,
+      });
+    }
   }, [open]);
 
   const handleFile = async (file: File) => {
@@ -118,26 +130,12 @@ export function InlineImage({
         )}
       </button>
 
-      {open && (
+      {open && pos && (
         <div
-          className={`z-50 w-56 rounded-2xl border border-acolha-line bg-white p-2 shadow-2xl ${
-            isMobile
-              ? 'absolute left-1/2 top-[calc(100%+8px)] -translate-x-1/2'
-              : 'absolute left-1/2 top-[calc(100%+8px)] -translate-x-1/2'
-          }`}
+          className="fixed z-[100] w-56 overflow-hidden rounded-2xl border border-acolha-line bg-white p-2 shadow-2xl"
+          style={{ top: pos.top, left: Math.max(8, Math.min(window.innerWidth - 240, pos.left)) }}
+          onClick={(e) => e.stopPropagation()}
         >
-          <div className="mb-2 flex items-center justify-between px-2 pt-1">
-            <span className="text-xs font-medium text-acolha-ink">Foto do perfil</span>
-            <button
-              type="button"
-              onClick={() => setOpen(false)}
-              className="text-acolha-muted hover:text-acolha-ink"
-              aria-label="Fechar"
-            >
-              <X className="h-3.5 w-3.5" />
-            </button>
-          </div>
-
           <label className="flex cursor-pointer items-center gap-2 rounded-xl px-3 py-2.5 text-sm text-acolha-ink transition-colors hover:bg-acolha-mist">
             <Pencil className="h-4 w-4 text-acolha-muted" />
             {uploading ? 'Enviando...' : 'Trocar imagem'}

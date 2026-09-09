@@ -14,8 +14,8 @@ interface InlineImageProps {
 }
 
 /**
- * Imagem editavel inline. Clique abre um pequeno menu proximo a imagem
- * para trocar (upload) ou remover a imagem.
+ * Imagem editavel inline. Clica para trocar ou remover.
+ * Ocupa 100% do container pai para garantir touch em toda a area.
  */
 export function InlineImage({
   src,
@@ -99,41 +99,45 @@ export function InlineImage({
   if (!editable) {
     return src ? (
       <div
+        ref={rootRef}
+        className={`${className} bg-cover bg-center`}
         role="img"
         aria-label={alt}
-        className={className}
-        style={{ backgroundImage: `url(${src})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
+        style={{ backgroundImage: `url(${src})` }}
       />
     ) : (
-      <div className={placeholderClassName}>{children}</div>
+      <div ref={rootRef} className={placeholderClassName}>{children}</div>
     );
   }
 
   return (
-    <div ref={rootRef} className="relative inline-block">
+    <div ref={rootRef} className="relative h-full w-full">
       <button
         type="button"
         onClick={(e) => {
           e.stopPropagation();
           setOpen(!open);
         }}
-        className="block w-full"
+        className="h-full w-full"
         aria-label={src ? `Trocar imagem: ${alt}` : `Adicionar imagem: ${alt}`}
       >
         {src ? (
           <div
-            className={className}
-            style={{ backgroundImage: `url(${src})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
+            className={`${className} h-full w-full bg-cover bg-center`}
+            style={{ backgroundImage: `url(${src})` }}
           />
         ) : (
-          <div className={placeholderClassName}>{children}</div>
+          <div className={`${placeholderClassName} h-full w-full`}>{children}</div>
         )}
       </button>
 
       {open && pos && (
         <div
           className="fixed z-[100] w-56 overflow-hidden rounded-2xl border border-acolha-line bg-white p-2 shadow-2xl"
-          style={{ top: pos.top, left: Math.max(8, Math.min(window.innerWidth - 240, pos.left)) }}
+          style={{
+            top: pos.top,
+            left: Math.max(8, Math.min(window.innerWidth - 240, pos.left)),
+          }}
           onClick={(e) => e.stopPropagation()}
         >
           <label className="flex cursor-pointer items-center gap-2 rounded-xl px-3 py-2.5 text-sm text-acolha-ink transition-colors hover:bg-acolha-mist">

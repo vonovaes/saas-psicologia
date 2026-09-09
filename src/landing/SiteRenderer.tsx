@@ -57,6 +57,7 @@ export function SiteRenderer({
 
   const [dragged, setDragged] = useState<number | null>(null);
   const [dropTarget, setDropTarget] = useState<number | null>(null);
+  const [dropPosition, setDropPosition] = useState<'before' | 'after'>('before');
 
   return (
     <ThemeProvider tokens={tokens}>
@@ -109,20 +110,32 @@ export function SiteRenderer({
                 } ${!section.visible ? 'opacity-40 grayscale' : ''} ${
                   dragged === sortedIndex ? 'opacity-30' : ''
                 } ${
-                  dropTarget === sortedIndex ? 'ring-2 ring-dashed ring-acolha-accent' : ''
+                  dropTarget === sortedIndex
+                    ? dropPosition === 'before'
+                      ? 'border-t-4 border-acolha-accent'
+                      : 'border-b-4 border-acolha-accent'
+                    : ''
                 }`}
                 onDragOver={(e) => {
                   e.preventDefault();
+                  const rect = (e.target as HTMLElement).getBoundingClientRect();
+                  const pos = e.clientY < rect.top + rect.height / 2 ? 'before' : 'after';
                   setDropTarget(sortedIndex);
+                  setDropPosition(pos);
                 }}
-                onDragLeave={() => setDropTarget(null)}
+                onDragLeave={() => {
+                  setDropTarget(null);
+                  setDropPosition('before');
+                }}
                 onDrop={(e) => {
                   e.preventDefault();
                   if (dragged !== null && dragged !== sortedIndex) {
-                    onReorderSections?.(dragged, sortedIndex);
+                    const target = dropPosition === 'before' ? sortedIndex : sortedIndex + 1;
+                    onReorderSections?.(dragged, target);
                   }
                   setDragged(null);
                   setDropTarget(null);
+                  setDropPosition('before');
                 }}
               >
                 <div

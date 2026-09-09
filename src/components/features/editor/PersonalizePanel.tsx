@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { X, Palette } from 'lucide-react';
 import { ThemePanel } from './ThemePanel';
 import { TenantThemeData, ThemeTokens } from '@/landing/themes/tokens';
@@ -22,31 +22,27 @@ export function PersonalizePanel({
   onUpdateTokens,
   onApplyTemplate,
 }: PersonalizePanelProps) {
-  useEffect(() => {
-    if (!open) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
-    };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [open, onClose]);
+  const dialogRef = useRef<HTMLDialogElement>(null);
 
-  if (!open) return null;
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+
+    if (open) {
+      if (!dialog.open) dialog.showModal();
+    } else {
+      if (dialog.open) dialog.close();
+    }
+  }, [open]);
 
   return (
-    <div className="fixed inset-0 z-50 flex justify-end">
-      {/* Backdrop */}
-      <div
-        role="button"
-        tabIndex={0}
-        className="absolute inset-0 bg-acolha-ink/40"
-        onClick={onClose}
-        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') onClose(); }}
-        aria-label="Fechar painel"
-      />
-
-      {/* Panel */}
-      <div className="relative z-10 flex h-full w-full flex-col bg-white shadow-2xl sm:w-[28rem]">
+    <dialog
+      ref={dialogRef}
+      onClose={onClose}
+      className="personalize-dialog fixed inset-0 z-50 m-0 h-full w-full max-h-none max-w-none border-0 bg-transparent p-0 lg:ml-auto lg:w-[28rem]"
+      aria-label="Personalizar design"
+    >
+      <div className="flex h-full w-full flex-col bg-white shadow-2xl">
         <div className="flex items-center justify-between border-b border-acolha-line px-4 py-3 sm:px-6 sm:py-4">
           <div className="flex items-center gap-2 text-acolha-ink">
             <Palette className="h-5 w-5" />
@@ -71,6 +67,6 @@ export function PersonalizePanel({
           />
         </div>
       </div>
-    </div>
+    </dialog>
   );
 }

@@ -1,8 +1,8 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-
 import { useIsMobile } from '@/hooks/useIsMobile';
+import { sanitizeHtml } from '@/lib/sanitizeHtml';
 
 type TextTag = 'h1' | 'h2' | 'h3' | 'p' | 'span' | 'div' | 'a' | 'label' | 'li';
 
@@ -14,11 +14,14 @@ interface InlineTextProps {
   editable?: boolean;
   multiline?: boolean;
   placeholder?: string;
+  /** Se true, permite negrito/italico/alinhamento. Padrao: mesma coisa que multiline. */
+  richText?: boolean;
+  'aria-label'?: string;
 }
 
 /**
- * Componente de texto editável inline com suporte a negrito, itálico e alinhamento.
- * Quando `editable=true`, o usuário pode clicar, editar e aplicar formatação.
+ * Componente de texto editavel inline com suporte a negrito, italico e alinhamento.
+ * Quando `editable=true`, o usuario pode clicar, editar e aplicar formatacao.
  * Salva no `onBlur`.
  */
 export function InlineText({
@@ -29,27 +32,35 @@ export function InlineText({
   editable,
   multiline,
   placeholder,
+  richText,
+  'aria-label': ariaLabel,
 }: InlineTextProps) {
   const ref = useRef<HTMLElement>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [showToolbar, setShowToolbar] = useState(false);
   const [toolbarPos, setToolbarPos] = useState<{ top?: number; bottom?: number; left: number } | null>(null);
   const isMobile = useIsMobile();
+  const isRich = richText !== undefined ? richText : multiline;
 
-  // Sincroniza com a prop externa quando não está editando.
+  // Sincroniza com a prop externa quando nao esta editando.
   useEffect(() => {
     if (ref.current && !isEditing && ref.current.innerHTML !== value) {
-      ref.current.innerHTML = value || placeholder || '';
+      ref.current.innerHTML = isRich ? (value || placeholder || '') : (value || placeholder || '');
     }
-  }, [value, isEditing, placeholder]);
+  }, [value, isEditing, placeholder, isRich]);
 
   const Tag = as;
 
   if (!editable) {
+    if (!isRich) {
+      return (
+        <Tag className={className}>{value || placeholder}</Tag>
+      ) as React.ReactNode;
+    }
     return (
       <Tag
         className={className}
-        dangerouslySetInnerHTML={{ __html: value || placeholder || '' }}
+        dangerouslySetInnerHTML={{ __html: sanitizeHtml(value || placeholder || '') }}
       />
     ) as React.ReactNode;
   }
@@ -57,17 +68,18 @@ export function InlineText({
   const commit = () => {
     setIsEditing(false);
     setShowToolbar(false);
-    const next = ref.current?.innerHTML || '';
+    const raw = ref.current?.innerHTML || '';
+    const next = isRich ? sanitizeHtml(raw) : sanitizeHtml(raw, true);
     if (next !== value) onChange?.(next);
   };
 
   const handleFocus = () => {
     setIsEditing(true);
-    positionToolbar();
+    if (isRich) positionToolbar();
   };
 
   const handleBlur = (e: React.FocusEvent) => {
-    // Se o foco foi para a toolbar, não comita
+    // Se o foco foi para a toolbar, nao comita
     const related = e.relatedTarget as HTMLElement | null;
     if (related?.closest('[data-inline-toolbar]')) {
       return;
@@ -82,13 +94,18 @@ export function InlineText({
     }
     if (e.key === 'Escape') {
       e.preventDefault();
-      if (ref.current) ref.current.innerHTML = value || placeholder || '';
+      if (ref.current) ref.current.innerHTML = isRich ? (value || placeholder || '') : (value || placeholder || '');
       (e.target as HTMLElement).blur();
     }
   };
 
   const handleInput = () => {
-    positionToolbar();
+    if (isRich) positionToolbar();
+  };
+
+  const handleClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (isRich) positionToolbar();
   };
 
   const positionToolbar = () => {
@@ -109,15 +126,17 @@ export function InlineText({
   };
 
   const exec = (command: 'bold' | 'italic' | 'justifyLeft' | 'justifyCenter' | 'justifyRight') => {
+    if (!isRich) return;
     document.execCommand(command, false);
     if (ref.current) {
       ref.current.focus();
-      onChange?.(ref.current.innerHTML);
+      const next = sanitizeHtml(ref.current.innerHTML);
+      onChange?.(next);
     }
   };
 
   const isActive = (command: string) => {
-    if (typeof document === 'undefined') return false;
+    if (typeof document === 'undefined' || !isRich) return false;
     return document.queryCommandState(command);
   };
 
@@ -128,14 +147,17 @@ export function InlineText({
         className={className}
         contentEditable
         suppressContentEditableWarning
+        role="textbox"
+        aria-multiline={multiline}
+        aria-label={ariaLabel || placeholder || 'Texto editavel'}
         onFocus={handleFocus}
         onBlur={handleBlur}
         onKeyDown={handleKeyDown}
         onInput={handleInput}
-        onClick={positionToolbar}
-        dangerouslySetInnerHTML={{ __html: value || placeholder || '' }}
+        onClick={handleClick}
+        dangerouslySetInnerHTML={{ __html: isRich ? (value || placeholder || '') : (value || placeholder || '') }}
       />
-      {showToolbar && toolbarPos && (
+      {showToolbar && isRich && toolbarPos && (
         <div
           data-inline-toolbar
           className="fixed z-[100] flex items-center gap-1 rounded-full border border-acolha-line bg-white px-3 py-2 shadow-lg"
@@ -145,7 +167,7 @@ export function InlineText({
           <ToolbarButton active={isActive('bold')} onClick={() => exec('bold')} label="Negrito">
             B
           </ToolbarButton>
-          <ToolbarButton active={isActive('italic')} onClick={() => exec('italic')} label="Itálico">
+          <ToolbarButton active={isActive('italic')} onClick={() => exec('italic')} label="Italico">
             I
           </ToolbarButton>
           <div className="mx-1 h-4 w-px bg-acolha-line" />

@@ -194,9 +194,9 @@ export function useEditorState(initialTheme: TenantThemeData | null, initialCont
   const reorderSections = useCallback((from: number, to: number) => {
     setTheme((prev) => {
       const sorted = [...prev.sections].sort((a, b) => a.order - b.order);
-      if (from === to || from < 0 || from >= sorted.length || to < 0 || to >= sorted.length) return prev;
+      if (from === to || from < 0 || from >= sorted.length || to < 0 || to > sorted.length) return prev;
       const moved = sorted.splice(from, 1)[0];
-      sorted.splice(to, 0, moved);
+      sorted.splice(Math.min(to, sorted.length), 0, moved);
       return {
         ...prev,
         sections: sorted.map((s, i) => ({ ...s, order: i })),

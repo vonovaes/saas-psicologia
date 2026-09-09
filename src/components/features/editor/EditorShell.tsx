@@ -339,6 +339,7 @@ export function EditorShell({
               onMoveSection={editor.moveSection}
               onUpdateSection={editor.updateSection}
               onRemoveSection={(i) => {
+                if (!window.confirm('Tem certeza que deseja remover esta seção?')) return;
                 editor.removeSection(i);
                 if (selectedIndex === i) setSelectedIndex(null);
               }}

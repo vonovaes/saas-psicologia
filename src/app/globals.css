@@ -42,11 +42,13 @@ body:has(.mobile-menu[open]) {
 }
 
 /* ── Painel Personalizar do editor ────────────────────────────── */
-.personalize-dialog::backdrop {
+.personalize-dialog::backdrop,
+.sections-dialog::backdrop {
   background-color: rgba(24, 49, 43, 0.6);
 }
 
-.personalize-dialog[open] {
+.personalize-dialog[open],
+.sections-dialog[open] {
   display: flex;
 }
 

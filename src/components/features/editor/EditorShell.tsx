@@ -99,7 +99,12 @@ export function EditorShell({
 
   const handlePublish = async () => {
     const ok = await editor.publish();
-    setFeedback(ok ? 'Publicado com sucesso!' : 'Erro ao publicar.');
+    if (ok) {
+      setFeedback('Publicado com sucesso!');
+      onRefreshData();
+    } else {
+      setFeedback('Erro ao publicar.');
+    }
     setTimeout(() => setFeedback(''), 4000);
   };
 

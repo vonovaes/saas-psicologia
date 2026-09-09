@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect } from 'react';
 import { X, Palette } from 'lucide-react';
 import { ThemePanel } from './ThemePanel';
 import { TenantThemeData, ThemeTokens } from '@/landing/themes/tokens';
@@ -21,15 +22,26 @@ export function PersonalizePanel({
   onUpdateTokens,
   onApplyTemplate,
 }: PersonalizePanelProps) {
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [open, onClose]);
+
   if (!open) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex justify-end">
       {/* Backdrop */}
-      <button
-        type="button"
+      <div
+        role="button"
+        tabIndex={0}
         className="absolute inset-0 bg-acolha-ink/40"
         onClick={onClose}
+        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') onClose(); }}
         aria-label="Fechar painel"
       />
 

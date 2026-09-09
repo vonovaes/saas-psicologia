@@ -1,6 +1,7 @@
 'use client';
 
 import { useRef, useState } from 'react';
+import { useIsMobile } from '@/hooks/useIsMobile';
 
 interface InlineImageProps {
   src: string | null;
@@ -28,6 +29,7 @@ export function InlineImage({
   const inputRef = useRef<HTMLInputElement>(null);
   const [open, setOpen] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const isMobile = useIsMobile();
 
   const handleFile = async (file: File) => {
     setUploading(true);
@@ -83,8 +85,13 @@ export function InlineImage({
       </button>
 
       {open && (
-        <div className="absolute z-50 mt-2 flex flex-col gap-2 rounded-xl border border-acolha-line bg-white p-2 shadow-xl">
-          <label className="cursor-pointer rounded-lg px-4 py-2 text-left text-sm text-acolha-ink transition-colors hover:bg-acolha-mist">
+        <div
+          className={`z-50 flex flex-col gap-2 rounded-xl border border-acolha-line bg-white p-2 shadow-2xl ${
+            isMobile
+              ? 'fixed bottom-4 left-1/2 w-56 -translate-x-1/2'
+              : 'absolute mt-2'
+          }`}
+        >          <label className="cursor-pointer rounded-lg px-4 py-2 text-left text-sm text-acolha-ink transition-colors hover:bg-acolha-mist">
             {uploading ? 'Enviando...' : 'Trocar imagem'}
             <input
               ref={inputRef}

@@ -127,7 +127,9 @@ export function SiteRenderer({
               >
                 <div
                   data-section-toolbar
-                  className="absolute right-2 top-2 z-30 opacity-0 transition-opacity group-hover:opacity-100 focus-within:opacity-100"
+                  className={`absolute right-2 top-2 z-30 transition-opacity ${
+                    isSelected ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+                  }`}
                   onClick={(e) => e.stopPropagation()}
                 >
                   <SectionHoverToolbar

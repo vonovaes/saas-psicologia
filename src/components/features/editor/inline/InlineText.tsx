@@ -2,6 +2,8 @@
 
 import { useEffect, useRef, useState } from 'react';
 
+import { useIsMobile } from '@/hooks/useIsMobile';
+
 type TextTag = 'h1' | 'h2' | 'h3' | 'p' | 'span' | 'div' | 'a' | 'label' | 'li';
 
 interface InlineTextProps {
@@ -31,7 +33,8 @@ export function InlineText({
   const ref = useRef<HTMLElement>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [showToolbar, setShowToolbar] = useState(false);
-  const [toolbarPos, setToolbarPos] = useState<{ top: number; left: number } | null>(null);
+  const [toolbarPos, setToolbarPos] = useState<{ top?: number; bottom?: number; left: number } | null>(null);
+  const isMobile = useIsMobile();
 
   // Sincroniza com a prop externa quando não está editando.
   useEffect(() => {
@@ -91,10 +94,17 @@ export function InlineText({
   const positionToolbar = () => {
     if (!ref.current) return;
     const rect = ref.current.getBoundingClientRect();
-    setToolbarPos({
-      top: Math.max(8, rect.top - 48 + window.scrollY),
-      left: Math.max(8, Math.min(window.innerWidth - 220, rect.left + rect.width / 2 - 110)),
-    });
+    if (isMobile) {
+      setToolbarPos({
+        bottom: 16,
+        left: Math.max(8, Math.min(window.innerWidth - 240, window.innerWidth / 2 - 120)),
+      });
+    } else {
+      setToolbarPos({
+        top: Math.max(8, rect.top - 48 + window.scrollY),
+        left: Math.max(8, Math.min(window.innerWidth - 240, rect.left + rect.width / 2 - 110)),
+      });
+    }
     setShowToolbar(true);
   };
 
@@ -129,7 +139,7 @@ export function InlineText({
         <div
           data-inline-toolbar
           className="fixed z-[100] flex items-center gap-1 rounded-full border border-acolha-line bg-white px-3 py-2 shadow-lg"
-          style={{ top: toolbarPos.top, left: toolbarPos.left }}
+          style={{ top: toolbarPos.top, bottom: toolbarPos.bottom, left: toolbarPos.left }}
           onMouseDown={(e) => e.preventDefault()}
         >
           <ToolbarButton active={isActive('bold')} onClick={() => exec('bold')} label="Negrito">

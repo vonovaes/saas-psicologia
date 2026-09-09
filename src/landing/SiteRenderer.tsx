@@ -16,6 +16,8 @@ interface SiteRendererProps {
   onSelectSection?: (index: number) => void;
   /** Callback para edição inline de conteúdo (source: 'profile.displayName') */
   onUpdateContent?: (source: string, value: unknown) => void;
+  /** Callback para atualizar overrides de uma seção */
+  onUpdateSectionOverride?: (sectionIndex: number, key: string, value: unknown) => void;
 }
 
 /**
@@ -32,6 +34,7 @@ export function SiteRenderer({
   selectedIndex = null,
   onSelectSection,
   onUpdateContent,
+  onUpdateSectionOverride,
 }: SiteRendererProps) {
   const tokens = theme?.tokens ?? DEFAULT_TOKENS;
   const ordered = [...(theme?.sections ?? DEFAULT_SECTIONS)];
@@ -56,8 +59,10 @@ export function SiteRenderer({
                 key={`${section.type}-${originalIndex}`}
                 data={data}
                 config={section}
+                sectionIndex={originalIndex}
                 editable={editable}
                 onUpdateContent={onUpdateContent}
+                onUpdateSectionOverride={onUpdateSectionOverride}
               />
             );
 
@@ -95,7 +100,7 @@ export function SiteRenderer({
               </div>
             );
           })}
-        <FooterSection data={data} />
+        <FooterSection data={data} editable={editable} onUpdateContent={onUpdateContent} />
       </div>
     </ThemeProvider>
   );

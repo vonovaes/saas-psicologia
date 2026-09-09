@@ -3,7 +3,7 @@
 import { SectionProps } from '@/landing/types';
 import { InlineText } from '@/components/features/editor/inline/InlineText';
 
-export function HeroSection({ data, config, editable, onUpdateContent }: SectionProps) {
+export function HeroSection({ data, config, sectionIndex, editable, onUpdateContent, onUpdateSectionOverride }: SectionProps) {
   const profile = data.profile;
   if (!profile) return null;
 
@@ -11,8 +11,12 @@ export function HeroSection({ data, config, editable, onUpdateContent }: Section
   const ctaText = (config.overrides.ctaText as string) || 'Agendar Consulta';
   const variant = config.variant;
 
-  const handleChange = (source: string) => (value: string) => {
-    onUpdateContent?.(source, value);
+  const updateSection = (key: string, value: string) => {
+    onUpdateSectionOverride?.(sectionIndex, key, value);
+  };
+
+  const updateProfile = (key: string) => (value: string) => {
+    onUpdateContent?.(`profile.${key}`, value);
   };
 
   const scrollToContact = () => {
@@ -24,15 +28,20 @@ export function HeroSection({ data, config, editable, onUpdateContent }: Section
     return (
       <section className="relative min-h-[70vh] flex items-center overflow-hidden bg-site-bg">
         <div className="relative z-10 max-w-4xl mx-auto px-4 @sm:px-6 @lg:px-8 py-12 @sm:py-20">
-          <p className="text-site-primary/80 tracking-[0.3em] uppercase text-sm font-medium mb-6">
-            {eyebrow}
-          </p>
+          <InlineText
+            as="p"
+            className="text-site-primary/80 tracking-[0.3em] uppercase text-sm font-medium mb-6"
+            value={eyebrow}
+            editable={editable}
+            onChange={(v) => updateSection('eyebrow', v)}
+            placeholder="Chapéu"
+          />
           <InlineText
             as="h1"
             className="text-4xl @sm:text-5xl @lg:text-7xl font-light tracking-tight leading-tight text-site-text mb-6"
             value={profile.displayName}
             editable={editable}
-            onChange={handleChange('profile.displayName')}
+            onChange={updateProfile('displayName')}
             placeholder="Nome do profissional"
           />
           <InlineText
@@ -40,7 +49,7 @@ export function HeroSection({ data, config, editable, onUpdateContent }: Section
             className="text-base @sm:text-xl text-site-text-muted font-light mb-8"
             value={profile.city}
             editable={editable}
-            onChange={handleChange('profile.city')}
+            onChange={updateProfile('city')}
             placeholder="Cidade"
           />
           <InlineText
@@ -49,14 +58,24 @@ export function HeroSection({ data, config, editable, onUpdateContent }: Section
             value={profile.description}
             editable={editable}
             multiline
-            onChange={handleChange('profile.description')}
+            onChange={updateProfile('description')}
             placeholder="Descrição profissional"
           />
           <button
             onClick={scrollToContact}
             className="bg-site-primary text-site-bg font-medium px-8 py-4 rounded-full hover:opacity-90 transition-opacity"
           >
-            {ctaText}
+            {editable ? (
+              <InlineText
+                as="span"
+                value={ctaText}
+                editable={editable}
+                onChange={(v) => updateSection('ctaText', v)}
+                placeholder="Texto do botão"
+              />
+            ) : (
+              ctaText
+            )}
           </button>
         </div>
       </section>
@@ -81,15 +100,20 @@ export function HeroSection({ data, config, editable, onUpdateContent }: Section
               </svg>
             )}
           </div>
-          <p className="text-site-primary/80 tracking-[0.3em] uppercase text-sm font-medium mb-4">
-            {eyebrow}
-          </p>
+          <InlineText
+            as="p"
+            className="text-site-primary/80 tracking-[0.3em] uppercase text-sm font-medium mb-4"
+            value={eyebrow}
+            editable={editable}
+            onChange={(v) => updateSection('eyebrow', v)}
+            placeholder="Chapéu"
+          />
           <InlineText
             as="h1"
             className="text-4xl @sm:text-5xl @lg:text-7xl font-light tracking-tight leading-tight text-site-text mb-4"
             value={profile.displayName}
             editable={editable}
-            onChange={handleChange('profile.displayName')}
+            onChange={updateProfile('displayName')}
             placeholder="Nome do profissional"
           />
           <InlineText
@@ -97,7 +121,7 @@ export function HeroSection({ data, config, editable, onUpdateContent }: Section
             className="text-base @sm:text-xl text-site-text-muted font-light mb-8"
             value={profile.city}
             editable={editable}
-            onChange={handleChange('profile.city')}
+            onChange={updateProfile('city')}
             placeholder="Cidade"
           />
           <InlineText
@@ -106,7 +130,7 @@ export function HeroSection({ data, config, editable, onUpdateContent }: Section
             value={profile.description}
             editable={editable}
             multiline
-            onChange={handleChange('profile.description')}
+            onChange={updateProfile('description')}
             placeholder="Descrição profissional"
           />
           <div className="flex flex-wrap justify-center gap-3 mb-10">
@@ -125,7 +149,7 @@ export function HeroSection({ data, config, editable, onUpdateContent }: Section
                 <span
                   key={index}
                   className="px-3 py-1.5 rounded-full text-xs font-medium bg-site-surface text-site-text-muted border border-white/10"
-                >
+              >
                   {approach}
                 </span>
               ))}
@@ -135,7 +159,17 @@ export function HeroSection({ data, config, editable, onUpdateContent }: Section
             onClick={scrollToContact}
             className="bg-site-primary text-site-bg font-medium px-8 py-4 rounded-full hover:opacity-90 transition-opacity"
           >
-            {ctaText}
+            {editable ? (
+              <InlineText
+                as="span"
+                value={ctaText}
+                editable={editable}
+                onChange={(v) => updateSection('ctaText', v)}
+                placeholder="Texto do botão"
+              />
+            ) : (
+              ctaText
+            )}
           </button>
         </div>
       </section>
@@ -152,15 +186,20 @@ export function HeroSection({ data, config, editable, onUpdateContent }: Section
         <div className="grid @lg:grid-cols-2 gap-10 @lg:gap-16 items-center">
           <div className="space-y-6 @sm:space-y-8">
             <div className="space-y-4">
-              <p className="text-site-primary/80 tracking-[0.3em] uppercase text-sm font-medium">
-                {eyebrow}
-              </p>
+              <InlineText
+                as="p"
+                className="text-site-primary/80 tracking-[0.3em] uppercase text-sm font-medium"
+                value={eyebrow}
+                editable={editable}
+                onChange={(v) => updateSection('eyebrow', v)}
+                placeholder="Chapéu"
+              />
               <InlineText
                 as="h1"
                 className="text-4xl @sm:text-5xl @lg:text-7xl font-light tracking-tight leading-tight text-site-text"
                 value={profile.displayName}
                 editable={editable}
-                onChange={handleChange('profile.displayName')}
+                onChange={updateProfile('displayName')}
                 placeholder="Nome do profissional"
               />
               <InlineText
@@ -168,7 +207,7 @@ export function HeroSection({ data, config, editable, onUpdateContent }: Section
                 className="text-base @sm:text-xl text-site-text-muted font-light"
                 value={profile.city}
                 editable={editable}
-                onChange={handleChange('profile.city')}
+                onChange={updateProfile('city')}
                 placeholder="Cidade"
               />
             </div>
@@ -179,7 +218,7 @@ export function HeroSection({ data, config, editable, onUpdateContent }: Section
               value={profile.description}
               editable={editable}
               multiline
-              onChange={handleChange('profile.description')}
+              onChange={updateProfile('description')}
               placeholder="Descrição profissional"
             />
 
@@ -211,7 +250,17 @@ export function HeroSection({ data, config, editable, onUpdateContent }: Section
               onClick={scrollToContact}
               className="bg-site-primary text-site-bg font-medium px-8 py-4 rounded-full hover:opacity-90 transition-opacity"
             >
-              {ctaText}
+              {editable ? (
+                <InlineText
+                  as="span"
+                  value={ctaText}
+                  editable={editable}
+                  onChange={(v) => updateSection('ctaText', v)}
+                  placeholder="Texto do botão"
+                />
+              ) : (
+                ctaText
+              )}
             </button>
           </div>
 

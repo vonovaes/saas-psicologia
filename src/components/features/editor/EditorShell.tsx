@@ -326,6 +326,7 @@ export function EditorShell({
                 setPanel('sections');
               }}
               onUpdateContent={editor.updateContent}
+              onUpdateSectionOverride={editor.updateSectionOverride}
             />
           </div>
         </div>

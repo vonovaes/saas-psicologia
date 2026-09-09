@@ -1,13 +1,24 @@
 'use client';
 
 import { SectionProps } from '@/landing/types';
+import { InlineText } from '@/components/features/editor/inline/InlineText';
 
-export function SpecialtiesSection({ data, config }: SectionProps) {
+export function SpecialtiesSection({ data, config, sectionIndex, editable, onUpdateContent, onUpdateSectionOverride }: SectionProps) {
   const profile = data.profile;
   if (!profile || profile.specialties.length === 0) return null;
 
   const title = (config.overrides.title as string) || 'Áreas de atuação';
   const variant = config.variant;
+
+  const updateSection = (key: string, value: string) => {
+    onUpdateSectionOverride?.(sectionIndex, key, value);
+  };
+
+  const updateSpecialty = (index: number, value: string) => {
+    const next = [...profile.specialties];
+    next[index] = value;
+    onUpdateContent?.('profile.specialties', next);
+  };
 
   return (
     <section className="py-16 @sm:py-24 @lg:py-32 px-4 bg-site-bg">
@@ -16,20 +27,28 @@ export function SpecialtiesSection({ data, config }: SectionProps) {
           <p className="text-site-primary/80 tracking-[0.3em] uppercase text-sm font-medium mb-4">
             Especialidades
           </p>
-          <h2 className="text-3xl @sm:text-4xl @lg:text-5xl font-light tracking-tight text-site-text">
-            {title}
-          </h2>
+          <InlineText
+            as="h2"
+            className="text-3xl @sm:text-4xl @lg:text-5xl font-light tracking-tight text-site-text"
+            value={title}
+            editable={editable}
+            onChange={(v) => updateSection('title', v)}
+            placeholder="Título da seção"
+          />
         </div>
 
         {variant === 'tags' && (
           <div className="flex flex-wrap justify-center gap-4 max-w-4xl mx-auto">
             {profile.specialties.map((specialty, index) => (
-              <span
+              <InlineText
                 key={index}
+                as="span"
                 className="px-6 py-3 rounded-full text-base font-medium border border-site-primary/30 text-site-primary/90 bg-site-surface/50 backdrop-blur-sm"
-              >
-                {specialty}
-              </span>
+                value={specialty}
+                editable={editable}
+                onChange={(v) => updateSpecialty(index, v)}
+                placeholder="Especialidade"
+              />
             ))}
           </div>
         )}
@@ -41,7 +60,14 @@ export function SpecialtiesSection({ data, config }: SectionProps) {
                 <span className="text-site-primary/60 font-light text-lg">
                   {String(index + 1).padStart(2, '0')}
                 </span>
-                <h3 className="text-2xl font-light text-site-text">{specialty}</h3>
+                <InlineText
+                  as="h3"
+                  className="text-2xl font-light text-site-text"
+                  value={specialty}
+                  editable={editable}
+                  onChange={(v) => updateSpecialty(index, v)}
+                  placeholder="Especialidade"
+                />
               </div>
             ))}
           </div>
@@ -59,7 +85,14 @@ export function SpecialtiesSection({ data, config }: SectionProps) {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
                   </svg>
                 </div>
-                <h3 className="text-2xl font-light mb-3 text-site-text">{specialty}</h3>
+                <InlineText
+                  as="h3"
+                  className="text-2xl font-light mb-3 text-site-text"
+                  value={specialty}
+                  editable={editable}
+                  onChange={(v) => updateSpecialty(index, v)}
+                  placeholder="Especialidade"
+                />
                 <p className="text-site-text-muted font-light leading-relaxed">
                   Tratamento especializado e personalizado.
                 </p>

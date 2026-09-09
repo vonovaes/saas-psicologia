@@ -1,13 +1,22 @@
 'use client';
 
 import { SectionProps } from '@/landing/types';
+import { InlineText } from '@/components/features/editor/inline/InlineText';
 
-export function AboutSection({ data, config }: SectionProps) {
+export function AboutSection({ data, config, sectionIndex, editable, onUpdateContent, onUpdateSectionOverride }: SectionProps) {
   const profile = data.profile;
   if (!profile) return null;
 
   const title = (config.overrides.title as string) || 'Experiência que transforma';
   const minimal = config.variant === 'minimal';
+
+  const updateSection = (key: string, value: string) => {
+    onUpdateSectionOverride?.(sectionIndex, key, value);
+  };
+
+  const updateProfile = (key: string) => (value: string) => {
+    onUpdateContent?.(`profile.${key}`, value);
+  };
 
   return (
     <section className="py-16 @sm:py-24 @lg:py-32 px-4 bg-site-bg">
@@ -17,12 +26,23 @@ export function AboutSection({ data, config }: SectionProps) {
             <p className="text-site-primary/80 tracking-[0.3em] uppercase text-sm font-medium">
               Sobre Mim
             </p>
-            <h2 className="text-3xl @sm:text-4xl @lg:text-5xl font-light tracking-tight text-site-text">
-              {title}
-            </h2>
-            <p className="text-base @sm:text-xl text-site-text-muted font-light leading-relaxed">
-              {profile.description}
-            </p>
+            <InlineText
+              as="h2"
+              className="text-3xl @sm:text-4xl @lg:text-5xl font-light tracking-tight text-site-text"
+              value={title}
+              editable={editable}
+              onChange={(v) => updateSection('title', v)}
+              placeholder="Título da seção"
+            />
+            <InlineText
+              as="p"
+              className="text-base @sm:text-xl text-site-text-muted font-light leading-relaxed"
+              value={profile.description}
+              editable={editable}
+              multiline
+              onChange={updateProfile('description')}
+              placeholder="Descrição profissional"
+            />
           </div>
 
           {!minimal && (
@@ -34,7 +54,14 @@ export function AboutSection({ data, config }: SectionProps) {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 13l4 4L19 7" />
                     </svg>
                   </div>
-                  <span className="text-site-text-muted font-light">{profile.attendanceType}</span>
+                  <InlineText
+                    as="span"
+                    className="text-site-text-muted font-light"
+                    value={profile.attendanceType}
+                    editable={editable}
+                    onChange={updateProfile('attendanceType')}
+                    placeholder="Tipo de atendimento"
+                  />
                 </div>
               </div>
 
@@ -46,7 +73,14 @@ export function AboutSection({ data, config }: SectionProps) {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                     </svg>
                   </div>
-                  <span className="text-site-text-muted font-light">{profile.city}</span>
+                  <InlineText
+                    as="span"
+                    className="text-site-text-muted font-light"
+                    value={profile.city}
+                    editable={editable}
+                    onChange={updateProfile('city')}
+                    placeholder="Cidade"
+                  />
                 </div>
               </div>
 
@@ -58,7 +92,14 @@ export function AboutSection({ data, config }: SectionProps) {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                       </svg>
                     </div>
-                    <span className="text-site-text-muted font-light">{profile.address}</span>
+                    <InlineText
+                      as="span"
+                      className="text-site-text-muted font-light"
+                      value={profile.address}
+                      editable={editable}
+                      onChange={updateProfile('address')}
+                      placeholder="Endereço"
+                    />
                   </div>
                 </div>
               )}

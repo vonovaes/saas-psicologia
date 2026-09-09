@@ -28,6 +28,9 @@ export class UploadService {
     const uniqueFileName = `${this.tenantId}-${timestamp}-${validation.data.fileName}`;
 
     try {
+      if (!process.env.BLOB_READ_WRITE_TOKEN) {
+        throw new Error('BLOB_READ_WRITE_TOKEN nao configurado. Adicione o token do Vercel Blob no .env.local.');
+      }
       // Upload to Vercel Blob
       const blob = await put(uniqueFileName, file, {
         access: 'public',

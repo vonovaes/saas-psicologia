@@ -209,7 +209,7 @@ export function useEditorState(initialTheme: TenantThemeData | null, initialCont
   // ── Conteúdo (campos com source) ──────────────────────────────
 
   const updateContent = useCallback((source: string, value: unknown) => {
-    setContentEdits((prev) => setByPath(prev, source, value));
+    setContentEdits((prev) => ({ ...prev, [source]: value }));
     pushHistory();
     setIsDirty(true);
   }, []);
@@ -242,7 +242,7 @@ export function useEditorState(initialTheme: TenantThemeData | null, initialCont
     (base: SiteData, source: string | undefined, overrideValue: unknown): unknown => {
       if (overrideValue !== undefined) return overrideValue;
       if (!source) return undefined;
-      const edited = getByPath(contentEdits, source);
+      const edited = contentEdits[source];
       if (edited !== undefined) return edited;
       return getByPath(base as unknown as Record<string, unknown>, source);
     },
@@ -299,14 +299,17 @@ export function useEditorState(initialTheme: TenantThemeData | null, initialCont
       });
       if (!res.ok) throw new Error('Failed to publish theme');
 
-      setContentEdits({});
-      setIsDirty(false);
       setLastSavedAt(new Date());
       return true;
     } finally {
       setPublishing(false);
     }
   }, [theme, contentEdits]);
+
+  const clearContentEdits = useCallback(() => {
+    setContentEdits({});
+    setIsDirty(false);
+  }, []);
 
   return useMemo(
     () => ({
@@ -330,6 +333,7 @@ export function useEditorState(initialTheme: TenantThemeData | null, initialCont
       getFieldValue,
       saveDraft,
       publish,
+      clearContentEdits,
       setTheme,
       undo,
       redo,
@@ -340,7 +344,7 @@ export function useEditorState(initialTheme: TenantThemeData | null, initialCont
       theme, contentEdits, isDirty, saving, publishing, lastSavedAt,
       updateTokens, updateColors, updateSection, updateSectionOverride,
       updateContent, applyTemplate, addSection, removeSection, moveSection, reorderSections,
-      getPreviewData, getFieldValue, saveDraft, publish, undo, redo, canUndo, canRedo,
+      getPreviewData, getFieldValue, saveDraft, publish, clearContentEdits, undo, redo, canUndo, canRedo,
     ]
   );
 }

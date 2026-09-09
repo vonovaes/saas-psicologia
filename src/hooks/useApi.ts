@@ -12,7 +12,7 @@ interface FetchState<T> {
  * Helper interno para chamadas à API do painel.
  */
 async function apiFetch<T>(url: string): Promise<T> {
-  const response = await fetch(url);
+  const response = await fetch(url, { cache: 'no-store' });
   if (!response.ok) throw new Error(`Erro ${response.status}: ${response.statusText}`);
   return response.json();
 }

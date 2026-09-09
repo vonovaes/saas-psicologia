@@ -36,6 +36,7 @@ export async function GET(request: NextRequest) {
         description: profile.description,
         address: profile.address,
         attendanceType: profile.attendanceType,
+        profileImageUrl: profile.profileImageUrl,
       } : null,
       settings: settings ? {
         whatsappNumber: settings.whatsappNumber,

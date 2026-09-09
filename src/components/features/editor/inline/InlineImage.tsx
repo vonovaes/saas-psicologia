@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useIsMobile } from '@/hooks/useIsMobile';
+import { Pencil, Trash2, X } from 'lucide-react';
 
 interface InlineImageProps {
   src: string | null;
@@ -14,7 +15,7 @@ interface InlineImageProps {
 }
 
 /**
- * Imagem editavel inline. Clique abre um pequeno popover
+ * Imagem editavel inline. Clique abre um pequeno menu proximo a imagem
  * para trocar (upload) ou remover a imagem.
  */
 export function InlineImage({
@@ -64,7 +65,12 @@ export function InlineImage({
         throw new Error(data.error || `Upload failed: ${response.status}`);
       }
       const data = await response.json();
-      onChange(data.url);
+      const url = data?.file?.url;
+      if (!url) {
+        throw new Error('Resposta do servidor nao contem a URL da imagem.');
+      }
+      onChange(url);
+      setOpen(false);
     } catch (error) {
       console.error('Error uploading image:', error);
       setError(error instanceof Error ? error.message : 'Erro ao enviar. Tente novamente.');
@@ -114,13 +120,26 @@ export function InlineImage({
 
       {open && (
         <div
-          className={`z-50 flex flex-col gap-2 rounded-xl border border-acolha-line bg-white p-2 shadow-2xl ${
+          className={`z-50 w-56 rounded-2xl border border-acolha-line bg-white p-2 shadow-2xl ${
             isMobile
-              ? 'fixed bottom-4 left-1/2 w-56 -translate-x-1/2'
-              : 'absolute mt-2'
+              ? 'absolute left-1/2 top-[calc(100%+8px)] -translate-x-1/2'
+              : 'absolute left-1/2 top-[calc(100%+8px)] -translate-x-1/2'
           }`}
         >
-          <label className="cursor-pointer rounded-lg px-4 py-2 text-left text-sm text-acolha-ink transition-colors hover:bg-acolha-mist">
+          <div className="mb-2 flex items-center justify-between px-2 pt-1">
+            <span className="text-xs font-medium text-acolha-ink">Foto do perfil</span>
+            <button
+              type="button"
+              onClick={() => setOpen(false)}
+              className="text-acolha-muted hover:text-acolha-ink"
+              aria-label="Fechar"
+            >
+              <X className="h-3.5 w-3.5" />
+            </button>
+          </div>
+
+          <label className="flex cursor-pointer items-center gap-2 rounded-xl px-3 py-2.5 text-sm text-acolha-ink transition-colors hover:bg-acolha-mist">
+            <Pencil className="h-4 w-4 text-acolha-muted" />
             {uploading ? 'Enviando...' : 'Trocar imagem'}
             <input
               ref={inputRef}
@@ -133,17 +152,20 @@ export function InlineImage({
               }}
             />
           </label>
+
           {src && (
             <button
               type="button"
               onClick={handleRemove}
-              className="rounded-lg px-4 py-2 text-left text-sm text-red-600 transition-colors hover:bg-red-50"
+              className="mt-1 flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-left text-sm text-red-600 transition-colors hover:bg-red-50"
             >
+              <Trash2 className="h-4 w-4" />
               Remover
             </button>
           )}
+
           {error && (
-            <p className="px-4 py-2 text-xs text-red-600">{error}</p>
+            <p className="mt-2 rounded-lg bg-red-50 px-2 py-1.5 text-xs text-red-600">{error}</p>
           )}
         </div>
       )}

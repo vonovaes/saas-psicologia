@@ -227,12 +227,12 @@ export function EditorShell({
       </header>
 
       {/* Canvas */}
-      <div className={`relative flex-1 overflow-y-auto bg-gray-200 flex ${isMobile ? '' : 'justify-center p-2 sm:p-4'}`}>
+      <div className={`relative flex-1 overflow-y-auto bg-gray-200 ${isMobile ? '' : 'p-2 sm:p-4 flex justify-center'}`}>
         <div
-          className={`overflow-hidden bg-white ${
+          className={`${
             isMobile
-              ? 'h-full w-full rounded-none shadow-none'
-              : `shadow-2xl transition-all duration-300 self-start ${DEVICE_WIDTHS[device]} ${DEVICE_FRAME[device]}`
+              ? 'w-full'
+              : 'bg-white shadow-2xl overflow-hidden transition-all duration-300 self-start ' + DEVICE_WIDTHS[device] + ' ' + DEVICE_FRAME[device]
           }`}
         >
           {!isMobile && device === 'mobile' && (

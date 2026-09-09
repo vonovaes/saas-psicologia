@@ -23,7 +23,7 @@ export function ThemeProvider({ tokens = DEFAULT_TOKENS, children }: ThemeProvid
   const cssVars = tokensToCssVars(merged) as React.CSSProperties;
 
   return (
-    <div className="tenant-site" style={cssVars}>
+    <div className="tenant-site w-full" style={cssVars}>
       {children}
     </div>
   );

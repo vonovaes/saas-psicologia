@@ -15,9 +15,9 @@ interface InlineTextProps {
 }
 
 /**
- * Componente de texto editável inline.
- * Quando `editable=true`, o usuário pode clicar e editar o texto
- * diretamente no preview. Salva no `onBlur`.
+ * Componente de texto editável inline com suporte a negrito, itálico e alinhamento.
+ * Quando `editable=true`, o usuário pode clicar, editar e aplicar formatação.
+ * Salva no `onBlur`.
  */
 export function InlineText({
   as = 'span',
@@ -30,29 +30,46 @@ export function InlineText({
 }: InlineTextProps) {
   const ref = useRef<HTMLElement>(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [showToolbar, setShowToolbar] = useState(false);
+  const [toolbarPos, setToolbarPos] = useState<{ top: number; left: number } | null>(null);
 
   // Sincroniza com a prop externa quando não está editando.
-  // Evita sobrescrever enquanto o usuário digita.
   useEffect(() => {
-    if (ref.current && !isEditing && ref.current.textContent !== value) {
-      ref.current.textContent = value;
+    if (ref.current && !isEditing && ref.current.innerHTML !== value) {
+      ref.current.innerHTML = value || placeholder || '';
     }
-  }, [value, isEditing]);
+  }, [value, isEditing, placeholder]);
 
   const Tag = as;
 
   if (!editable) {
     return (
-      <Tag className={className}>
-        {value || placeholder}
-      </Tag>
+      <Tag
+        className={className}
+        dangerouslySetInnerHTML={{ __html: value || placeholder || '' }}
+      />
     ) as React.ReactNode;
   }
 
-  const handleBlur = () => {
+  const commit = () => {
     setIsEditing(false);
-    const next = ref.current?.textContent || '';
+    setShowToolbar(false);
+    const next = ref.current?.innerHTML || '';
     if (next !== value) onChange?.(next);
+  };
+
+  const handleFocus = () => {
+    setIsEditing(true);
+    positionToolbar();
+  };
+
+  const handleBlur = (e: React.FocusEvent) => {
+    // Se o foco foi para a toolbar, não comita
+    const related = e.relatedTarget as HTMLElement | null;
+    if (related?.closest('[data-inline-toolbar]')) {
+      return;
+    }
+    commit();
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -62,22 +79,104 @@ export function InlineText({
     }
     if (e.key === 'Escape') {
       e.preventDefault();
-      if (ref.current) ref.current.textContent = value;
+      if (ref.current) ref.current.innerHTML = value || placeholder || '';
       (e.target as HTMLElement).blur();
     }
   };
 
+  const handleInput = () => {
+    positionToolbar();
+  };
+
+  const positionToolbar = () => {
+    if (!ref.current) return;
+    const rect = ref.current.getBoundingClientRect();
+    setToolbarPos({
+      top: Math.max(8, rect.top - 48 + window.scrollY),
+      left: Math.max(8, Math.min(window.innerWidth - 220, rect.left + rect.width / 2 - 110)),
+    });
+    setShowToolbar(true);
+  };
+
+  const exec = (command: 'bold' | 'italic' | 'justifyLeft' | 'justifyCenter' | 'justifyRight') => {
+    document.execCommand(command, false);
+    if (ref.current) {
+      ref.current.focus();
+      onChange?.(ref.current.innerHTML);
+    }
+  };
+
+  const isActive = (command: string) => {
+    if (typeof document === 'undefined') return false;
+    return document.queryCommandState(command);
+  };
+
   return (
-    <Tag
-      ref={ref as any}
-      className={className}
-      contentEditable
-      suppressContentEditableWarning
-      onFocus={() => setIsEditing(true)}
-      onBlur={handleBlur}
-      onKeyDown={handleKeyDown}
+    <>
+      <Tag
+        ref={ref as any}
+        className={className}
+        contentEditable
+        suppressContentEditableWarning
+        onFocus={handleFocus}
+        onBlur={handleBlur}
+        onKeyDown={handleKeyDown}
+        onInput={handleInput}
+        onClick={positionToolbar}
+        dangerouslySetInnerHTML={{ __html: value || placeholder || '' }}
+      />
+      {showToolbar && toolbarPos && (
+        <div
+          data-inline-toolbar
+          className="fixed z-[100] flex items-center gap-1 rounded-full border border-acolha-line bg-white px-3 py-2 shadow-lg"
+          style={{ top: toolbarPos.top, left: toolbarPos.left }}
+          onMouseDown={(e) => e.preventDefault()}
+        >
+          <ToolbarButton active={isActive('bold')} onClick={() => exec('bold')} label="Negrito">
+            B
+          </ToolbarButton>
+          <ToolbarButton active={isActive('italic')} onClick={() => exec('italic')} label="Itálico">
+            I
+          </ToolbarButton>
+          <div className="mx-1 h-4 w-px bg-acolha-line" />
+          <ToolbarButton onClick={() => exec('justifyLeft')} label="Alinhar esquerda">
+            ←
+          </ToolbarButton>
+          <ToolbarButton onClick={() => exec('justifyCenter')} label="Centralizar">
+            ↔
+          </ToolbarButton>
+          <ToolbarButton onClick={() => exec('justifyRight')} label="Alinhar direita">
+            →
+          </ToolbarButton>
+        </div>
+      )}
+    </>
+  );
+}
+
+function ToolbarButton({
+  active,
+  onClick,
+  label,
+  children,
+}: {
+  active?: boolean;
+  onClick: () => void;
+  label: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={label}
+      className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-semibold transition-colors ${
+        active
+          ? 'bg-acolha-accent text-white'
+          : 'text-acolha-ink hover:bg-acolha-mist'
+      }`}
     >
-      {value || placeholder}
-    </Tag>
-  ) as React.ReactNode;
+      {children}
+    </button>
+  );
 }

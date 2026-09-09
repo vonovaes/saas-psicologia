@@ -1,8 +1,11 @@
 'use client';
 
 import { SectionProps } from '@/landing/types';
+import { InlineText } from '@/components/features/editor/inline/InlineText';
+import { InlineImage } from '@/components/features/editor/inline/InlineImage';
+import { InlineList } from '@/components/features/editor/inline/InlineList';
 
-export function HeroSection({ data, config }: SectionProps) {
+export function HeroSection({ data, config, sectionIndex, editable, onUpdateContent, onUpdateSectionOverride }: SectionProps) {
   const profile = data.profile;
   if (!profile) return null;
 
@@ -10,30 +13,83 @@ export function HeroSection({ data, config }: SectionProps) {
   const ctaText = (config.overrides.ctaText as string) || 'Agendar Consulta';
   const variant = config.variant;
 
+  const updateSection = (key: string, value: string) => {
+    onUpdateSectionOverride?.(sectionIndex, key, value);
+  };
+
+  const updateProfile = (key: string) => (value: unknown) => {
+    onUpdateContent?.(`profile.${key}`, value);
+  };
+
   const scrollToContact = () => {
     document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
   };
+
+  const imagePlaceholder = (
+    <svg className="w-20 h-20 text-site-primary/80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+    </svg>
+  );
+
+  const smallImagePlaceholder = (
+    <svg className="w-16 h-16 text-site-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+    </svg>
+  );
 
   // ── Variant: minimal (só tipografia) ─────────────────────────
   if (variant === 'minimal') {
     return (
       <section className="relative min-h-[70vh] flex items-center overflow-hidden bg-site-bg">
         <div className="relative z-10 max-w-4xl mx-auto px-4 @sm:px-6 @lg:px-8 py-12 @sm:py-20">
-          <p className="text-site-primary/80 tracking-[0.3em] uppercase text-sm font-medium mb-6">
-            {eyebrow}
-          </p>
-          <h1 className="text-4xl @sm:text-5xl @lg:text-7xl font-light tracking-tight leading-tight text-site-text mb-6">
-            {profile.displayName}
-          </h1>
-          <p className="text-base @sm:text-xl text-site-text-muted font-light mb-8">{profile.city}</p>
-          <p className="text-lg @sm:text-2xl text-site-text-muted font-light leading-relaxed max-w-2xl mb-10">
-            {profile.description}
-          </p>
+          <InlineText
+            as="p"
+            className="text-site-primary/80 tracking-[0.3em] uppercase text-sm font-medium mb-6"
+            value={eyebrow}
+            editable={editable}
+            onChange={(v) => updateSection('eyebrow', v)}
+            placeholder="Chapéu"
+          />
+          <InlineText
+            as="h1"
+            className="text-4xl @sm:text-5xl @lg:text-7xl font-light tracking-tight leading-tight text-site-text mb-6"
+            value={profile.displayName}
+            editable={editable}
+            onChange={updateProfile('displayName')}
+            placeholder="Nome do profissional"
+          />
+          <InlineText
+            as="p"
+            className="text-base @sm:text-xl text-site-text-muted font-light mb-8"
+            value={profile.city}
+            editable={editable}
+            onChange={updateProfile('city')}
+            placeholder="Cidade"
+          />
+          <InlineText
+            as="p"
+            className="text-lg @sm:text-2xl text-site-text-muted font-light leading-relaxed max-w-2xl mb-10"
+            value={profile.description}
+            editable={editable}
+            multiline
+            onChange={updateProfile('description')}
+            placeholder="Descrição profissional"
+          />
           <button
             onClick={scrollToContact}
             className="bg-site-primary text-site-bg font-medium px-8 py-4 rounded-full hover:opacity-90 transition-opacity"
           >
-            {ctaText}
+            {editable ? (
+              <InlineText
+                as="span"
+                value={ctaText}
+                editable={editable}
+                onChange={(v) => updateSection('ctaText', v)}
+                placeholder="Texto do botão"
+              />
+            ) : (
+              ctaText
+            )}
           </button>
         </div>
       </section>
@@ -47,54 +103,85 @@ export function HeroSection({ data, config }: SectionProps) {
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-site-primary/15 via-transparent to-transparent" />
         <div className="relative z-10 max-w-4xl mx-auto px-4 @sm:px-6 @lg:px-8 py-12 @sm:py-20 text-center">
           <div className="w-40 h-40 bg-site-primary/20 rounded-full mx-auto mb-8 flex items-center justify-center border border-site-primary/20 overflow-hidden">
-            {profile.profileImageUrl ? (
-              <div
-                className="w-full h-full bg-cover bg-center"
-                style={{ backgroundImage: `url(${profile.profileImageUrl})` }}
-              />
-            ) : (
-              <svg className="w-20 h-20 text-site-primary/80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-              </svg>
-            )}
+            <InlineImage
+              src={profile.profileImageUrl}
+              onChange={updateProfile('profileImageUrl')}
+              editable={editable}
+              alt="Foto do profissional"
+              className="w-full h-full rounded-full"
+              placeholderClassName="w-full h-full flex items-center justify-center"
+            >
+              {imagePlaceholder}
+            </InlineImage>
           </div>
-          <p className="text-site-primary/80 tracking-[0.3em] uppercase text-sm font-medium mb-4">
-            {eyebrow}
-          </p>
-          <h1 className="text-4xl @sm:text-5xl @lg:text-7xl font-light tracking-tight leading-tight text-site-text mb-4">
-            {profile.displayName}
-          </h1>
-          <p className="text-base @sm:text-xl text-site-text-muted font-light mb-8">{profile.city}</p>
-          <p className="text-lg @sm:text-2xl text-site-text-muted font-light leading-relaxed max-w-2xl mx-auto mb-10">
-            {profile.description}
-          </p>
-          <div className="flex flex-wrap justify-center gap-3 mb-10">
-            {profile.specialties.map((specialty, index) => (
-              <span
-                key={index}
-                className="px-4 py-2 rounded-full text-sm font-medium border border-site-primary/30 text-site-primary/90"
-              >
-                {specialty}
-              </span>
-            ))}
-          </div>
-          {(profile.approaches ?? []).length > 0 && (
-            <div className="flex flex-wrap justify-center gap-2 mb-10">
-              {(profile.approaches ?? []).map((approach, index) => (
-                <span
-                  key={index}
-                  className="px-3 py-1.5 rounded-full text-xs font-medium bg-site-surface text-site-text-muted border border-white/10"
-                >
-                  {approach}
-                </span>
-              ))}
-            </div>
-          )}
+          <InlineText
+            as="p"
+            className="text-site-primary/80 tracking-[0.3em] uppercase text-sm font-medium mb-4"
+            value={eyebrow}
+            editable={editable}
+            onChange={(v) => updateSection('eyebrow', v)}
+            placeholder="Chapéu"
+          />
+          <InlineText
+            as="h1"
+            className="text-4xl @sm:text-5xl @lg:text-7xl font-light tracking-tight leading-tight text-site-text mb-4"
+            value={profile.displayName}
+            editable={editable}
+            onChange={updateProfile('displayName')}
+            placeholder="Nome do profissional"
+          />
+          <InlineText
+            as="p"
+            className="text-base @sm:text-xl text-site-text-muted font-light mb-8"
+            value={profile.city}
+            editable={editable}
+            onChange={updateProfile('city')}
+            placeholder="Cidade"
+          />
+          <InlineText
+            as="p"
+            className="text-lg @sm:text-2xl text-site-text-muted font-light leading-relaxed max-w-2xl mx-auto mb-10"
+            value={profile.description}
+            editable={editable}
+            multiline
+            onChange={updateProfile('description')}
+            placeholder="Descrição profissional"
+          />
+          <InlineList
+            items={profile.specialties}
+            onChange={updateProfile('specialties')}
+            editable={editable}
+            placeholder="Especialidade"
+            className="flex flex-wrap justify-center gap-3 mb-10"
+            itemClassName="px-4 py-2 rounded-full text-sm font-medium border border-site-primary/30 text-site-primary/90"
+            addLabel="Especialidade"
+          />
+          {(profile.approaches ?? []).length > 0 || editable ? (
+            <InlineList
+              items={profile.approaches ?? []}
+              onChange={updateProfile('approaches')}
+              editable={editable}
+              placeholder="Abordagem"
+              className="flex flex-wrap justify-center gap-2 mb-10"
+              itemClassName="px-3 py-1.5 rounded-full text-xs font-medium bg-site-surface text-site-text-muted border border-white/10"
+              addLabel="Abordagem"
+            />
+          ) : null}
           <button
             onClick={scrollToContact}
             className="bg-site-primary text-site-bg font-medium px-8 py-4 rounded-full hover:opacity-90 transition-opacity"
           >
-            {ctaText}
+            {editable ? (
+              <InlineText
+                as="span"
+                value={ctaText}
+                editable={editable}
+                onChange={(v) => updateSection('ctaText', v)}
+                placeholder="Texto do botão"
+              />
+            ) : (
+              ctaText
+            )}
           </button>
         </div>
       </section>
@@ -111,48 +198,79 @@ export function HeroSection({ data, config }: SectionProps) {
         <div className="grid @lg:grid-cols-2 gap-10 @lg:gap-16 items-center">
           <div className="space-y-6 @sm:space-y-8">
             <div className="space-y-4">
-              <p className="text-site-primary/80 tracking-[0.3em] uppercase text-sm font-medium">
-                {eyebrow}
-              </p>
-              <h1 className="text-4xl @sm:text-5xl @lg:text-7xl font-light tracking-tight leading-tight text-site-text">
-                {profile.displayName}
-              </h1>
-              <p className="text-base @sm:text-xl text-site-text-muted font-light">{profile.city}</p>
+              <InlineText
+                as="p"
+                className="text-site-primary/80 tracking-[0.3em] uppercase text-sm font-medium"
+                value={eyebrow}
+                editable={editable}
+                onChange={(v) => updateSection('eyebrow', v)}
+                placeholder="Chapéu"
+              />
+              <InlineText
+                as="h1"
+                className="text-4xl @sm:text-5xl @lg:text-7xl font-light tracking-tight leading-tight text-site-text"
+                value={profile.displayName}
+                editable={editable}
+                onChange={updateProfile('displayName')}
+                placeholder="Nome do profissional"
+              />
+              <InlineText
+                as="p"
+                className="text-base @sm:text-xl text-site-text-muted font-light"
+                value={profile.city}
+                editable={editable}
+                onChange={updateProfile('city')}
+                placeholder="Cidade"
+              />
             </div>
 
-            <p className="text-lg @sm:text-2xl text-site-text-muted font-light leading-relaxed max-w-xl">
-              {profile.description}
-            </p>
+            <InlineText
+              as="p"
+              className="text-lg @sm:text-2xl text-site-text-muted font-light leading-relaxed max-w-xl"
+              value={profile.description}
+              editable={editable}
+              multiline
+              onChange={updateProfile('description')}
+              placeholder="Descrição profissional"
+            />
 
-            <div className="flex flex-wrap gap-3">
-              {profile.specialties.map((specialty, index) => (
-                <span
-                  key={index}
-                  className="px-4 py-2 rounded-full text-sm font-medium border border-site-primary/30 text-site-primary/90 backdrop-blur-sm"
-                >
-                  {specialty}
-                </span>
-              ))}
-            </div>
+            <InlineList
+              items={profile.specialties}
+              onChange={updateProfile('specialties')}
+              editable={editable}
+              placeholder="Especialidade"
+              className="flex flex-wrap gap-3"
+              itemClassName="px-4 py-2 rounded-full text-sm font-medium border border-site-primary/30 text-site-primary/90 backdrop-blur-sm"
+              addLabel="Especialidade"
+            />
 
-            {(profile.approaches ?? []).length > 0 && (
-              <div className="flex flex-wrap gap-2">
-                {(profile.approaches ?? []).map((approach, index) => (
-                  <span
-                    key={index}
-                    className="px-3 py-1.5 rounded-full text-xs font-medium bg-site-surface text-site-text-muted border border-white/10"
-                  >
-                    {approach}
-                  </span>
-                ))}
-              </div>
-            )}
+            {(profile.approaches ?? []).length > 0 || editable ? (
+              <InlineList
+                items={profile.approaches ?? []}
+                onChange={updateProfile('approaches')}
+                editable={editable}
+                placeholder="Abordagem"
+                className="flex flex-wrap gap-2"
+                itemClassName="px-3 py-1.5 rounded-full text-xs font-medium bg-site-surface text-site-text-muted border border-white/10"
+                addLabel="Abordagem"
+              />
+            ) : null}
 
             <button
               onClick={scrollToContact}
               className="bg-site-primary text-site-bg font-medium px-8 py-4 rounded-full hover:opacity-90 transition-opacity"
             >
-              {ctaText}
+              {editable ? (
+                <InlineText
+                  as="span"
+                  value={ctaText}
+                  editable={editable}
+                  onChange={(v) => updateSection('ctaText', v)}
+                  placeholder="Texto do botão"
+                />
+              ) : (
+                ctaText
+              )}
             </button>
           </div>
 
@@ -161,16 +279,16 @@ export function HeroSection({ data, config }: SectionProps) {
             <div className="relative bg-gradient-to-br from-site-surface to-site-bg rounded-3xl p-6 @sm:p-12 backdrop-blur-xl border border-white/5">
               <div className="text-center">
                 <div className="w-32 h-32 bg-site-primary/20 rounded-full mx-auto mb-6 flex items-center justify-center backdrop-blur-sm overflow-hidden">
-                  {profile.profileImageUrl ? (
-                    <div
-                      className="w-full h-full bg-cover bg-center"
-                      style={{ backgroundImage: `url(${profile.profileImageUrl})` }}
-                    />
-                  ) : (
-                    <svg className="w-16 h-16 text-site-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                    </svg>
-                  )}
+                  <InlineImage
+                    src={profile.profileImageUrl}
+                    onChange={updateProfile('profileImageUrl')}
+                    editable={editable}
+                    alt="Foto do profissional"
+                    className="w-full h-full rounded-full"
+                    placeholderClassName="w-full h-full flex items-center justify-center"
+                  >
+                    {smallImagePlaceholder}
+                  </InlineImage>
                 </div>
                 <p className="text-site-text-muted font-light">Foto Profissional</p>
               </div>

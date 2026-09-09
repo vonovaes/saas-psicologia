@@ -3,13 +3,18 @@
 import { useState } from 'react';
 import { Button, Input, Textarea } from '@/components/ui';
 import { SectionProps } from '@/landing/types';
+import { InlineText } from '@/components/features/editor/inline/InlineText';
 
-export function ContactSection({ data, config }: SectionProps) {
+export function ContactSection({ data, config, sectionIndex, editable, onUpdateSectionOverride }: SectionProps) {
   const settings = data.settings;
   const title = (config.overrides.title as string) || 'Entre em contato';
   const subtitle =
     (config.overrides.subtitle as string) || 'Tire suas dúvidas ou agende sua primeira consulta';
   const whatsappOnly = config.variant === 'whatsapp-only';
+
+  const updateSection = (key: string, value: string) => {
+    onUpdateSectionOverride?.(sectionIndex, key, value);
+  };
 
   const [formData, setFormData] = useState({ name: '', phone: '', message: '', consent: false });
   const [submitting, setSubmitting] = useState(false);
@@ -65,10 +70,23 @@ export function ContactSection({ data, config }: SectionProps) {
           <p className="text-site-primary/80 tracking-[0.3em] uppercase text-sm font-medium mb-4">
             Contato
           </p>
-          <h2 className="text-3xl @sm:text-4xl @lg:text-5xl font-light tracking-tight mb-4 text-site-text">
-            {title}
-          </h2>
-          <p className="text-base @sm:text-xl text-site-text-muted font-light">{subtitle}</p>
+          <InlineText
+            as="h2"
+            className="text-3xl @sm:text-4xl @lg:text-5xl font-light tracking-tight mb-4 text-site-text"
+            value={title}
+            editable={editable}
+            onChange={(v) => updateSection('title', v)}
+            placeholder="Título da seção"
+          />
+          <InlineText
+            as="p"
+            className="text-base @sm:text-xl text-site-text-muted font-light"
+            value={subtitle}
+            editable={editable}
+            multiline
+            onChange={(v) => updateSection('subtitle', v)}
+            placeholder="Subtítulo"
+          />
         </div>
 
         <div className="bg-gradient-to-br from-site-surface to-site-bg rounded-3xl p-6 @sm:p-12 backdrop-blur-xl border border-white/5">

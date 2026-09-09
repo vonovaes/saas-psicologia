@@ -41,6 +41,15 @@ body:has(.mobile-menu[open]) {
   overflow: hidden;
 }
 
+/* ── Painel Personalizar do editor ────────────────────────────── */
+.personalize-dialog::backdrop {
+  background-color: rgba(24, 49, 43, 0.6);
+}
+
+.personalize-dialog[open] {
+  display: flex;
+}
+
 /* Valores padrão = template "Noite" (tema atual). Serão
    sobrescritos pelo ThemeProvider conforme o tema do tenant. */
 .tenant-site {

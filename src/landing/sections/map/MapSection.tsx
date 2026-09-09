@@ -1,13 +1,18 @@
 'use client';
 
 import { SectionProps } from '@/landing/types';
+import { InlineText } from '@/components/features/editor/inline/InlineText';
 
-export function MapSection({ data, config }: SectionProps) {
+export function MapSection({ data, config, sectionIndex, editable, onUpdateContent, onUpdateSectionOverride }: SectionProps) {
   const embedUrl = data.settings?.googleMapsEmbedUrl;
   const address = data.profile?.address;
   if (!embedUrl && !address) return null;
 
   const title = (config.overrides.title as string) || 'Onde atendo';
+
+  const updateSection = (key: string, value: string) => {
+    onUpdateSectionOverride?.(sectionIndex, key, value);
+  };
 
   return (
     <section className="py-16 @sm:py-24 @lg:py-32 px-4 bg-site-bg">
@@ -16,11 +21,23 @@ export function MapSection({ data, config }: SectionProps) {
           <p className="text-site-primary/80 tracking-[0.3em] uppercase text-sm font-medium mb-4">
             Localização
           </p>
-          <h2 className="text-3xl @sm:text-4xl @lg:text-5xl font-light tracking-tight text-site-text">
-            {title}
-          </h2>
+          <InlineText
+            as="h2"
+            className="text-3xl @sm:text-4xl @lg:text-5xl font-light tracking-tight text-site-text"
+            value={title}
+            editable={editable}
+            onChange={(v) => updateSection('title', v)}
+            placeholder="Título da seção"
+          />
           {address && (
-            <p className="mt-4 text-base @sm:text-xl text-site-text-muted font-light">{address}</p>
+            <InlineText
+              as="p"
+              className="mt-4 text-base @sm:text-xl text-site-text-muted font-light"
+              value={address}
+              editable={editable}
+              onChange={(v) => onUpdateContent?.('profile.address', v)}
+              placeholder="Endereço"
+            />
           )}
         </div>
         {embedUrl && (

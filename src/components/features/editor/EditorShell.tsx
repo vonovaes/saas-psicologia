@@ -327,6 +327,13 @@ export function EditorShell({
               }}
               onUpdateContent={editor.updateContent}
               onUpdateSectionOverride={editor.updateSectionOverride}
+              onMoveSection={editor.moveSection}
+              onUpdateSection={editor.updateSection}
+              onRemoveSection={(i) => {
+                editor.removeSection(i);
+                if (selectedIndex === i) setSelectedIndex(null);
+              }}
+              onReorderSections={editor.reorderSections}
             />
           </div>
         </div>

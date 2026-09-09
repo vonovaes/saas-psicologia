@@ -259,7 +259,7 @@ export function useEditorState(initialTheme: TenantThemeData | null, initialCont
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           action: 'draft',
-          draft: { ...theme },
+          draft: { ...theme, contentEdits: editsRef.current },
         }),
       });
       if (!response.ok) throw new Error('Failed to save draft');

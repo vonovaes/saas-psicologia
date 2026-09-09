@@ -58,8 +58,14 @@ export function InlineImage({
   useEffect(() => {
     if (open && rootRef.current) {
       const rect = rootRef.current.getBoundingClientRect();
+      const popoverHeight = 140;
+      const spaceBelow = window.innerHeight - rect.bottom;
+      const top =
+        spaceBelow >= popoverHeight + 8
+          ? rect.bottom + window.scrollY + 8
+          : rect.top + window.scrollY - popoverHeight - 8;
       setPos({
-        top: rect.bottom + window.scrollY + 8,
+        top,
         left: rect.left + window.scrollX + rect.width / 2 - 112,
       });
     }

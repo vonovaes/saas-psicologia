@@ -7,6 +7,7 @@ import { SiteRenderer } from '@/landing/SiteRenderer';
 import { SiteData } from '@/landing/types';
 import { TenantThemeData } from '@/landing/themes/tokens';
 import { useEditorState } from './hooks/useEditorState';
+import { useIsMobile } from '@/hooks/useIsMobile';
 import { SectionsPanel } from './SectionsPanel';
 import { PersonalizePanel } from './PersonalizePanel';
 
@@ -46,6 +47,7 @@ export function EditorShell({
 }: EditorShellProps) {
   const router = useRouter();
   const editor = useEditorState(initialTheme, initialContentEdits);
+  const isMobile = useIsMobile();
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [device, setDevice] = useState<DeviceMode>('desktop');
   const [feedback, setFeedback] = useState('');
@@ -53,6 +55,11 @@ export function EditorShell({
   const [sectionsOpen, setSectionsOpen] = useState(false);
 
   const previewData = editor.getPreviewData(baseData);
+
+  // No mobile real, o preview ocupa a tela toda como se fosse o dispositivo.
+  useEffect(() => {
+    setDevice(isMobile ? 'mobile' : 'desktop');
+  }, [isMobile]);
 
   useEffect(() => {
     if (!editor.isDirty) return;
@@ -220,11 +227,15 @@ export function EditorShell({
       </header>
 
       {/* Canvas */}
-      <div className="relative flex-1 overflow-y-auto bg-gray-200 p-2 sm:p-4 flex justify-center">
+      <div className={`relative flex-1 overflow-y-auto bg-gray-200 flex ${isMobile ? '' : 'justify-center p-2 sm:p-4'}`}>
         <div
-          className={`bg-white shadow-2xl overflow-hidden transition-all duration-300 self-start ${DEVICE_WIDTHS[device]} ${DEVICE_FRAME[device]}`}
+          className={`overflow-hidden bg-white ${
+            isMobile
+              ? 'h-full w-full rounded-none shadow-none'
+              : `shadow-2xl transition-all duration-300 self-start ${DEVICE_WIDTHS[device]} ${DEVICE_FRAME[device]}`
+          }`}
         >
-          {device === 'mobile' && (
+          {!isMobile && device === 'mobile' && (
             <div className="hidden lg:flex bg-gray-800 justify-center py-2">
               <div className="w-24 h-5 bg-gray-900 rounded-full" />
             </div>

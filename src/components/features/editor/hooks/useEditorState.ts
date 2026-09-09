@@ -259,7 +259,7 @@ export function useEditorState(initialTheme: TenantThemeData | null, initialCont
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           action: 'draft',
-          draft: { ...theme, contentEdits: editsRef.current },
+          draft: { ...theme },
         }),
       });
       if (!response.ok) throw new Error('Failed to save draft');
@@ -299,14 +299,17 @@ export function useEditorState(initialTheme: TenantThemeData | null, initialCont
       });
       if (!res.ok) throw new Error('Failed to publish theme');
 
-      setContentEdits({});
-      setIsDirty(false);
       setLastSavedAt(new Date());
       return true;
     } finally {
       setPublishing(false);
     }
   }, [theme, contentEdits]);
+
+  const clearContentEdits = useCallback(() => {
+    setContentEdits({});
+    setIsDirty(false);
+  }, []);
 
   return useMemo(
     () => ({
@@ -330,6 +333,7 @@ export function useEditorState(initialTheme: TenantThemeData | null, initialCont
       getFieldValue,
       saveDraft,
       publish,
+      clearContentEdits,
       setTheme,
       undo,
       redo,
@@ -340,7 +344,7 @@ export function useEditorState(initialTheme: TenantThemeData | null, initialCont
       theme, contentEdits, isDirty, saving, publishing, lastSavedAt,
       updateTokens, updateColors, updateSection, updateSectionOverride,
       updateContent, applyTemplate, addSection, removeSection, moveSection, reorderSections,
-      getPreviewData, getFieldValue, saveDraft, publish, undo, redo, canUndo, canRedo,
+      getPreviewData, getFieldValue, saveDraft, publish, clearContentEdits, undo, redo, canUndo, canRedo,
     ]
   );
 }

@@ -16,7 +16,7 @@ interface EditorShellProps {
   initialTheme: TenantThemeData | null;
   initialContentEdits?: Record<string, unknown>;
   publicSlug?: string | null;
-  onRefreshData: () => void;
+  onRefreshData: () => Promise<void>;
 }
 
 type DeviceMode = 'desktop' | 'tablet' | 'mobile';
@@ -100,8 +100,9 @@ export function EditorShell({
   const handlePublish = async () => {
     const ok = await editor.publish();
     if (ok) {
+      await onRefreshData();
+      editor.clearContentEdits();
       setFeedback('Publicado com sucesso!');
-      onRefreshData();
     } else {
       setFeedback('Erro ao publicar.');
     }

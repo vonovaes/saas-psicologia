@@ -35,8 +35,7 @@ export default function EditorPage() {
         tokens: { ...(published?.tokens as object), ...(draft.tokens as object) },
       } as unknown as TenantThemeData)
     : published;
-  const initialContentEdits =
-    (draft && (draft as { contentEdits?: Record<string, unknown> }).contentEdits) ?? {};
+  const initialContentEdits = {};
 
   return (
     <EditorShell
@@ -44,9 +43,8 @@ export default function EditorPage() {
       initialTheme={initialTheme}
       initialContentEdits={initialContentEdits}
       publicSlug={tenantSlug}
-      onRefreshData={() => {
-        refetchProfile();
-        refetchFaqs();
+      onRefreshData={async () => {
+        await Promise.all([refetchProfile(), refetchFaqs()]);
       }}
     />
   );

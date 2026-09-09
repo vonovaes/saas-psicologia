@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { useIsMobile } from '@/hooks/useIsMobile';
+import { Pencil, Trash2 } from 'lucide-react';
 
 interface InlineImageProps {
   src: string | null;
@@ -14,8 +14,8 @@ interface InlineImageProps {
 }
 
 /**
- * Imagem editavel inline. Clique abre um pequeno popover
- * para trocar (upload) ou remover a imagem.
+ * Imagem editavel inline. Clica para trocar ou remover.
+ * Ocupa 100% do container pai para garantir touch em toda a area.
  */
 export function InlineImage({
   src,
@@ -31,7 +31,7 @@ export function InlineImage({
   const [open, setOpen] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState('');
-  const isMobile = useIsMobile();
+  const [pos, setPos] = useState<{ top: number; left: number } | null>(null);
 
   // Fecha em clique fora e ao pressionar Escape
   useEffect(() => {
@@ -44,12 +44,31 @@ export function InlineImage({
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') setOpen(false);
     };
+    const handleScroll = () => setOpen(false);
     document.addEventListener('mousedown', handleClick);
     document.addEventListener('keydown', handleKey);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => {
       document.removeEventListener('mousedown', handleClick);
       document.removeEventListener('keydown', handleKey);
+      window.removeEventListener('scroll', handleScroll);
     };
+  }, [open]);
+
+  useEffect(() => {
+    if (open && rootRef.current) {
+      const rect = rootRef.current.getBoundingClientRect();
+      const popoverHeight = 140;
+      const spaceBelow = window.innerHeight - rect.bottom;
+      const top =
+        spaceBelow >= popoverHeight + 8
+          ? rect.bottom + window.scrollY + 8
+          : rect.top + window.scrollY - popoverHeight - 8;
+      setPos({
+        top,
+        left: rect.left + window.scrollX + rect.width / 2 - 112,
+      });
+    }
   }, [open]);
 
   const handleFile = async (file: File) => {
@@ -59,15 +78,22 @@ export function InlineImage({
       const formData = new FormData();
       formData.append('file', file);
       const response = await fetch('/api/upload', { method: 'POST', body: formData });
-      if (!response.ok) throw new Error('Upload failed');
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
+        throw new Error(data.error || `Upload failed: ${response.status}`);
+      }
       const data = await response.json();
-      onChange(data.url);
+      const url = data?.file?.url;
+      if (!url) {
+        throw new Error('Resposta do servidor nao contem a URL da imagem.');
+      }
+      onChange(url);
+      setOpen(false);
     } catch (error) {
       console.error('Error uploading image:', error);
-      setError('Erro ao enviar. Tente novamente.');
+      setError(error instanceof Error ? error.message : 'Erro ao enviar. Tente novamente.');
     } finally {
       setUploading(false);
-      setOpen(false);
     }
   };
 
@@ -79,46 +105,49 @@ export function InlineImage({
   if (!editable) {
     return src ? (
       <div
+        ref={rootRef}
+        className={`${className} bg-cover bg-center`}
         role="img"
         aria-label={alt}
-        className={className}
-        style={{ backgroundImage: `url(${src})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
+        style={{ backgroundImage: `url(${src})` }}
       />
     ) : (
-      <div className={placeholderClassName}>{children}</div>
+      <div ref={rootRef} className={placeholderClassName}>{children}</div>
     );
   }
 
   return (
-    <div ref={rootRef} className="relative inline-block">
+    <div ref={rootRef} className="relative h-full w-full">
       <button
         type="button"
         onClick={(e) => {
           e.stopPropagation();
           setOpen(!open);
         }}
-        className="block w-full"
+        className="h-full w-full"
         aria-label={src ? `Trocar imagem: ${alt}` : `Adicionar imagem: ${alt}`}
       >
         {src ? (
           <div
-            className={className}
-            style={{ backgroundImage: `url(${src})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
+            className={`${className} h-full w-full bg-cover bg-center`}
+            style={{ backgroundImage: `url(${src})` }}
           />
         ) : (
-          <div className={placeholderClassName}>{children}</div>
+          <div className={`${placeholderClassName} h-full w-full`}>{children}</div>
         )}
       </button>
 
-      {open && (
+      {open && pos && (
         <div
-          className={`z-50 flex flex-col gap-2 rounded-xl border border-acolha-line bg-white p-2 shadow-2xl ${
-            isMobile
-              ? 'fixed bottom-4 left-1/2 w-56 -translate-x-1/2'
-              : 'absolute mt-2'
-          }`}
+          className="fixed z-[100] w-56 overflow-hidden rounded-2xl border border-acolha-line bg-white p-2 shadow-2xl"
+          style={{
+            top: pos.top,
+            left: Math.max(8, Math.min(window.innerWidth - 240, pos.left)),
+          }}
+          onClick={(e) => e.stopPropagation()}
         >
-          <label className="cursor-pointer rounded-lg px-4 py-2 text-left text-sm text-acolha-ink transition-colors hover:bg-acolha-mist">
+          <label className="flex cursor-pointer items-center gap-2 rounded-xl px-3 py-2.5 text-sm text-acolha-ink transition-colors hover:bg-acolha-mist">
+            <Pencil className="h-4 w-4 text-acolha-muted" />
             {uploading ? 'Enviando...' : 'Trocar imagem'}
             <input
               ref={inputRef}
@@ -131,17 +160,20 @@ export function InlineImage({
               }}
             />
           </label>
+
           {src && (
             <button
               type="button"
               onClick={handleRemove}
-              className="rounded-lg px-4 py-2 text-left text-sm text-red-600 transition-colors hover:bg-red-50"
+              className="mt-1 flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-left text-sm text-red-600 transition-colors hover:bg-red-50"
             >
+              <Trash2 className="h-4 w-4" />
               Remover
             </button>
           )}
+
           {error && (
-            <p className="px-4 py-2 text-xs text-red-600">{error}</p>
+            <p className="mt-2 rounded-lg bg-red-50 px-2 py-1.5 text-xs text-red-600">{error}</p>
           )}
         </div>
       )}

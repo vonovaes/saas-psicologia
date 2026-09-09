@@ -82,7 +82,7 @@ export function ImageField({ field, value, onChange }: FieldProps) {
       const response = await fetch('/api/upload', { method: 'POST', body: formData });
       if (!response.ok) throw new Error('Upload failed');
       const data = await response.json();
-      onChange(data.url);
+      onChange(data?.file?.url);
     } catch (error) {
       console.error('Error uploading image:', error);
     } finally {

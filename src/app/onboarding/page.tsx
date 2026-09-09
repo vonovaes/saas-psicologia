@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { TEMPLATES } from '@/landing/themes/presets';
 
@@ -8,16 +8,15 @@ const inputClass =
   'w-full rounded-xl border border-acolha-line bg-white px-4 py-3 text-sm text-acolha-ink placeholder:text-acolha-muted/60 focus:border-acolha-accent focus:outline-none focus:ring-2 focus:ring-acolha-accent/20 transition-colors';
 const labelClass = 'block text-sm font-medium text-acolha-ink mb-1.5';
 
-/** Campo de lista com chips (adicionar com Enter ou botão) */
-function ChipInput({
-  value,
-  onChange,
-  placeholder,
-}: {
+interface ChipInputProps {
   value: string[];
   onChange: (items: string[]) => void;
   placeholder: string;
-}) {
+  helper?: string;
+}
+
+/** Campo de lista com chips (adicionar com Enter ou botão) */
+function ChipInput({ value, onChange, placeholder, helper }: ChipInputProps) {
   const [input, setInput] = useState('');
 
   const add = () => {
@@ -49,8 +48,9 @@ function ChipInput({
           +
         </button>
       </div>
+      {helper && <p className="mt-1.5 text-xs text-acolha-muted">{helper}</p>}
       {value.length > 0 && (
-        <div className="mt-2 flex flex-wrap gap-2">
+        <div className="mt-3 flex flex-wrap gap-2">
           {value.map((item, i) => (
             <span
               key={i}
@@ -73,7 +73,33 @@ function ChipInput({
   );
 }
 
-const STEPS = ['Sobre você', 'Especialidades', 'Contato', 'Visual da página'];
+function StepHeader({
+  title,
+  subtitle,
+  children,
+}: {
+  title: string;
+  subtitle?: string;
+  children?: React.ReactNode;
+}) {
+  return (
+    <div className="mb-6">
+      <h1 className="text-2xl font-medium text-acolha-ink">{title}</h1>
+      {subtitle && <p className="mt-2 text-sm text-acolha-body">{subtitle}</p>}
+      {children}
+    </div>
+  );
+}
+
+function HelperCard({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="mt-4 rounded-xl border border-acolha-line bg-acolha-bg/60 p-4 text-sm text-acolha-body">
+      {children}
+    </div>
+  );
+}
+
+const STEPS = ['Sobre você', 'Especialidades', 'Contato', 'Visual'];
 
 export default function OnboardingPage() {
   const router = useRouter();
@@ -93,7 +119,8 @@ export default function OnboardingPage() {
   const [tenantSlug, setTenantSlug] = useState<string | null>(null);
   const [linkCopied, setLinkCopied] = useState(false);
 
-  // Busca o slug do tenant para mostrar a URL pública na tela final
+  const mainRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     fetch('/api/profile')
       .then((r) => (r.ok ? r.json() : null))
@@ -101,11 +128,24 @@ export default function OnboardingPage() {
       .catch(() => {});
   }, []);
 
+  useEffect(() => {
+    // Foco no primeiro campo util a cada etapa
+    const main = mainRef.current;
+    if (!main) return;
+    const focusable = main.querySelector<HTMLElement>(
+      'input:not([type=hidden]), textarea, select, button'
+    );
+    focusable?.focus();
+  }, [step]);
+
   const canContinue =
-    step === 0 ? city.trim().length > 0 && description.trim().length >= 20 :
-    step === 1 ? specialties.length > 0 :
-    step === 3 ? !!templateId :
-    true;
+    step === 0
+      ? city.trim().length > 0 && description.trim().length >= 20
+      : step === 1
+      ? specialties.length > 0
+      : step === 3
+      ? !!templateId
+      : true;
 
   const finish = async () => {
     setSaving(true);
@@ -140,15 +180,13 @@ export default function OnboardingPage() {
     ? `${typeof window !== 'undefined' ? window.location.origin : ''}/p/${tenantSlug}`
     : null;
 
-  // ── Tela de sucesso: página publicada ──────────────────────
   if (done) {
     return (
       <div className="min-h-screen bg-acolha-bg flex flex-col">
         <header className="px-6 py-6">
           <div className="mx-auto max-w-3xl">
             <span className="text-xl font-semibold tracking-tight text-acolha-ink">
-              Acolha
-              <span className="text-acolha-accent">.</span>
+              Acolha<span className="text-acolha-accent">.</span>
             </span>
           </div>
         </header>
@@ -159,8 +197,9 @@ export default function OnboardingPage() {
             </div>
             <h1 className="text-3xl font-medium text-acolha-ink">Sua página está no ar!</h1>
             <p className="mt-3 text-acolha-body">
-              Este é o endereço para divulgar aos seus pacientes:
+              Parabéns. Agora é só compartilhar seu endereço com pacientes e ajustar o que quiser.
             </p>
+
             {publicUrl && (
               <div className="mt-6 rounded-[1.4rem] border border-white/80 bg-white/90 p-6 shadow-[0_28px_80px_-35px_rgba(24,49,43,0.25)]">
                 <code className="block break-all text-sm font-medium text-acolha-accent">
@@ -189,12 +228,35 @@ export default function OnboardingPage() {
                 </div>
               </div>
             )}
+
+            <div className="mt-8 rounded-[1.4rem] border border-white/80 bg-white/90 p-6 text-left shadow-[0_28px_80px_-35px_rgba(24,49,43,0.25)]">
+              <p className="mb-4 text-sm font-medium text-acolha-ink">Próximos passos no editor</p>
+              <ul className="space-y-3 text-sm text-acolha-body">
+                <li className="flex items-start gap-3">
+                  <span className="text-acolha-accent">✎</span>
+                  <span>Clique em qualquer texto da página para editar.</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="text-acolha-accent">☰</span>
+                  <span>Use o botão Seções para reordenar, ocultar ou adicionar blocos.</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="text-acolha-accent">🎨</span>
+                  <span>Use o botão Personalizar para trocar cores, fontes e template.</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="text-acolha-accent">🖼</span>
+                  <span>Clique na foto do perfil para trocar ou adicionar sua imagem.</span>
+                </li>
+              </ul>
+            </div>
+
             <button
               type="button"
               onClick={() => router.push('/editor')}
-              className="mt-6 text-sm font-medium text-acolha-muted hover:text-acolha-ink"
+              className="mt-6 inline-flex items-center rounded-full bg-acolha-ink px-6 py-3 text-sm font-semibold text-white hover:bg-acolha-ink/90"
             >
-              Continuar personalizando no editor →
+              Abrir o editor →
             </button>
           </div>
         </main>
@@ -206,7 +268,9 @@ export default function OnboardingPage() {
     <div className="min-h-screen bg-acolha-bg flex flex-col">
       <header className="px-6 py-6">
         <div className="mx-auto flex max-w-3xl items-center justify-between">
-          <span className="text-xl font-semibold tracking-tight text-acolha-ink">Acolha</span>
+          <span className="text-xl font-semibold tracking-tight text-acolha-ink">
+            Acolha<span className="text-acolha-accent">.</span>
+          </span>
           <span className="text-sm text-acolha-muted">
             Passo {step + 1} de {STEPS.length}
           </span>
@@ -232,9 +296,12 @@ export default function OnboardingPage() {
         </div>
       </div>
 
-      <main className="flex flex-1 items-start justify-center px-6 py-10">
+      <main ref={mainRef} className="flex flex-1 items-start justify-center px-6 py-10">
         <div className="w-full max-w-3xl">
-          <div className="rounded-[1.4rem] border border-white/80 bg-white/90 p-7 shadow-[0_28px_80px_-35px_rgba(24,49,43,0.25)] sm:p-9">
+          <div
+            aria-live="polite"
+            className="rounded-[1.4rem] border border-white/80 bg-white/90 p-7 shadow-[0_28px_80px_-35px_rgba(24,49,43,0.25)] sm:p-9"
+          >
             {error && (
               <div className="mb-5 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">
                 {error}
@@ -244,12 +311,10 @@ export default function OnboardingPage() {
             {/* ── Passo 0: Sobre você ─────────────────────────── */}
             {step === 0 && (
               <div className="space-y-5">
-                <h1 className="text-2xl font-medium text-acolha-ink">
-                  Vamos montar sua página em poucos passos
-                </h1>
-                <p className="text-sm text-acolha-body">
-                  Essas informações aparecem na sua página pública.
-                </p>
+                <StepHeader
+                  title="Vamos montar sua página profissional"
+                  subtitle="Essas informações vão aparecer na sua página pública. Você pode editar tudo depois."
+                />
                 <div>
                   <label htmlFor="city" className={labelClass}>Cidade de atendimento</label>
                   <input
@@ -285,23 +350,34 @@ export default function OnboardingPage() {
                     placeholder="Fale sobre sua experiência e como você trabalha (mínimo 20 caracteres)"
                     className={inputClass}
                   />
+                  <p className="mt-1.5 text-xs text-acolha-muted">
+                    {description.trim().length >= 20
+                      ? '✓ Ótimo, essa descrição já aparece bem na página.'
+                      : `Faltam ${Math.max(0, 20 - description.trim().length)} caracteres.`}
+                  </p>
                 </div>
+
+                <HelperCard>
+                  <strong className="text-acolha-ink">Dica:</strong> seu nome e e-mail já vêm do
+                  cadastro. No editor você poderá trocar a foto e ajustar cada texto.
+                </HelperCard>
               </div>
             )}
 
             {/* ── Passo 1: Especialidades ─────────────────────── */}
             {step === 1 && (
               <div className="space-y-5">
-                <h1 className="text-2xl font-medium text-acolha-ink">Suas especialidades</h1>
-                <p className="text-sm text-acolha-body">
-                  Digite cada uma e pressione Enter. Elas aparecem como destaques na sua página.
-                </p>
+                <StepHeader
+                  title="Suas especialidades"
+                  subtitle="Elas aparecem como destaques logo na abertura da página."
+                />
                 <div>
                   <label className={labelClass}>Especialidades</label>
                   <ChipInput
                     value={specialties}
                     onChange={setSpecialties}
                     placeholder="Ex.: Ansiedade"
+                    helper="Digite e pressione Enter. Adicione quantas quiser."
                   />
                 </div>
                 <div>
@@ -310,6 +386,7 @@ export default function OnboardingPage() {
                     value={approaches}
                     onChange={setApproaches}
                     placeholder="Ex.: TCC, Psicanálise"
+                    helper="Você também pode deixar em branco e adicionar depois."
                   />
                 </div>
               </div>
@@ -318,7 +395,10 @@ export default function OnboardingPage() {
             {/* ── Passo 2: Contato ────────────────────────────── */}
             {step === 2 && (
               <div className="space-y-5">
-                <h1 className="text-2xl font-medium text-acolha-ink">Como pacientes falam com você</h1>
+                <StepHeader
+                  title="Como pacientes falam com você"
+                  subtitle="O botão de WhatsApp fica sempre visível na sua página."
+                />
                 <div>
                   <label htmlFor="whatsapp" className={labelClass}>WhatsApp</label>
                   <input
@@ -328,6 +408,9 @@ export default function OnboardingPage() {
                     placeholder="+5511999999999"
                     className={inputClass}
                   />
+                  <p className="mt-1.5 text-xs text-acolha-muted">
+                    O número com DDD. Pacientes clicam e vão direto para a conversa.
+                  </p>
                 </div>
                 <div>
                   <label htmlFor="instagram" className={labelClass}>Instagram (opcional)</label>
@@ -345,10 +428,10 @@ export default function OnboardingPage() {
             {/* ── Passo 3: Template ───────────────────────────── */}
             {step === 3 && (
               <div className="space-y-5">
-                <h1 className="text-2xl font-medium text-acolha-ink">Escolha o visual da página</h1>
-                <p className="text-sm text-acolha-body">
-                  Você poderá personalizar cores, seções e textos depois, no editor.
-                </p>
+                <StepHeader
+                  title="Escolha o visual da página"
+                  subtitle="Depois você pode trocar cores, tipografia e seções no editor."
+                />
                 <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
                   {TEMPLATES.map((t) => (
                     <button
@@ -384,6 +467,10 @@ export default function OnboardingPage() {
                     </button>
                   ))}
                 </div>
+                <HelperCard>
+                  Não precisa acertar de primeira. No editor você pode testar todos os templates e
+                  ajustar as cores como quiser.
+                </HelperCard>
               </div>
             )}
 
@@ -398,7 +485,13 @@ export default function OnboardingPage() {
                   ← Voltar
                 </button>
               ) : (
-                <span />
+                <button
+                  type="button"
+                  onClick={() => router.push('/dashboard')}
+                  className="text-sm text-acolha-muted hover:text-acolha-ink"
+                >
+                  Preencher depois
+                </button>
               )}
 
               {step < STEPS.length - 1 ? (
@@ -417,21 +510,11 @@ export default function OnboardingPage() {
                   disabled={saving || !canContinue}
                   className="rounded-full bg-acolha-accent px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-acolha-accent-hover disabled:opacity-50"
                 >
-                  {saving ? 'Publicando...' : 'Concluir e abrir o editor'}
+                  {saving ? 'Publicando...' : 'Publicar minha página'}
                 </button>
               )}
             </div>
           </div>
-
-          {step === 0 && (
-            <button
-              type="button"
-              onClick={() => router.push('/dashboard')}
-              className="mt-4 w-full text-center text-sm text-acolha-muted hover:text-acolha-ink"
-            >
-              Pular por agora — preencher depois
-            </button>
-          )}
         </div>
       </main>
     </div>

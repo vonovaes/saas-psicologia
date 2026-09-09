@@ -7,9 +7,7 @@ import { SiteRenderer } from '@/landing/SiteRenderer';
 import { SiteData } from '@/landing/types';
 import { TenantThemeData } from '@/landing/themes/tokens';
 import { useEditorState } from './hooks/useEditorState';
-import { SectionInspector } from './SectionInspector';
-import { SectionList } from './SectionList';
-import { ThemePanel } from './ThemePanel';
+import { SectionsPanel } from './SectionsPanel';
 import { PersonalizePanel } from './PersonalizePanel';
 
 interface EditorShellProps {
@@ -20,11 +18,8 @@ interface EditorShellProps {
   onRefreshData: () => void;
 }
 
-type SidePanel = 'sections' | 'design';
 type DeviceMode = 'desktop' | 'tablet' | 'mobile';
 
-// Larguras do frame simulado — só aplicadas em telas lg+; num celular
-// real o canvas ocupa a largura toda (o dispositivo já é mobile).
 const DEVICE_WIDTHS: Record<DeviceMode, string> = {
   desktop: 'w-full lg:max-w-6xl',
   tablet: 'w-full lg:w-[768px] lg:max-w-full',
@@ -39,7 +34,8 @@ const DEVICE_FRAME: Record<DeviceMode, string> = {
 
 /**
  * Shell do editor visual: toolbar superior, canvas com o
- * SiteRenderer em modo edição e painel lateral contextual.
+ * SiteRenderer em modo edicao e paineis flutuantes para
+ * secoes e personalizacao.
  */
 export function EditorShell({
   baseData,
@@ -51,25 +47,21 @@ export function EditorShell({
   const router = useRouter();
   const editor = useEditorState(initialTheme, initialContentEdits);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
-  const [panel, setPanel] = useState<SidePanel>('sections');
   const [device, setDevice] = useState<DeviceMode>('desktop');
   const [feedback, setFeedback] = useState('');
-  const [panelOpen, setPanelOpen] = useState(true);
   const [personalizeOpen, setPersonalizeOpen] = useState(false);
+  const [sectionsOpen, setSectionsOpen] = useState(false);
 
   const previewData = editor.getPreviewData(baseData);
-  const selectedSection = selectedIndex !== null ? editor.theme.sections[selectedIndex] : null;
 
-  // ── Autosave do rascunho (debounce 2s após última mudança) ────
   useEffect(() => {
     if (!editor.isDirty) return;
     const timeout = setTimeout(() => {
       editor.saveDraft();
     }, 2000);
     return () => clearTimeout(timeout);
-  }, [editor.isDirty, editor.theme, editor.contentEdits]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [editor.isDirty, editor.theme, editor.contentEdits]);
 
-  // ── Atalhos: Ctrl+Z / Ctrl+Shift+Z / Ctrl+Y ───────────────────
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       const isMod = e.ctrlKey || e.metaKey;
@@ -90,7 +82,6 @@ export function EditorShell({
     return () => window.removeEventListener('keydown', handler);
   }, [editor.undo, editor.redo]);
 
-  // ── Aviso ao sair com alterações não publicadas ───────────────
   useEffect(() => {
     const handler = (e: BeforeUnloadEvent) => {
       if (editor.isDirty) e.preventDefault();
@@ -157,8 +148,8 @@ export function EditorShell({
             </button>
           </div>
 
-          {/* Device preview — só faz sentido em telas grandes */}
-          <div className="hidden lg:flex items-center gap-1 bg-gray-100 rounded-lg p-1" role="group" aria-label="Modo de visualização">
+          {/* Device preview */}
+          <div className="hidden lg:flex items-center gap-1 bg-gray-100 rounded-lg p-1" role="group" aria-label="Modo de visualizacao">
             {(['desktop', 'tablet', 'mobile'] as DeviceMode[]).map((mode) => (
               <button
                 key={mode}
@@ -181,6 +172,13 @@ export function EditorShell({
               Salvo {editor.lastSavedAt.toLocaleTimeString('pt-BR')}
             </span>
           )}
+          <button
+            type="button"
+            onClick={() => setSectionsOpen(true)}
+            className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-2.5 py-1.5 text-xs font-medium text-gray-700 transition-colors hover:bg-gray-50 sm:px-3 sm:text-sm"
+          >
+            ☰ <span className="hidden sm:inline">Seções</span>
+          </button>
           <button
             type="button"
             onClick={() => setPersonalizeOpen(true)}
@@ -221,133 +219,48 @@ export function EditorShell({
         </div>
       </header>
 
-      {/* Mobile: painel em cima, preview embaixo | Desktop: preview à esquerda, painel à direita */}
-      <div className="flex flex-1 flex-col lg:flex-row overflow-hidden">
-        {/* Painel de edição — colapsável no mobile */}
-        <aside
-          className={`order-first lg:order-none w-full lg:w-80 bg-white border-b lg:border-b-0 lg:border-l border-gray-200 flex flex-col shrink-0 max-h-[45vh] lg:max-h-none ${
-            panelOpen ? '' : 'hidden lg:flex'
-          }`}
+      {/* Canvas */}
+      <div className="relative flex-1 overflow-y-auto bg-gray-200 p-2 sm:p-4 flex justify-center">
+        <div
+          className={`bg-white shadow-2xl overflow-hidden transition-all duration-300 self-start ${DEVICE_WIDTHS[device]} ${DEVICE_FRAME[device]}`}
         >
-          <div className="flex border-b border-gray-200 shrink-0" role="tablist">
-            <button
-              role="tab"
-              aria-selected={panel === 'sections'}
-              onClick={() => setPanel('sections')}
-              className={`flex-1 py-3 text-sm font-medium transition-colors ${
-                panel === 'sections'
-                  ? 'text-blue-600 border-b-2 border-blue-600'
-                  : 'text-gray-500 hover:text-gray-700'
-              }`}
-            >
-              Seções
-            </button>
-            <button
-              role="tab"
-              aria-selected={panel === 'design'}
-              onClick={() => setPanel('design')}
-              className={`flex-1 py-3 text-sm font-medium transition-colors ${
-                panel === 'design'
-                  ? 'text-blue-600 border-b-2 border-blue-600'
-                  : 'text-gray-500 hover:text-gray-700'
-              }`}
-            >
-              Design
-            </button>
-            {/* Recolher painel — só no mobile */}
-            <button
-              onClick={() => setPanelOpen(false)}
-              aria-label="Recolher painel"
-              className="lg:hidden px-4 text-gray-400 hover:text-gray-700"
-            >
-              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
-              </svg>
-            </button>
-          </div>
-
-          <div className="flex-1 overflow-y-auto p-4">
-            {panel === 'design' ? (
-              <ThemePanel
-                theme={editor.theme}
-                onUpdateColors={editor.updateColors}
-                onUpdateTokens={editor.updateTokens}
-                onApplyTemplate={editor.applyTemplate}
-              />
-            ) : selectedSection ? (
-              <SectionInspector
-                section={selectedSection}
-                sectionIndex={selectedIndex!}
-                data={baseData}
-                getFieldValue={editor.getFieldValue}
-                onUpdateSection={editor.updateSection}
-                onUpdateOverride={editor.updateSectionOverride}
-                onUpdateContent={editor.updateContent}
-                onRefreshData={onRefreshData}
-                onBack={() => setSelectedIndex(null)}
-              />
-            ) : (
-              <SectionList
-                sections={editor.theme.sections}
-                selectedIndex={selectedIndex}
-                onSelect={setSelectedIndex}
-                onMove={editor.moveSection}
-                onRemove={(i) => {
-                  editor.removeSection(i);
-                  if (selectedIndex === i) setSelectedIndex(null);
-                }}
-                onToggleVisible={(i, visible) =>
-                  editor.updateSection(i, { visible })
-                }
-                onAdd={editor.addSection}
-              />
-            )}
-          </div>
-        </aside>
-
-        {/* Canvas */}
-        <div className="relative flex-1 overflow-y-auto bg-gray-200 p-2 sm:p-4 flex justify-center">
-          {/* Botão flutuante para reabrir o painel — só mobile, só quando recolhido */}
-          {!panelOpen && (
-            <button
-              onClick={() => setPanelOpen(true)}
-              className="lg:hidden fixed bottom-4 right-4 z-50 rounded-full bg-gray-900 px-5 py-3 text-sm font-semibold text-white shadow-lg"
-            >
-              ☰ Editar
-            </button>
+          {device === 'mobile' && (
+            <div className="hidden lg:flex bg-gray-800 justify-center py-2">
+              <div className="w-24 h-5 bg-gray-900 rounded-full" />
+            </div>
           )}
-          <div
-            className={`bg-white shadow-2xl overflow-hidden transition-all duration-300 self-start ${DEVICE_WIDTHS[device]} ${DEVICE_FRAME[device]}`}
-          >
-            {/* Notch do celular — apenas no simulador (desktop) */}
-            {device === 'mobile' && (
-              <div className="hidden lg:flex bg-gray-800 justify-center py-2">
-                <div className="w-24 h-5 bg-gray-900 rounded-full" />
-              </div>
-            )}
-            <SiteRenderer
-              data={previewData}
-              theme={editor.theme}
-              editable
-              selectedIndex={selectedIndex}
-              onSelectSection={(i) => {
-                setSelectedIndex(i);
-                setPanel('sections');
-              }}
-              onUpdateContent={editor.updateContent}
-              onUpdateSectionOverride={editor.updateSectionOverride}
-              onMoveSection={editor.moveSection}
-              onUpdateSection={editor.updateSection}
-              onRemoveSection={(i) => {
-                if (!window.confirm('Tem certeza que deseja remover esta seção?')) return;
-                editor.removeSection(i);
-                if (selectedIndex === i) setSelectedIndex(null);
-              }}
-              onReorderSections={editor.reorderSections}
-            />
-          </div>
+          <SiteRenderer
+            data={previewData}
+            theme={editor.theme}
+            editable
+            selectedIndex={selectedIndex}
+            onSelectSection={(i) => {
+              setSelectedIndex(i);
+              setSectionsOpen(true);
+            }}
+            onUpdateContent={editor.updateContent}
+            onUpdateSectionOverride={editor.updateSectionOverride}
+            onMoveSection={editor.moveSection}
+            onUpdateSection={editor.updateSection}
+            onRemoveSection={(i) => {
+              if (!window.confirm('Tem certeza que deseja remover esta seção?')) return;
+              editor.removeSection(i);
+              if (selectedIndex === i) setSelectedIndex(null);
+            }}
+            onReorderSections={editor.reorderSections}
+          />
         </div>
       </div>
+
+      <SectionsPanel
+        open={sectionsOpen}
+        onClose={() => setSectionsOpen(false)}
+        selectedIndex={selectedIndex}
+        setSelectedIndex={setSelectedIndex}
+        editor={editor}
+        baseData={baseData}
+        onRefreshData={onRefreshData}
+      />
 
       <PersonalizePanel
         open={personalizeOpen}

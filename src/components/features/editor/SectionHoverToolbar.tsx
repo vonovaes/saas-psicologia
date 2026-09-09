@@ -1,6 +1,6 @@
 'use client';
 
-import { ArrowDown, ArrowUp, Eye, EyeOff, GripVertical, Trash2 } from 'lucide-react';
+import { ArrowDown, ArrowUp, Eye, EyeOff, GripVertical, Pencil, Trash2 } from 'lucide-react';
 
 interface SectionHoverToolbarProps {
   isVisible: boolean;
@@ -10,11 +10,9 @@ interface SectionHoverToolbarProps {
   onMoveDown: () => void;
   onToggleVisibility: () => void;
   onRemove: () => void;
-  onAdd?: () => void;
+  onEdit: () => void;
   onDragStart: () => void;
   onDragEnd: () => void;
-  onDragOver: (e: React.DragEvent, position: 'before' | 'after') => void;
-  onDrop: (e: React.DragEvent) => void;
 }
 
 export function SectionHoverToolbar({
@@ -25,24 +23,14 @@ export function SectionHoverToolbar({
   onMoveDown,
   onToggleVisibility,
   onRemove,
-  onAdd,
+  onEdit,
   onDragStart,
   onDragEnd,
-  onDragOver,
-  onDrop,
 }: SectionHoverToolbarProps) {
   return (
     <div
       className="absolute right-2 top-2 z-30 flex items-center gap-1 rounded-full border border-acolha-line bg-white/95 px-2 py-1 shadow-lg backdrop-blur-sm"
-      onDragOver={(e) => {
-        const rect = e.currentTarget.getBoundingClientRect();
-        const position = e.clientY < rect.top + rect.height / 2 ? 'before' : 'after';
-        onDragOver(e, position);
-      }}
-      onDrop={(e) => {
-        e.preventDefault();
-        onDrop(e);
-      }}
+      onClick={(e) => e.stopPropagation()}
     >
       <div
         draggable
@@ -53,6 +41,14 @@ export function SectionHoverToolbar({
       >
         <GripVertical className="h-4 w-4" />
       </div>
+      <button
+        type="button"
+        onClick={onEdit}
+        className="rounded-full p-1.5 text-acolha-muted transition-colors hover:bg-acolha-mist hover:text-acolha-ink"
+        title="Editar seção"
+      >
+        <Pencil className="h-4 w-4" />
+      </button>
       <button
         type="button"
         onClick={onMoveUp}
@@ -87,16 +83,6 @@ export function SectionHoverToolbar({
       >
         <Trash2 className="h-4 w-4" />
       </button>
-      {onAdd && (
-        <button
-          type="button"
-          onClick={onAdd}
-          className="ml-1 rounded-full bg-acolha-accent px-3 py-1 text-xs font-medium text-white transition-colors hover:bg-acolha-accent-hover"
-          title="Adicionar seção"
-        >
-          +
-        </button>
-      )}
     </div>
   );
 }

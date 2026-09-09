@@ -11,28 +11,27 @@ import { TenantThemeData, DEFAULT_SECTIONS, DEFAULT_TOKENS } from './themes/toke
 interface SiteRendererProps {
   data: SiteData;
   theme?: Partial<TenantThemeData>;
-  /** Modo edição: envolve cada seção em uma área clicável com highlight */
+  /** Modo edicao: envolve cada secao em uma area clicavel com highlight */
   editable?: boolean;
-  /** Índice (em theme.sections) da seção selecionada no editor */
+  /** Indice (em theme.sections) da secao selecionada no editor */
   selectedIndex?: number | null;
   onSelectSection?: (index: number) => void;
-  /** Callback para edição inline de conteúdo (source: 'profile.displayName') */
+  /** Callback para edicao inline de conteudo (source: 'profile.displayName') */
   onUpdateContent?: (source: string, value: unknown) => void;
-  /** Callback para atualizar overrides de uma seção */
+  /** Callback para atualizar overrides de uma secao */
   onUpdateSectionOverride?: (sectionIndex: number, key: string, value: unknown) => void;
-  /** Callbacks de estrutura de seções */
+  /** Callbacks de estrutura de secoes */
   onMoveSection?: (index: number, direction: 'up' | 'down') => void;
   onUpdateSection?: (index: number, patch: Record<string, unknown>) => void;
   onRemoveSection?: (index: number) => void;
   onReorderSections?: (from: number, to: number) => void;
-  onAddSection?: () => void;
 }
 
 /**
- * Renderizador único do site do tenant. Usado tanto pela
- * landing pública quanto pelo editor visual (modo edição).
+ * Renderizador unico do site do tenant. Usado tanto pela
+ * landing publica quanto pelo editor visual (modo edicao).
  *
- * Renderiza as seções na ordem definida em theme.sections,
+ * Renderiza as secoes na ordem definida em theme.sections,
  * injeta os tokens via ThemeProvider e adiciona o footer.
  */
 export function SiteRenderer({
@@ -47,7 +46,6 @@ export function SiteRenderer({
   onUpdateSection,
   onRemoveSection,
   onReorderSections,
-  onAddSection,
 }: SiteRendererProps) {
   const tokens = theme?.tokens ?? DEFAULT_TOKENS;
   const ordered = [...(theme?.sections ?? DEFAULT_SECTIONS)];
@@ -88,25 +86,12 @@ export function SiteRenderer({
             return (
               <div
                 key={`${section.type}-${originalIndex}`}
-                onClick={(e) => {
-                  // Não seleciona se o clique veio da toolbar
-                  if ((e.target as HTMLElement).closest('[data-section-toolbar]')) return;
-                  onSelectSection?.(originalIndex);
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    onSelectSection?.(originalIndex);
-                  }
-                }}
-                role="button"
-                tabIndex={0}
-                aria-label={`Editar seção: ${entry.schema.name}`}
-                aria-pressed={isSelected}
-                className={`group relative cursor-pointer transition-shadow focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                data-section-index={originalIndex}
+                aria-label={`Secao: ${entry.schema.name}`}
+                className={`group relative transition-shadow ${
                   isSelected
                     ? 'ring-2 ring-blue-500 ring-offset-2 ring-offset-transparent'
-                    : 'hover:ring-2 hover:ring-blue-400/50'
+                    : ''
                 } ${!section.visible ? 'opacity-40 grayscale' : ''} ${
                   dragged === sortedIndex ? 'opacity-30' : ''
                 } ${
@@ -143,7 +128,6 @@ export function SiteRenderer({
                   className={`absolute right-2 top-2 z-30 transition-opacity ${
                     isSelected ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
                   }`}
-                  onClick={(e) => e.stopPropagation()}
                 >
                   <SectionHoverToolbar
                     isVisible={section.visible}
@@ -153,18 +137,11 @@ export function SiteRenderer({
                     onMoveDown={() => onMoveSection?.(originalIndex, 'down')}
                     onToggleVisibility={() => onUpdateSection?.(originalIndex, { visible: !section.visible })}
                     onRemove={() => onRemoveSection?.(originalIndex)}
-                    onAdd={() => onAddSection?.()}
+                    onEdit={() => onSelectSection?.(originalIndex)}
                     onDragStart={() => setDragged(sortedIndex)}
                     onDragEnd={() => {
                       setDragged(null);
                       setDropTarget(null);
-                    }}
-                    onDragOver={(e, position) => {
-                      // A toolbar não é drop target; o wrapper cuida disso
-                      e.preventDefault();
-                    }}
-                    onDrop={(e) => {
-                      e.preventDefault();
                     }}
                   />
                 </div>
@@ -180,15 +157,6 @@ export function SiteRenderer({
               </div>
             );
           })}
-        {editable && onAddSection && (
-          <button
-            type="button"
-            onClick={onAddSection}
-            className="mx-auto my-12 flex items-center gap-2 rounded-full border border-dashed border-acolha-accent bg-acolha-bg px-6 py-3 text-sm font-medium text-acolha-accent transition-colors hover:bg-acolha-mist"
-          >
-            + Adicionar seção
-          </button>
-        )}
         <FooterSection data={data} editable={editable} onUpdateContent={onUpdateContent} />
       </div>
     </ThemeProvider>

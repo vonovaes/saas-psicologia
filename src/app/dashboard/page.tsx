@@ -88,16 +88,6 @@ export default async function DashboardPage() {
       ),
     },
     {
-      href: '/faq',
-      title: 'Perguntas frequentes',
-      desc: `${faqsCount} pergunta${faqsCount === 1 ? '' : 's'} na sua página`,
-      iconBg: 'bg-amber-100 text-amber-600',
-      icon: (
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8}
-          d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.091 0 3.228.835 3.772 2 2.091 0 3.228-.835 3.772-2.091V9c-1.087-.766-2.287-1.322-3.515-1.89V5.356c0-1.673-1.107-3.006-2.573-3.006-1.466 0-2.573 1.333-2.573 3.006v1.754C8.228 6.35 7.028 6.906 5.94 7.672V9c.544 1.255 1.681 2.091 3.772 2.091 2.091 0 3.228-.836 3.772-2.091V9c-1.087.766-2.287 1.322-3.515 1.89v1.754c0 1.673 1.107 3.006 2.573 3.006 1.466 0 2.573-1.333 2.573-3.006v-1.754c1.228-.568 2.428-1.124 3.515-1.89V9c-.544-1.255-1.681-2.091-3.772-2.091z" />
-      ),
-    },
-    {
       href: '/profile',
       title: 'Minha Conta',
       desc: 'Dados de acesso, endereço e senha',
@@ -115,6 +105,16 @@ export default async function DashboardPage() {
       icon: (
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8}
           d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+      ),
+    },
+    {
+      href: '/dashboard/dominio',
+      title: 'Domínio personalizado',
+      desc: 'Use seu próprio domínio (ex: seusite.com.br)',
+      iconBg: 'bg-sky-100 text-sky-600',
+      icon: (
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8}
+          d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
       ),
     },
   ];

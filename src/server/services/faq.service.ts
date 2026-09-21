@@ -10,85 +10,22 @@ export class FaqService {
     this.auditLogRepository = new AuditLogRepository(tenantId);
   }
 
-  async getFaqById(id: string): Promise<Faq | null> {
-    return this.faqRepository.findById(id);
-  }
-
-  async createFaq(data: {
-    question: string;
-    answer: string;
-    position?: number;
-  }): Promise<Faq> {
-    const position = data.position ?? (await this.faqRepository.getNextPosition());
-    const faq = await this.faqRepository.create({
-      ...data,
-      position,
-    });
-
-    await this.auditLogRepository.create({
-      action: 'FAQ_CREATED',
-      resource: 'Faq',
-      metadata: { faqId: faq.id, question: faq.question },
-    });
-
-    return faq;
-  }
-
-  async updateFaq(id: string, data: Partial<Faq>): Promise<Faq> {
-    const faq = await this.faqRepository.update(id, data);
-
-    await this.auditLogRepository.create({
-      action: 'FAQ_UPDATED',
-      resource: 'Faq',
-      metadata: { faqId: id, changes: data },
-    });
-
-    return faq;
-  }
-
-  async softDeleteFaq(id: string): Promise<Faq> {
-    const faq = await this.faqRepository.softDelete(id);
-
-    await this.auditLogRepository.create({
-      action: 'FAQ_DELETED',
-      resource: 'Faq',
-      metadata: { faqId: id, question: faq.question },
-    });
-
-    return faq;
-  }
-
-  async listFaqs(): Promise<Faq[]> {
-    return this.faqRepository.listAll();
-  }
-
   async getAllFaqs(): Promise<Faq[]> {
     return this.faqRepository.listAll();
   }
 
-  async deleteFaq(id: string): Promise<void> {
-    await this.softDeleteFaq(id);
-  }
-
-  async reorderFaqs(updates: { id: string; position: number }[]): Promise<void> {
-    await this.faqRepository.updatePositions(updates);
-
-    await this.auditLogRepository.create({
-      action: 'FAQS_REORDERED',
-      resource: 'Faq',
-      metadata: { count: updates.length },
-    });
-  }
-
-  async updateFaqPosition(id: string, newPosition: number): Promise<Faq> {
-    const faq = await this.faqRepository.update(id, { position: newPosition });
+  /**
+   * Substitui a lista inteira de FAQs do tenant (publish do editor).
+   */
+  async replaceFaqs(items: { question: string; answer: string }[]): Promise<Faq[]> {
+    const faqs = await this.faqRepository.replaceAll(items);
 
     await this.auditLogRepository.create({
-      action: 'FAQ_POSITION_UPDATED',
+      action: 'FAQS_REPLACED',
       resource: 'Faq',
-      metadata: { faqId: id, newPosition },
+      metadata: { count: items.length },
     });
 
-    return faq;
+    return faqs;
   }
 }

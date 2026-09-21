@@ -22,7 +22,6 @@ interface SectionInspectorProps {
   onUpdateSection: (index: number, patch: Partial<SectionConfig>) => void;
   onUpdateOverride: (index: number, key: string, value: unknown) => void;
   onUpdateContent: (source: string, value: unknown) => void;
-  onRefreshData: () => void;
   onBack: () => void;
 }
 
@@ -38,7 +37,6 @@ export function SectionInspector({
   onUpdateSection,
   onUpdateOverride,
   onUpdateContent,
-  onRefreshData,
   onBack,
 }: SectionInspectorProps) {
   const entry = SECTION_REGISTRY[section.type];
@@ -65,7 +63,7 @@ export function SectionInspector({
       case 'image': return <ImageField key={field.id} {...props} />;
       case 'list': {
         if (field.source === 'faqs') {
-          return <FaqListField key={field.id} faqs={data.faqs} onRefresh={onRefreshData} />;
+          return <FaqListField key={field.id} {...props} />;
         }
         if (field.listFields?.length) {
           return <ObjectListField key={field.id} {...props} />;

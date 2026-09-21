@@ -91,7 +91,10 @@ export async function POST(request: NextRequest) {
         });
       } catch (emailError) {
         console.error('Error sending reset email:', emailError);
-        // Não expõe falha de envio — resposta genérica
+        return NextResponse.json(
+          { error: 'Não foi possível enviar o email agora. Tente novamente em instantes.' },
+          { status: 502 }
+        );
       }
     }
 

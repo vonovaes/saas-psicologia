@@ -35,6 +35,8 @@ const PROTECTED_ROUTES = [
   '/api/theme',
   '/api/account',
   '/api/vercel',
+  '/admin',
+  '/api/admin',
 ];
 
 function validateHost(host: string): boolean {

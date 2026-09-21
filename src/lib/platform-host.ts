@@ -9,6 +9,13 @@ export function isPlatformHost(host: string) {
     .filter(Boolean);
 
   const hostname = getHostname(host);
+
+  // Qualquer URL gerada pela Vercel (produção ou preview de branch)
+  // é host da plataforma: mostra a home de marketing em "/".
+  if (hostname.endsWith('.vercel.app')) {
+    return true;
+  }
+
   return hostname === 'localhost' || hostname === '127.0.0.1' || configuredHosts.includes(hostname);
 }
 

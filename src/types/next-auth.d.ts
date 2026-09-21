@@ -7,6 +7,7 @@ declare module 'next-auth' {
       email: string;
       role: string;
       tenantId: string;
+      isSuperAdmin: boolean;
     } & DefaultSession['user'];
   }
 
@@ -15,6 +16,7 @@ declare module 'next-auth' {
     email: string;
     role: string;
     tenantId: string;
+    isSuperAdmin: boolean;
   }
 }
 
@@ -24,5 +26,6 @@ declare module 'next-auth/jwt' {
     email: string;
     role: string;
     tenantId: string;
+    isSuperAdmin: boolean;
   }
 }

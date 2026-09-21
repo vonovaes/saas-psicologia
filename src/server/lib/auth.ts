@@ -70,6 +70,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             email: user.email,
             role: user.role,
             tenantId: user.tenantId,
+            isSuperAdmin: user.isSuperAdmin,
           };
         } catch (error) {
           console.error('Authorization error:', error);
@@ -85,6 +86,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         token.email = user.email;
         token.role = user.role;
         token.tenantId = user.tenantId;
+        token.isSuperAdmin = user.isSuperAdmin ?? false;
       }
       return token;
     },
@@ -94,6 +96,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         session.user.email = token.email as string;
         session.user.role = token.role as string;
         session.user.tenantId = token.tenantId as string;
+        session.user.isSuperAdmin = token.isSuperAdmin === true;
       }
       return session;
     },

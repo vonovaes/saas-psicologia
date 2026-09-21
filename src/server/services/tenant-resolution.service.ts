@@ -8,15 +8,16 @@ interface TenantResolutionResult {
   isActive: boolean;
 }
 
+// Cache compartilhado entre instâncias: qualquer rota pode invalidar
+// e a invalidação vale para o processo inteiro.
+const resolutionCache = new Map<string, { result: TenantResolutionResult; expiresAt: number }>();
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutos
+
 export class TenantResolutionService {
   private tenantRepository: TenantRepository;
-  private cache: Map<string, { result: TenantResolutionResult; expiresAt: number }>;
-  private cacheTTL: number;
 
   constructor() {
     this.tenantRepository = new TenantRepository('system');
-    this.cache = new Map();
-    this.cacheTTL = 5 * 60 * 1000; // 5 minutos
   }
 
   async resolveByHost(host: string): Promise<TenantResolutionResult | null> {
@@ -24,14 +25,15 @@ export class TenantResolutionService {
     const normalizedHost = this.normalizeHost(host);
 
     // Verificar cache
-    const cached = this.cache.get(normalizedHost);
+    const cached = resolutionCache.get(normalizedHost);
     if (cached && cached.expiresAt > Date.now()) {
       return cached.result;
     }
 
-    // Buscar domínio no banco diretamente (sem filtros de tenant)
-    const domain = await prisma.domain.findUnique({
-      where: { domain: normalizedHost },
+    // Buscar domínio no banco diretamente (sem filtros de tenant),
+    // ignorando domínios removidos (soft delete)
+    const domain = await prisma.domain.findFirst({
+      where: { domain: normalizedHost, deletedAt: null },
       include: { tenant: true },
     });
 
@@ -49,9 +51,9 @@ export class TenantResolutionService {
     };
 
     // Salvar no cache
-    this.cache.set(normalizedHost, {
+    resolutionCache.set(normalizedHost, {
       result,
-      expiresAt: Date.now() + this.cacheTTL,
+      expiresAt: Date.now() + CACHE_TTL,
     });
 
     return result;
@@ -60,7 +62,7 @@ export class TenantResolutionService {
   async resolveByTenantId(tenantId: string): Promise<Tenant | null> {
     // Verificar cache por tenantId
     const cacheKey = `tenant:${tenantId}`;
-    const cached = this.cache.get(cacheKey);
+    const cached = resolutionCache.get(cacheKey);
     if (cached && cached.expiresAt > Date.now()) {
       return cached.result.tenant;
     }
@@ -72,9 +74,9 @@ export class TenantResolutionService {
     }
 
     // Salvar no cache
-    this.cache.set(cacheKey, {
+    resolutionCache.set(cacheKey, {
       result: { tenant, domain: null, isActive: tenant.status === 'ACTIVE' || tenant.status === 'TRIAL' },
-      expiresAt: Date.now() + this.cacheTTL,
+      expiresAt: Date.now() + CACHE_TTL,
     });
 
     return tenant;
@@ -83,9 +85,9 @@ export class TenantResolutionService {
   invalidateCache(host?: string): void {
     if (host) {
       const normalizedHost = this.normalizeHost(host);
-      this.cache.delete(normalizedHost);
+      resolutionCache.delete(normalizedHost);
     } else {
-      this.cache.clear();
+      resolutionCache.clear();
     }
   }
 
@@ -104,8 +106,8 @@ export class TenantResolutionService {
 
   getCacheStats(): { size: number; keys: string[] } {
     return {
-      size: this.cache.size,
-      keys: Array.from(this.cache.keys()),
+      size: resolutionCache.size,
+      keys: Array.from(resolutionCache.keys()),
     };
   }
 }

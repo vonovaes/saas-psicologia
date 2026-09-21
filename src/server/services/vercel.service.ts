@@ -58,6 +58,20 @@ export class VercelService {
 
     return res.json();
   }
+
+  async removeDomain(projectId: string, domain: string) {
+    const res = await fetch(`${VERCEL_API}/v9/projects/${projectId}/domains/${encodeURIComponent(domain)}`, {
+      method: 'DELETE',
+      headers: getAuthHeaders(),
+    });
+
+    if (!res.ok) {
+      const text = await res.text();
+      throw new Error(`Vercel removeDomain failed: ${res.status} ${text}`);
+    }
+
+    return res.json();
+  }
 }
 
 export const vercelService = new VercelService();

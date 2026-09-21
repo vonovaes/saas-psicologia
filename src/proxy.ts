@@ -35,6 +35,8 @@ const PROTECTED_ROUTES = [
   '/api/theme',
   '/api/account',
   '/api/vercel',
+  '/admin',
+  '/api/admin',
 ];
 
 function validateHost(host: string): boolean {
@@ -47,7 +49,7 @@ function validateHost(host: string): boolean {
   return hostRegex.test(host);
 }
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname, host } = request.nextUrl;
 
   // Validar host

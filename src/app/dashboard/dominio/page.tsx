@@ -1,6 +1,8 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { AdminLayout } from '@/components/layout/AdminLayout';
 
 type DnsRecord = { type?: string; name?: string; value?: string };
 
@@ -44,6 +46,7 @@ function StatusBadge({ label, ok }: { label: string; ok: boolean }) {
 }
 
 export default function DominiosPage() {
+  const router = useRouter();
   const [domain, setDomain] = useState('');
   const [domains, setDomains] = useState<TenantDomain[]>([]);
   const [status, setStatus] = useState<string | null>(null);
@@ -63,6 +66,10 @@ export default function DominiosPage() {
   const loadDomains = useCallback(async () => {
     try {
       const res = await fetch('/api/vercel/domains');
+      if (res.status === 401) {
+        router.push('/login');
+        return;
+      }
       const json = await res.json();
       if (res.ok) setDomains(json?.domains || []);
     } catch {
@@ -70,7 +77,7 @@ export default function DominiosPage() {
     } finally {
       setListLoading(false);
     }
-  }, []);
+  }, [router]);
 
   useEffect(() => {
     loadDomains();
@@ -178,9 +185,12 @@ export default function DominiosPage() {
   }
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-semibold mb-4">Domínios personalizados</h1>
-
+    <AdminLayout
+      title="Domínio personalizado"
+      subtitle="Aponte seu próprio domínio (ex: seusite.com.br) para sua página"
+      breadcrumb={[{ label: 'Domínio' }]}
+      maxWidth="lg"
+    >
       <form onSubmit={handleAdd} className="space-y-3 max-w-md">
         <label className="block">
           <span className="text-sm">Novo domínio (ex: exemplo.com)</span>
@@ -305,6 +315,6 @@ export default function DominiosPage() {
           </li>
         </ol>
       </section>
-    </div>
+    </AdminLayout>
   );
 }

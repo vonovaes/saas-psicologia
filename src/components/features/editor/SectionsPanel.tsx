@@ -15,7 +15,6 @@ interface SectionsPanelProps {
   setSelectedIndex: (index: number | null) => void;
   editor: ReturnType<typeof useEditorState>;
   baseData: SiteData;
-  onRefreshData: () => void;
 }
 
 export function SectionsPanel({
@@ -25,7 +24,6 @@ export function SectionsPanel({
   setSelectedIndex,
   editor,
   baseData,
-  onRefreshData,
 }: SectionsPanelProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
 
@@ -87,7 +85,6 @@ export function SectionsPanel({
               onUpdateSection={editor.updateSection}
               onUpdateOverride={editor.updateSectionOverride}
               onUpdateContent={editor.updateContent}
-              onRefreshData={onRefreshData}
               onBack={() => setSelectedIndex(null)}
             />
           ) : (

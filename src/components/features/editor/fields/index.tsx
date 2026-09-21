@@ -239,96 +239,62 @@ interface FaqListItem {
 }
 
 /**
- * Editor de FAQ com persistência imediata via /api/faq
- * (mesmo comportamento da página Gestão de FAQ).
+ * Editor de FAQ — as edições entram no rascunho (contentEdits['faqs'])
+ * e são persistidas no banco ao clicar em Publicar.
  */
-export function FaqListField({
-  faqs,
-  onRefresh,
-}: {
-  faqs: FaqListItem[];
-  onRefresh: () => void;
-}) {
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState('');
+export function FaqListField({ field, value, onChange }: FieldProps) {
+  const items = (value as FaqListItem[]) ?? [];
 
-  const call = async (method: string, body?: object, query?: string) => {
-    setBusy(true);
-    setError('');
-    try {
-      const res = await fetch(`/api/faq${query ?? ''}`, {
-        method,
-        headers: { 'Content-Type': 'application/json' },
-        body: body ? JSON.stringify(body) : undefined,
-      });
-      if (!res.ok) throw new Error();
-      onRefresh();
-    } catch {
-      setError('Erro ao salvar FAQ');
-    } finally {
-      setBusy(false);
-    }
-  };
+  const update = (index: number, key: 'question' | 'answer', v: string) =>
+    onChange(items.map((item, i) => (i === index ? { ...item, [key]: v } : item)));
 
-  const updateItem = (faq: FaqListItem) =>
-    call('PUT', { id: faq.id, question: faq.question, answer: faq.answer });
+  const add = () =>
+    onChange([...items, { id: `new-${Date.now()}`, question: '', answer: '' }]);
+
+  const remove = (index: number) => onChange(items.filter((_, i) => i !== index));
 
   return (
     <div>
       <div className="flex items-center justify-between mb-2">
-        <label className="text-sm font-medium text-gray-700">Perguntas Frequentes</label>
+        <label className="text-sm font-medium text-gray-700">{field.label}</label>
         <button
-          disabled={busy}
-          onClick={() =>
-            call('POST', { question: 'Nova pergunta', answer: 'Nova resposta' })
-          }
-          className="text-xs text-blue-600 hover:text-blue-800 disabled:opacity-50"
+          onClick={add}
+          className="text-xs text-blue-600 hover:text-blue-800"
         >
           + Adicionar
         </button>
       </div>
-      {error && <p className="text-xs text-red-600 mb-2">{error}</p>}
       <div className="space-y-3">
-        {faqs.map((faq) => (
-          <div key={faq.id} className="border border-gray-200 rounded-lg p-3 space-y-2">
+        {items.map((faq, index) => (
+          <div key={faq.id || index} className="border border-gray-200 rounded-lg p-3 space-y-2">
             <div className="flex justify-between items-center">
-              <span className="text-xs text-gray-400">FAQ</span>
+              <span className="text-xs text-gray-400">Pergunta {index + 1}</span>
               <button
-                disabled={busy}
-                onClick={() => call('DELETE', undefined, `?id=${faq.id}`)}
-                className="text-xs text-red-500 hover:text-red-700 disabled:opacity-50"
+                onClick={() => remove(index)}
+                className="text-xs text-red-500 hover:text-red-700"
               >
                 Remover
               </button>
             </div>
             <Input
               label="Pergunta"
-              defaultValue={faq.question}
-              onBlur={(e) =>
-                e.target.value !== faq.question &&
-                updateItem({ ...faq, question: e.target.value })
-              }
+              value={faq.question}
+              onChange={(e) => update(index, 'question', e.target.value)}
             />
             <Textarea
               label="Resposta"
-              defaultValue={faq.answer}
+              value={faq.answer}
               rows={2}
-              onBlur={(e) =>
-                e.target.value !== faq.answer &&
-                updateItem({ ...faq, answer: e.target.value })
-              }
+              onChange={(e) => update(index, 'answer', e.target.value)}
             />
           </div>
         ))}
-        {faqs.length === 0 && (
+        {items.length === 0 && (
           <p className="text-xs text-gray-400 text-center py-3">
             Nenhuma FAQ. Clique em "+ Adicionar".
           </p>
         )}
       </div>
-      <p className="text-xs text-gray-400 mt-2">
-        FAQs são salvas imediatamente (entidade própria).
-      </p>
     </div>
   );
 }

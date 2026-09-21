@@ -276,7 +276,6 @@ export function EditorShell({
         setSelectedIndex={setSelectedIndex}
         editor={editor}
         baseData={baseData}
-        onRefreshData={onRefreshData}
       />
 
       <PersonalizePanel

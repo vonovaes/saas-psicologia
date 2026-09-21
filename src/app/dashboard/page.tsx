@@ -88,16 +88,6 @@ export default async function DashboardPage() {
       ),
     },
     {
-      href: '/faq',
-      title: 'Perguntas frequentes',
-      desc: `${faqsCount} pergunta${faqsCount === 1 ? '' : 's'} na sua página`,
-      iconBg: 'bg-amber-100 text-amber-600',
-      icon: (
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8}
-          d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.091 0 3.228.835 3.772 2 2.091 0 3.228-.835 3.772-2.091V9c-1.087-.766-2.287-1.322-3.515-1.89V5.356c0-1.673-1.107-3.006-2.573-3.006-1.466 0-2.573 1.333-2.573 3.006v1.754C8.228 6.35 7.028 6.906 5.94 7.672V9c.544 1.255 1.681 2.091 3.772 2.091 2.091 0 3.228-.836 3.772-2.091V9c-1.087.766-2.287 1.322-3.515 1.89v1.754c0 1.673 1.107 3.006 2.573 3.006 1.466 0 2.573-1.333 2.573-3.006v-1.754c1.228-.568 2.428-1.124 3.515-1.89V9c-.544-1.255-1.681-2.091-3.772-2.091z" />
-      ),
-    },
-    {
       href: '/profile',
       title: 'Minha Conta',
       desc: 'Dados de acesso, endereço e senha',

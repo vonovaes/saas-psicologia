@@ -291,6 +291,19 @@ export function useEditorState(initialTheme: TenantThemeData | null, initialCont
         if (!res.ok) throw new Error('Failed to save content');
       }
 
+      // FAQs editadas no editor substituem a lista inteira ao publicar
+      const faqsEdit = contentEdits['faqs'] as { question: string; answer: string }[] | undefined;
+      if (faqsEdit) {
+        const res = await fetch('/api/faq', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            faqs: faqsEdit.map(({ question, answer }) => ({ question, answer })),
+          }),
+        });
+        if (!res.ok) throw new Error('Failed to save FAQs');
+      }
+
       // 2) Publica o tema
       const res = await fetch('/api/theme', {
         method: 'PUT',

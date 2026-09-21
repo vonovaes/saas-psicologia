@@ -26,7 +26,6 @@ const PUBLIC_ROUTES = [
 const PROTECTED_ROUTES = [
   '/dashboard',
   '/profile',
-  '/faq',
   '/leads',
   '/data-rights',
   '/editor',

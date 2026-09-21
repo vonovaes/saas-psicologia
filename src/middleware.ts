@@ -35,6 +35,7 @@ const PROTECTED_ROUTES = [
   '/api/data-delete',
   '/api/theme',
   '/api/account',
+  '/api/vercel',
 ];
 
 function validateHost(host: string): boolean {

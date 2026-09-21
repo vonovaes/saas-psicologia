@@ -1,48 +1,128 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 type DnsRecord = { type?: string; name?: string; value?: string };
 
+type TenantDomain = {
+  id: string;
+  domain: string;
+  dnsStatus: 'PENDING' | 'VERIFIED' | 'ERROR';
+  sslStatus: 'PENDING' | 'ACTIVE' | 'ERROR';
+  isPrimary: boolean;
+};
+
 function extractDnsRecords(result: any): DnsRecord[] {
-  return (
+  const records =
     result?.dnsRecords ||
     result?.records ||
     result?.domain?.dnsRecords ||
     result?.domain?.records ||
-    []
-  ).map((r: any) => ({ type: r?.type, name: r?.name, value: r?.value }));
+    result?.verification ||
+    [];
+  return records.map((r: any) => ({
+    type: r?.type,
+    name: r?.name || r?.domain,
+    value: r?.value,
+  }));
 }
 
 function isVerified(result: any) {
+  return result?.verified === true;
+}
+
+function StatusBadge({ label, ok }: { label: string; ok: boolean }) {
   return (
-    result?.verified === true ||
-    result?.state === 'READY' ||
-    result?.status === 'VERIFIED' ||
-    result?.domain?.verified === true
+    <span
+      className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
+        ok ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
+      }`}
+    >
+      {label}
+    </span>
   );
 }
 
 export default function DominiosPage() {
   const [domain, setDomain] = useState('');
+  const [domains, setDomains] = useState<TenantDomain[]>([]);
   const [status, setStatus] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [listLoading, setListLoading] = useState(true);
   const [dnsRecords, setDnsRecords] = useState<DnsRecord[]>([]);
-  const [domainStatus, setDomainStatus] = useState<string | null>(null);
+  const [selectedDomain, setSelectedDomain] = useState<string | null>(null);
   const pollRef = useRef<number | null>(null);
 
-  useEffect(() => {
-    return () => {
-      if (pollRef.current) window.clearInterval(pollRef.current);
-    };
+  const stopPolling = () => {
+    if (pollRef.current) {
+      window.clearInterval(pollRef.current);
+      pollRef.current = null;
+    }
+  };
+
+  const loadDomains = useCallback(async () => {
+    try {
+      const res = await fetch('/api/vercel/domains');
+      const json = await res.json();
+      if (res.ok) setDomains(json?.domains || []);
+    } catch {
+      // silencioso: a lista é best-effort
+    } finally {
+      setListLoading(false);
+    }
   }, []);
+
+  useEffect(() => {
+    loadDomains();
+    return stopPolling;
+  }, [loadDomains]);
+
+  const verifyDomain = useCallback(
+    async (name: string) => {
+      try {
+        const res = await fetch(`/api/vercel/domains?domain=${encodeURIComponent(name)}`);
+        const json = await res.json();
+        if (!res.ok) {
+          setStatus(`Erro ao verificar: ${json?.error || res.status}`);
+          return false;
+        }
+        setDnsRecords(extractDnsRecords(json?.result));
+        if (json?.domain) {
+          setDomains((prev) =>
+            prev.map((d) => (d.id === json.domain.id ? json.domain : d))
+          );
+        }
+        if (isVerified(json?.result)) {
+          setStatus('Domínio verificado e HTTPS ativo.');
+          stopPolling();
+          return true;
+        }
+        setStatus('Aguardando verificação DNS.');
+        return false;
+      } catch (err: any) {
+        setStatus(`Erro ao verificar: ${err?.message || String(err)}`);
+        return false;
+      }
+    },
+    []
+  );
+
+  const startPolling = useCallback(
+    (name: string) => {
+      stopPolling();
+      setSelectedDomain(name);
+      pollRef.current = window.setInterval(() => {
+        verifyDomain(name);
+      }, 8000);
+    },
+    [verifyDomain]
+  );
 
   async function handleAdd(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
     setStatus(null);
     setDnsRecords([]);
-    setDomainStatus(null);
     try {
       const res = await fetch('/api/vercel/domains', {
         method: 'POST',
@@ -52,13 +132,15 @@ export default function DominiosPage() {
       const json = await res.json();
       if (!res.ok) throw new Error(json?.error || 'Erro desconhecido');
 
-      const result = json?.result;
-      const records = extractDnsRecords(result);
-      setDnsRecords(records);
-      setStatus('Domínio adicionado. Copie os registros abaixo e adicione no provedor do domínio.');
-
-      // start polling
-      startPolling();
+      setDnsRecords(extractDnsRecords(json?.result));
+      setStatus(
+        json?.alreadyExists
+          ? 'Este domínio já estava cadastrado. Verificando status...'
+          : 'Domínio adicionado. Copie os registros abaixo e adicione no provedor do domínio.'
+      );
+      setDomain('');
+      await loadDomains();
+      startPolling(domain.trim().toLowerCase());
     } catch (err: any) {
       setStatus(`Erro: ${err?.message || String(err)}`);
     } finally {
@@ -66,38 +148,24 @@ export default function DominiosPage() {
     }
   }
 
-  function startPolling() {
-    if (pollRef.current) window.clearInterval(pollRef.current);
-    pollRef.current = window.setInterval(async () => {
-      try {
-        const res = await fetch(`/api/vercel/domains?domain=${encodeURIComponent(domain)}`);
-        const json = await res.json();
-        if (!res.ok) {
-          setStatus(`Erro ao verificar: ${json?.error || res.status}`);
-          return;
-        }
-        const result = json?.result;
-        setDnsRecords(extractDnsRecords(result));
-        if (isVerified(result)) {
-          setDomainStatus('VERIFIED');
-          setStatus('Domínio verificado e HTTPS ativo.');
-          if (pollRef.current) {
-            window.clearInterval(pollRef.current);
-            pollRef.current = null;
-          }
-        } else {
-          setDomainStatus('PENDING');
-          setStatus('Aguardando verificação DNS.');
-        }
-      } catch (err: any) {
-        setStatus(`Erro polling: ${err?.message || String(err)}`);
+  async function handleRemove(name: string) {
+    if (!window.confirm(`Remover o domínio ${name}?`)) return;
+    try {
+      const res = await fetch(`/api/vercel/domains?domain=${encodeURIComponent(name)}`, {
+        method: 'DELETE',
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json?.error || 'Erro desconhecido');
+      if (selectedDomain === name) {
+        stopPolling();
+        setSelectedDomain(null);
+        setDnsRecords([]);
       }
-    }, 8000);
-  }
-
-  async function manualCheck() {
-    if (pollRef.current) window.clearInterval(pollRef.current);
-    startPolling();
+      setStatus(`Domínio ${name} removido.`);
+      await loadDomains();
+    } catch (err: any) {
+      setStatus(`Erro ao remover: ${err?.message || String(err)}`);
+    }
   }
 
   async function copyToClipboard(text: string) {
@@ -112,6 +180,7 @@ export default function DominiosPage() {
   return (
     <div className="p-6">
       <h1 className="text-2xl font-semibold mb-4">Domínios personalizados</h1>
+
       <form onSubmit={handleAdd} className="space-y-3 max-w-md">
         <label className="block">
           <span className="text-sm">Novo domínio (ex: exemplo.com)</span>
@@ -123,36 +192,90 @@ export default function DominiosPage() {
           />
         </label>
 
-        <div className="flex gap-2">
-          <button
-            className="px-4 py-2 rounded bg-blue-600 text-white disabled:opacity-60"
-            disabled={loading || !domain}
-          >
-            {loading ? 'Adicionando...' : 'Adicionar domínio'}
-          </button>
-
-          <button
-            type="button"
-            onClick={manualCheck}
-            className="px-4 py-2 rounded bg-gray-200"
-            disabled={!domain}
-          >
-            Verificar agora
-          </button>
-        </div>
+        <button
+          className="px-4 py-2 rounded bg-blue-600 text-white disabled:opacity-60"
+          disabled={loading || !domain}
+        >
+          {loading ? 'Adicionando...' : 'Adicionar domínio'}
+        </button>
 
         {status && <div className="mt-3 text-sm">{status}</div>}
-        {domainStatus && <div className="mt-1 text-sm">Status: {domainStatus}</div>}
       </form>
+
+      <section className="mt-8 max-w-2xl">
+        <h2 className="text-lg font-medium">Seus domínios</h2>
+        {listLoading ? (
+          <p className="mt-2 text-sm text-gray-500">Carregando...</p>
+        ) : domains.length === 0 ? (
+          <p className="mt-2 text-sm text-gray-500">
+            Nenhum domínio cadastrado ainda.
+          </p>
+        ) : (
+          <ul className="mt-3 space-y-3">
+            {domains.map((d) => (
+              <li
+                key={d.id}
+                className="flex items-center justify-between gap-3 rounded border p-3"
+              >
+                <div>
+                  <div className="font-medium">{d.domain}</div>
+                  <div className="mt-1 flex gap-2">
+                    <StatusBadge
+                      label={`DNS: ${d.dnsStatus}`}
+                      ok={d.dnsStatus === 'VERIFIED'}
+                    />
+                    <StatusBadge
+                      label={`SSL: ${d.sslStatus}`}
+                      ok={d.sslStatus === 'ACTIVE'}
+                    />
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    className="px-3 py-1.5 rounded bg-gray-200 text-sm"
+                    onClick={() => {
+                      setSelectedDomain(d.domain);
+                      verifyDomain(d.domain);
+                    }}
+                  >
+                    Verificar
+                  </button>
+                  {d.dnsStatus !== 'VERIFIED' && (
+                    <button
+                      type="button"
+                      className="px-3 py-1.5 rounded bg-gray-200 text-sm"
+                      onClick={() => startPolling(d.domain)}
+                    >
+                      Monitorar
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    className="px-3 py-1.5 rounded bg-red-100 text-red-700 text-sm"
+                    onClick={() => handleRemove(d.domain)}
+                  >
+                    Remover
+                  </button>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
 
       {dnsRecords.length > 0 && (
         <section className="mt-6 max-w-md">
-          <h2 className="text-lg font-medium">Registros DNS a configurar</h2>
+          <h2 className="text-lg font-medium">
+            Registros DNS a configurar{selectedDomain ? ` (${selectedDomain})` : ''}
+          </h2>
           <ul className="mt-2 space-y-2 text-sm">
             {dnsRecords.map((r, i) => (
               <li key={i} className="flex items-start justify-between gap-2">
                 <div>
-                  <div className="font-medium">{r.type} — {r.name}</div>
+                  <div className="font-medium">
+                    {r.type} — {r.name}
+                  </div>
                   <div className="text-xs text-gray-600">{r.value}</div>
                 </div>
                 <div>
@@ -172,8 +295,14 @@ export default function DominiosPage() {
       <section className="mt-8">
         <h2 className="text-lg font-medium">Observações</h2>
         <ol className="list-decimal list-inside mt-2 text-sm">
-          <li>Se o provedor usar proxy (ex: Cloudflare "orange cloud"), peça para desativar o proxy até a verificação.</li>
-          <li>A propagação pode levar alguns minutos até horas — mantenha esta página aberta para polling automático.</li>
+          <li>
+            Se o provedor usar proxy (ex: Cloudflare &quot;orange cloud&quot;), peça para
+            desativar o proxy até a verificação.
+          </li>
+          <li>
+            A propagação pode levar alguns minutos até horas — use
+            &quot;Monitorar&quot; para verificação automática.
+          </li>
         </ol>
       </section>
     </div>

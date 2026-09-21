@@ -15,7 +15,7 @@
 | Fase 2 - Autenticação e Painel Básico | ✅ Completo | 100% |
 | Fase 3 - Painel Administrativo | ✅ Completo | 100% |
 | Fase 4 - Landing Page Pública | ✅ Completo | 100% |
-| Fase 5 - Domínios Personalizados e SSL | ⏳ Pendente | 0% |
+| Fase 5 - Domínios Personalizados e SSL | 🔶 Em andamento | 70% |
 | Fase 6 - Analytics e Tracking | ⏳ Pendente | 0% |
 | Fase 7 - Segurança e LGPD | ✅ Completo | 100% |
 | Fase 8 - Preparação para Produção | ⏳ Pendente | 0% |
@@ -141,16 +141,25 @@
 - ✅ Multi-tenant resolution por host
 - ✅ Design responsivo e mobile-first
 
-### Fase 5 - Domínios Personalizados e SSL ⏳
+### Fase 5 - Domínios Personalizados e SSL 🔶 Em andamento
 
 **Objetivo:** Implementar sistema de domínios personalizados com SSL automatizado.
 
+**Concluído (branch feat/custom-domains):**
+- ✅ Integração Vercel Domains API (addDomain, getDomain, removeDomain)
+- ✅ Autenticação + isolamento por tenant em /api/vercel/domains
+- ✅ Persistência na tabela Domain vinculada ao tenant
+- ✅ Validação de DNS com atualização de dnsStatus/sslStatus no banco
+- ✅ Listar/verificar/remover domínios na tela /dashboard/dominio
+- ✅ Resolução de tenant por host conectada à tabela Domain
+  (ignora domínios soft-deleted; cache compartilhado e invalidável)
+- ✅ SSL automático via Vercel (Let's Encrypt, renovação gerenciada)
+
 **Pendente:**
-- ⏳ Integração Vercel Domains API
-- ⏳ Validação de DNS
-- ⏳ Monitoramento de SSL
-- ⏳ Renovação automática
-- ⏳ Instruções de configuração
+- ⏳ Testar fluxo completo com domínio real
+- ⏳ Instruções de configuração mais detalhadas por provedor (Registro.br, Cloudflare, GoDaddy)
+- ⏳ Re-verificação periódica automática de status (cron)
+- ⏳ Definir domínio primário e redirecionamentos www
 
 ### Fase 6 - Analytics e Tracking ⏳
 

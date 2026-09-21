@@ -17,6 +17,8 @@ const PUBLIC_ROUTES = [
   '/api/faq',
   '/api/lead',
   '/login',
+  '/forgot-password',
+  '/reset-password',
   '/_next',
   '/favicon.ico',
   '/robots.txt',

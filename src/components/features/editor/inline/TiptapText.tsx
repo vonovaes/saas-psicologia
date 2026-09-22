@@ -68,11 +68,24 @@ export function TiptapText({
 
   if (!editor) return <div className={className}>{value || placeholder}</div>;
 
+  const isEmpty = editor.isEmpty;
+
   return (
-    <div className="relative">
+    <div
+      className={`relative ${
+        isEmpty ? 'rounded-md border border-dashed border-site-primary/40' : ''
+      }`}
+    >
+      {isEmpty && !editor.isFocused && (
+        <span className="pointer-events-none absolute left-3 top-1.5 text-site-text-muted/80 italic">
+          {placeholder}
+        </span>
+      )}
       <EditorContent
         editor={editor}
-        className={`prose max-w-none outline-none ${className}`}
+        className={`prose max-w-none outline-none cursor-text ${
+          isEmpty ? 'min-h-[2.5rem] px-3 py-1.5' : ''
+        } ${className}`}
         role="textbox"
         aria-multiline={multiline}
         aria-label={ariaLabel || placeholder || 'Texto editavel'}

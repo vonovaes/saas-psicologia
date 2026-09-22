@@ -8,6 +8,7 @@ export function AboutSection({ data, config, sectionIndex, editable, onUpdateCon
   if (!profile) return null;
 
   const title = (config.overrides.title as string) || 'Experiência que transforma';
+  const aboutText = (config.overrides.text as string) || '';
   const minimal = config.variant === 'minimal';
 
   const updateSection = (key: string, value: string) => {
@@ -19,7 +20,7 @@ export function AboutSection({ data, config, sectionIndex, editable, onUpdateCon
   };
 
   return (
-    <section className="py-16 @sm:py-24 @lg:py-32 px-4 bg-site-bg">
+    <section className="py-12 @sm:py-16 @lg:py-24 px-4 bg-site-bg">
       <div className="max-w-7xl mx-auto">
         <div className={`grid ${minimal ? '@lg:grid-cols-1 max-w-3xl' : '@lg:grid-cols-2'} gap-6 @sm:p-12 @lg:gap-20 items-center`}>
           <div className="space-y-6 @sm:space-y-8">
@@ -34,15 +35,17 @@ export function AboutSection({ data, config, sectionIndex, editable, onUpdateCon
               onChange={(v) => updateSection('title', v)}
               placeholder="Título da seção"
             />
-            <InlineText
-              as="p"
-              className="text-base @sm:text-xl text-site-text-muted font-light leading-relaxed"
-              value={profile.description}
-              editable={editable}
-              multiline
-              onChange={updateProfile('description')}
-              placeholder="Descrição profissional"
-            />
+            {(aboutText || editable) && (
+              <InlineText
+                as="p"
+                className="text-base @sm:text-xl text-site-text-muted font-light leading-relaxed"
+                value={aboutText}
+                editable={editable}
+                multiline
+                onChange={(v) => updateSection('text', v)}
+                placeholder="Conte um pouco sobre você, sua formação e experiência"
+              />
+            )}
           </div>
 
           {!minimal && (

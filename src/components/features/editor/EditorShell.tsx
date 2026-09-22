@@ -16,6 +16,7 @@ interface EditorShellProps {
   baseData: SiteData;
   initialTheme: TenantThemeData | null;
   initialContentEdits?: Record<string, unknown>;
+  initialDirty?: boolean;
   publicSlug?: string | null;
   onRefreshData: () => Promise<void>;
 }
@@ -43,11 +44,12 @@ export function EditorShell({
   baseData,
   initialTheme,
   initialContentEdits,
+  initialDirty,
   publicSlug,
   onRefreshData,
 }: EditorShellProps) {
   const router = useRouter();
-  const editor = useEditorState(initialTheme, initialContentEdits);
+  const editor = useEditorState(initialTheme, initialContentEdits, initialDirty);
   const isMobile = useIsMobile();
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [device, setDevice] = useState<DeviceMode>('desktop');
@@ -99,13 +101,16 @@ export function EditorShell({
   }, [editor.isDirty]);
 
   const handlePublish = async () => {
-    const ok = await editor.publish();
-    if (ok) {
+    try {
+      await editor.publish();
       await onRefreshData();
       editor.clearContentEdits();
       setFeedback('Publicado com sucesso!');
-    } else {
-      setFeedback('Erro ao publicar.');
+    } catch (err) {
+      console.error('Publish failed:', err);
+      setFeedback(
+        err instanceof Error ? err.message : 'Erro ao publicar. Tente novamente.'
+      );
     }
     setTimeout(() => setFeedback(''), 4000);
   };

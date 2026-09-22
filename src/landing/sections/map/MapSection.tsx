@@ -2,11 +2,16 @@
 
 import { SectionProps } from '@/landing/types';
 import { InlineText } from '@/components/features/editor/inline/InlineText';
+import { SectionEmptyState } from '../SectionEmptyState';
 
 export function MapSection({ data, config, sectionIndex, editable, onUpdateContent, onUpdateSectionOverride }: SectionProps) {
   const embedUrl = data.settings?.googleMapsEmbedUrl;
   const address = data.profile?.address;
-  if (!embedUrl && !address) return null;
+  if (!embedUrl && !address) {
+    return editable ? (
+      <SectionEmptyState message="Nenhum endereço ou mapa configurado. Adicione pelo painel de seções." />
+    ) : null;
+  }
 
   const title = (config.overrides.title as string) || 'Onde atendo';
 

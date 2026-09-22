@@ -47,16 +47,7 @@ export class TenantProfileService {
     return profile;
   }
 
-  async upsertProfile(data: {
-    displayName: string;
-    specialties: string[];
-    approaches?: string[];
-    city: string;
-    description: string;
-    address?: string;
-    profileImageUrl?: string;
-    attendanceType?: string;
-  }): Promise<TenantProfile> {
+  async upsertProfile(data: Partial<TenantProfile>): Promise<TenantProfile> {
     const existingProfile = await this.getProfile();
     const profile = await this.profileRepository.upsert(data);
 

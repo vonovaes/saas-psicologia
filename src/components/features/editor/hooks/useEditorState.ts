@@ -7,6 +7,7 @@ import {
   SectionType,
   ThemeTokens,
   DEFAULT_THEME,
+  mergeSectionsPreservingEdits,
 } from '@/landing/themes/tokens';
 import { SiteData } from '@/landing/types';
 import { useRef } from 'react';
@@ -50,10 +51,16 @@ function setByPath(obj: Record<string, unknown>, path: string, value: unknown): 
   return clone;
 }
 
-export function useEditorState(initialTheme: TenantThemeData | null, initialContentEdits: Record<string, unknown> = {}) {
+export function useEditorState(
+  initialTheme: TenantThemeData | null,
+  initialContentEdits: Record<string, unknown> = {},
+  initialDirty?: boolean,
+) {
   const [theme, setTheme] = useState<TenantThemeData>(initialTheme ?? DEFAULT_THEME);
   const [contentEdits, setContentEdits] = useState<Record<string, unknown>>(initialContentEdits);
-  const [isDirty, setIsDirty] = useState(Object.keys(initialContentEdits).length > 0);
+  const [isDirty, setIsDirty] = useState(
+    initialDirty ?? Object.keys(initialContentEdits).length > 0,
+  );
   const [saving, setSaving] = useState(false);
   const [publishing, setPublishing] = useState(false);
   const [lastSavedAt, setLastSavedAt] = useState<Date | null>(null);
@@ -65,6 +72,8 @@ export function useEditorState(initialTheme: TenantThemeData | null, initialCont
   const [canRedo, setCanRedo] = useState(false);
   const themeRef = useRef(theme);
   const editsRef = useRef(contentEdits);
+  const saveInFlightRef = useRef<Promise<void> | null>(null);
+  const publishingRef = useRef(false);
   themeRef.current = theme;
   editsRef.current = contentEdits;
 
@@ -141,7 +150,10 @@ export function useEditorState(initialTheme: TenantThemeData | null, initialCont
   }, []);
 
   const applyTemplate = useCallback((template: TenantThemeData) => {
-    setTheme(template);
+    setTheme((prev) => ({
+      ...template,
+      sections: mergeSectionsPreservingEdits(prev.sections, template.sections),
+    }));
     pushHistory();
     setIsDirty(true);
   }, []);
@@ -251,33 +263,60 @@ export function useEditorState(initialTheme: TenantThemeData | null, initialCont
 
   // ── Persistência ──────────────────────────────────────────────
 
-  const saveDraft = useCallback(async () => {
-    setSaving(true);
-    try {
-      const response = await fetch('/api/theme', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          action: 'draft',
-          draft: { ...theme, contentEdits: editsRef.current },
-        }),
-      });
-      if (!response.ok) throw new Error('Failed to save draft');
-      setLastSavedAt(new Date());
-    } finally {
-      setSaving(false);
-    }
-  }, [theme]);
+  const saveDraft = useCallback(() => {
+    // Rastreia o save em voo para que publish() aguarde sua conclusão —
+    // evita que um draft atrasado seja gravado DEPOIS do publish limpar
+    // o rascunho no servidor (o que faria o editor reabrir "sujo").
+    const run = (async () => {
+      // Autosave agendado pode disparar durante o publish — aborta para
+      // não recriar o draft depois que o servidor o limpou.
+      if (publishingRef.current) return;
+      setSaving(true);
+      try {
+        const response = await fetch('/api/theme', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'draft',
+            draft: { ...themeRef.current, contentEdits: editsRef.current },
+          }),
+        });
+        if (!response.ok) throw new Error('Failed to save draft');
+        setLastSavedAt(new Date());
+      } finally {
+        setSaving(false);
+      }
+    })();
+    saveInFlightRef.current = run;
+    void run.finally(() => {
+      if (saveInFlightRef.current === run) saveInFlightRef.current = null;
+    });
+    return run;
+  }, []);
 
   const publish = useCallback(async () => {
     setPublishing(true);
+    publishingRef.current = true;
     try {
+      // Aguarda qualquer autosave em voo terminar antes de publicar,
+      // senão o draft tardio seria recriado após o publish limpa-lo.
+      if (saveInFlightRef.current) {
+        try { await saveInFlightRef.current; } catch { /* publish segue mesmo se o draft falhar */ }
+      }
+
+      const currentTheme = themeRef.current;
+      const currentEdits = editsRef.current;
+
       // 1) Persiste edições de conteúdo nas entidades de origem
       const profilePatch: Record<string, unknown> = {};
       const settingsPatch: Record<string, unknown> = {};
-      for (const [path, value] of Object.entries(contentEdits)) {
-        if (path.startsWith('profile.')) profilePatch[path.replace('profile.', '')] = value;
-        if (path.startsWith('settings.')) settingsPatch[path.replace('settings.', '')] = value;
+      for (const [path, value] of Object.entries(currentEdits)) {
+        // Listas de strings: descarta itens vazios para não publicar chips em branco
+        const clean = Array.isArray(value) && value.every((v) => typeof v === 'string')
+          ? value.map((v) => (v as string).trim()).filter(Boolean)
+          : value;
+        if (path.startsWith('profile.')) profilePatch[path.replace('profile.', '')] = clean;
+        if (path.startsWith('settings.')) settingsPatch[path.replace('settings.', '')] = clean;
       }
       if (Object.keys(profilePatch).length || Object.keys(settingsPatch).length) {
         const res = await fetch('/api/profile', {
@@ -288,11 +327,11 @@ export function useEditorState(initialTheme: TenantThemeData | null, initialCont
             ...(Object.keys(settingsPatch).length ? { settings: settingsPatch } : {}),
           }),
         });
-        if (!res.ok) throw new Error('Failed to save content');
+        if (!res.ok) throw new Error('Erro ao salvar o conteúdo do perfil.');
       }
 
       // FAQs editadas no editor substituem a lista inteira ao publicar
-      const faqsEdit = contentEdits['faqs'] as { question: string; answer: string }[] | undefined;
+      const faqsEdit = currentEdits['faqs'] as { question: string; answer: string }[] | undefined;
       if (faqsEdit) {
         const res = await fetch('/api/faq', {
           method: 'PUT',
@@ -301,23 +340,24 @@ export function useEditorState(initialTheme: TenantThemeData | null, initialCont
             faqs: faqsEdit.map(({ question, answer }) => ({ question, answer })),
           }),
         });
-        if (!res.ok) throw new Error('Failed to save FAQs');
+        if (!res.ok) throw new Error('Erro ao salvar as perguntas frequentes.');
       }
 
       // 2) Publica o tema
       const res = await fetch('/api/theme', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'publish', theme }),
+        body: JSON.stringify({ action: 'publish', theme: currentTheme }),
       });
-      if (!res.ok) throw new Error('Failed to publish theme');
+      if (!res.ok) throw new Error('Erro ao publicar o tema.');
 
       setLastSavedAt(new Date());
       return true;
     } finally {
       setPublishing(false);
+      publishingRef.current = false;
     }
-  }, [theme, contentEdits]);
+  }, []);
 
   const clearContentEdits = useCallback(() => {
     setContentEdits({});

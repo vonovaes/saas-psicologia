@@ -70,14 +70,28 @@ export async function PUT(request: NextRequest) {
     const profileService = new TenantProfileService(tenantId);
     const settingsService = new TenantSettingsService(tenantId);
 
-    // Atualizar perfil se fornecido
-    if (body.profile) {
-      await profileService.updateProfile(body.profile);
+    // Whitelist de campos editáveis — evita 500 por campo desconhecido
+    // e impede escrita de campos sensíveis (ex: tenantId).
+    if (body.profile && typeof body.profile === 'object') {
+      const allowed = [
+        'displayName', 'specialties', 'approaches', 'city',
+        'description', 'address', 'profileImageUrl', 'attendanceType',
+      ] as const;
+      const patch = Object.fromEntries(
+        allowed.filter((k) => k in body.profile).map((k) => [k, body.profile[k]])
+      );
+      if (Object.keys(patch).length) await profileService.upsertProfile(patch);
     }
 
-    // Atualizar configurações se fornecido
-    if (body.settings) {
-      await settingsService.updateSettings(body.settings);
+    if (body.settings && typeof body.settings === 'object') {
+      const allowed = [
+        'whatsappNumber', 'instagramHandle', 'googleMapsEmbedUrl',
+        'googleTagManagerId', 'googleAnalyticsId', 'googleAdsId', 'metaPixelId',
+      ] as const;
+      const patch = Object.fromEntries(
+        allowed.filter((k) => k in body.settings).map((k) => [k, body.settings[k]])
+      );
+      if (Object.keys(patch).length) await settingsService.upsertSettings(patch);
     }
 
     return NextResponse.json({ success: true });

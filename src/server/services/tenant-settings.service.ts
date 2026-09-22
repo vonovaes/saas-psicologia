@@ -46,15 +46,7 @@ export class TenantSettingsService {
     return settings;
   }
 
-  async upsertSettings(data: {
-    whatsappNumber?: string;
-    instagramHandle?: string;
-    googleMapsEmbedUrl?: string;
-    googleTagManagerId?: string;
-    googleAnalyticsId?: string;
-    googleAdsId?: string;
-    metaPixelId?: string;
-  }): Promise<TenantSettings> {
+  async upsertSettings(data: Partial<TenantSettings>): Promise<TenantSettings> {
     const existingSettings = await this.getSettings();
     const settings = await this.settingsRepository.upsert(data);
 

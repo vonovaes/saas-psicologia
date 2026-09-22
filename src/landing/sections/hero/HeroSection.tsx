@@ -4,6 +4,7 @@ import { SectionProps } from '@/landing/types';
 import { InlineText } from '@/components/features/editor/inline/InlineText';
 import { InlineImage } from '@/components/features/editor/inline/InlineImage';
 import { InlineList } from '@/components/features/editor/inline/InlineList';
+import { getWhatsAppLink } from '@/lib/whatsapp';
 
 export function HeroSection({ data, config, sectionIndex, editable, onUpdateContent, onUpdateSectionOverride }: SectionProps) {
   const profile = data.profile;
@@ -23,6 +24,17 @@ export function HeroSection({ data, config, sectionIndex, editable, onUpdateCont
 
   const scrollToContact = () => {
     document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  // CTA principal: abre WhatsApp com mensagem pronta; sem número, rola pro contato
+  const whatsappLink = getWhatsAppLink(data.settings?.whatsappNumber);
+  const handleCtaClick = () => {
+    if (editable) return;
+    if (whatsappLink) {
+      window.open(whatsappLink, '_blank', 'noopener,noreferrer');
+    } else {
+      scrollToContact();
+    }
   };
 
   const imagePlaceholder = (
@@ -76,7 +88,7 @@ export function HeroSection({ data, config, sectionIndex, editable, onUpdateCont
             placeholder="Descrição profissional"
           />
           <button
-            onClick={scrollToContact}
+            onClick={handleCtaClick}
             className="bg-site-primary text-site-bg font-medium px-8 py-4 rounded-full hover:opacity-90 transition-opacity"
           >
             {editable ? (
@@ -168,7 +180,7 @@ export function HeroSection({ data, config, sectionIndex, editable, onUpdateCont
             />
           ) : null}
           <button
-            onClick={scrollToContact}
+            onClick={handleCtaClick}
             className="bg-site-primary text-site-bg font-medium px-8 py-4 rounded-full hover:opacity-90 transition-opacity"
           >
             {editable ? (
@@ -257,7 +269,7 @@ export function HeroSection({ data, config, sectionIndex, editable, onUpdateCont
             ) : null}
 
             <button
-              onClick={scrollToContact}
+              onClick={handleCtaClick}
               className="bg-site-primary text-site-bg font-medium px-8 py-4 rounded-full hover:opacity-90 transition-opacity"
             >
               {editable ? (

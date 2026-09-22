@@ -2,6 +2,7 @@
 
 import { SiteData } from '@/landing/types';
 import { InlineText } from '@/components/features/editor/inline/InlineText';
+import { getWhatsAppLink } from '@/lib/whatsapp';
 
 interface FooterSectionProps {
   data: SiteData;
@@ -53,7 +54,7 @@ export function FooterSection({ data, editable, onUpdateContent }: FooterSection
             <h3 className="text-lg font-light mb-6 text-site-text">Contato</h3>
             {settings?.whatsappNumber && (
               <a
-                href={`https://wa.me/${settings.whatsappNumber.replace(/\D/g, '')}`}
+                href={getWhatsAppLink(settings.whatsappNumber) ?? '#'}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="block text-site-text-muted hover:text-site-primary transition-colors mb-3 font-light"

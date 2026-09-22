@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Button, Input, Textarea } from '@/components/ui';
 import { SectionProps } from '@/landing/types';
 import { InlineText } from '@/components/features/editor/inline/InlineText';
+import { getWhatsAppLink } from '@/lib/whatsapp';
 
 export function ContactSection({ data, config, sectionIndex, editable, onUpdateSectionOverride }: SectionProps) {
   const settings = data.settings;
@@ -59,9 +60,7 @@ export function ContactSection({ data, config, sectionIndex, editable, onUpdateS
     }
   };
 
-  const whatsappLink = settings?.whatsappNumber
-    ? `https://wa.me/${settings.whatsappNumber.replace(/\D/g, '')}`
-    : null;
+  const whatsappLink = getWhatsAppLink(settings?.whatsappNumber);
 
   return (
     <section id="contact" className="py-16 @sm:py-24 @lg:py-32 px-4 bg-site-bg">

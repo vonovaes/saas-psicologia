@@ -2,6 +2,7 @@
 
 import { SectionProps } from '@/landing/types';
 import { InlineText } from '@/components/features/editor/inline/InlineText';
+import { SectionEmptyState } from '../SectionEmptyState';
 
 interface TestimonialItem {
   name: string;
@@ -10,7 +11,11 @@ interface TestimonialItem {
 
 export function TestimonialsSection({ data, config, sectionIndex, editable, onUpdateSectionOverride }: SectionProps) {
   const items = (config.overrides.items as TestimonialItem[]) ?? [];
-  if (items.length === 0) return null;
+  if (items.length === 0) {
+    return editable ? (
+      <SectionEmptyState message="Nenhum depoimento ainda. Adicione pelo painel de seções." />
+    ) : null;
+  }
 
   const title = (config.overrides.title as string) || 'O que dizem os pacientes';
   const variant = config.variant;

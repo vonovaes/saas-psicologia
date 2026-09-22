@@ -2,10 +2,16 @@
 
 import { SectionProps } from '@/landing/types';
 import { InlineText } from '@/components/features/editor/inline/InlineText';
+import { SectionEmptyState } from '../SectionEmptyState';
 
 export function SpecialtiesSection({ data, config, sectionIndex, editable, onUpdateContent, onUpdateSectionOverride }: SectionProps) {
   const profile = data.profile;
-  if (!profile || profile.specialties.length === 0) return null;
+  if (!profile) return null;
+  if (profile.specialties.length === 0) {
+    return editable ? (
+      <SectionEmptyState message="Nenhuma especialidade ainda. Adicione no cabeçalho ou pelo painel de seções." />
+    ) : null;
+  }
 
   const title = (config.overrides.title as string) || 'Áreas de atuação';
   const variant = config.variant;

@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import { prisma } from '@/server/lib/prisma';
+import { buildTenantMetadata } from '@/lib/seo';
 import { SiteRenderer } from '@/landing/SiteRenderer';
 import { TenantThemeData } from '@/landing/themes/tokens';
 import { SiteData } from '@/landing/types';
@@ -29,11 +30,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     return { title: 'Página não encontrada' };
   }
 
-  const name = tenant.profile?.displayName ?? tenant.name;
-  return {
-    title: `${name} — Atendimento psicológico`,
-    description: tenant.profile?.description ?? 'Conheça o profissional e entre em contato.',
-  };
+  return buildTenantMetadata(tenant.profile, tenant.name);
 }
 
 /**

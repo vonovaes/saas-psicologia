@@ -100,11 +100,11 @@ export default function DominiosPage() {
           );
         }
         if (isVerified(json?.result)) {
-          setStatus('Domínio verificado e HTTPS ativo.');
+          setStatus('Endereço verificado e HTTPS ativo.');
           stopPolling();
           return true;
         }
-        setStatus('Aguardando verificação DNS.');
+        setStatus('Ativando endereço...');
         return false;
       } catch (err: any) {
         setStatus(`Erro ao verificar: ${err?.message || String(err)}`);
@@ -125,8 +125,20 @@ export default function DominiosPage() {
     [verifyDomain]
   );
 
+  function normalizeDomainInput(value: string): string {
+    const clean = value
+      .trim()
+      .toLowerCase()
+      .replace(/^https?:\/\//, '')
+      .replace(/[/ ].*$/, '');
+    if (!clean) return '';
+    return clean.includes('.') ? clean : `${clean}.vercel.app`;
+  }
+
   async function handleAdd(e: React.FormEvent) {
     e.preventDefault();
+    const fullDomain = normalizeDomainInput(domain);
+    if (!fullDomain) return;
     setLoading(true);
     setStatus(null);
     setDnsRecords([]);
@@ -134,20 +146,23 @@ export default function DominiosPage() {
       const res = await fetch('/api/vercel/domains', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ domain }),
+        body: JSON.stringify({ domain: fullDomain }),
       });
       const json = await res.json();
       if (!res.ok) throw new Error(json?.error || 'Erro desconhecido');
 
+      const isVercelApp = fullDomain.endsWith('.vercel.app');
       setDnsRecords(extractDnsRecords(json?.result));
       setStatus(
         json?.alreadyExists
-          ? 'Este domínio já estava cadastrado. Verificando status...'
-          : 'Domínio adicionado. Copie os registros abaixo e adicione no provedor do domínio.'
+          ? 'Este endereço já estava cadastrado. Verificando status...'
+          : isVercelApp
+            ? `Endereço ${fullDomain} criado! Ativando...`
+            : 'Domínio adicionado. Copie os registros abaixo e adicione no provedor do domínio.'
       );
       setDomain('');
       await loadDomains();
-      startPolling(domain.trim().toLowerCase());
+      startPolling(fullDomain);
     } catch (err: any) {
       setStatus(`Erro: ${err?.message || String(err)}`);
     } finally {
@@ -156,7 +171,7 @@ export default function DominiosPage() {
   }
 
   async function handleRemove(name: string) {
-    if (!window.confirm(`Remover o domínio ${name}?`)) return;
+    if (!window.confirm(`Remover o endereço ${name}?`)) return;
     try {
       const res = await fetch(`/api/vercel/domains?domain=${encodeURIComponent(name)}`, {
         method: 'DELETE',
@@ -168,7 +183,7 @@ export default function DominiosPage() {
         setSelectedDomain(null);
         setDnsRecords([]);
       }
-      setStatus(`Domínio ${name} removido.`);
+      setStatus(`Endereço ${name} removido.`);
       await loadDomains();
     } catch (err: any) {
       setStatus(`Erro ao remover: ${err?.message || String(err)}`);
@@ -186,39 +201,58 @@ export default function DominiosPage() {
 
   return (
     <AdminLayout
-      title="Domínio personalizado"
-      subtitle="Aponte seu próprio domínio (ex: seusite.com.br) para sua página"
+      title="Endereço da sua página"
+      subtitle="Escolha um endereço gratuito para divulgar sua página — sem precisar comprar domínio"
       breadcrumb={[{ label: 'Domínio' }]}
       maxWidth="lg"
     >
-      <form onSubmit={handleAdd} className="space-y-3 max-w-md">
+      <div className="max-w-md rounded-lg border border-blue-100 bg-blue-50 p-4 text-sm text-blue-900">
+        <p className="font-medium">Endereço gratuito .vercel.app</p>
+        <p className="mt-1">
+          Digite o nome desejado abaixo (ex: <strong>dra-maria</strong>) e sua página ficará
+          disponível em <strong>dra-maria.vercel.app</strong> em instantes, já com HTTPS.
+        </p>
+      </div>
+
+      <form onSubmit={handleAdd} className="space-y-3 max-w-md mt-4">
         <label className="block">
-          <span className="text-sm">Novo domínio (ex: exemplo.com)</span>
-          <input
-            className="mt-1 block w-full rounded border px-3 py-2"
-            value={domain}
-            onChange={(e) => setDomain(e.target.value)}
-            placeholder="seu-dominio.com"
-          />
+          <span className="text-sm">Novo endereço</span>
+          <div className="mt-1 flex items-stretch">
+            <input
+              className="block w-full rounded-l border px-3 py-2"
+              value={domain}
+              onChange={(e) => setDomain(e.target.value)}
+              placeholder="seu-nome"
+            />
+            {!domain.includes('.') && (
+              <span className="inline-flex items-center rounded-r border border-l-0 bg-gray-50 px-3 py-2 text-sm text-gray-500">
+                .vercel.app
+              </span>
+            )}
+          </div>
+          <span className="mt-1 block text-xs text-gray-500">
+            Tem um domínio próprio? Digite o endereço completo (ex: seusite.com.br).
+          </span>
         </label>
 
         <button
           className="px-4 py-2 rounded bg-blue-600 text-white disabled:opacity-60"
           disabled={loading || !domain}
         >
-          {loading ? 'Adicionando...' : 'Adicionar domínio'}
+          {loading ? 'Adicionando...' : 'Ativar endereço'}
         </button>
 
         {status && <div className="mt-3 text-sm">{status}</div>}
       </form>
 
       <section className="mt-8 max-w-2xl">
-        <h2 className="text-lg font-medium">Seus domínios</h2>
+        <h2 className="text-lg font-medium">Seus endereços</h2>
         {listLoading ? (
           <p className="mt-2 text-sm text-gray-500">Carregando...</p>
         ) : domains.length === 0 ? (
           <p className="mt-2 text-sm text-gray-500">
-            Nenhum domínio cadastrado ainda.
+            Nenhum endereço cadastrado ainda. Escolha um nome acima — por exemplo,
+            dra-maria vira dra-maria.vercel.app.
           </p>
         ) : (
           <ul className="mt-3 space-y-3">
@@ -302,16 +336,21 @@ export default function DominiosPage() {
         </section>
       )}
 
-      <section className="mt-8">
+      <section className="mt-8 max-w-2xl">
         <h2 className="text-lg font-medium">Observações</h2>
-        <ol className="list-decimal list-inside mt-2 text-sm">
+        <ol className="list-decimal list-inside mt-2 space-y-1 text-sm">
           <li>
-            Se o provedor usar proxy (ex: Cloudflare &quot;orange cloud&quot;), peça para
-            desativar o proxy até a verificação.
+            Endereços <strong>.vercel.app</strong> são gratuitos e ficam ativos em
+            instantes — não é preciso configurar nada.
           </li>
           <li>
-            A propagação pode levar alguns minutos até horas — use
-            &quot;Monitorar&quot; para verificação automática.
+            Se o nome escolhido já estiver em uso, o cadastro falha — tente uma
+            variação (ex: dra-maria-sp).
+          </li>
+          <li>
+            Domínio próprio (ex: seusite.com.br) também é aceito, mas exige
+            configurar os registros DNS no provedor do domínio — a propagação
+            pode levar até algumas horas. Use &quot;Monitorar&quot; para acompanhar.
           </li>
         </ol>
       </section>

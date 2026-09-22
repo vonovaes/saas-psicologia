@@ -27,9 +27,9 @@ export const oceanoPreset: TenantThemeData = {
     },
   },
   sections: [
-    { type: 'hero', variant: 'split', visible: true, order: 0, overrides: {} },
-    { type: 'specialties', variant: 'cards', visible: true, order: 1, overrides: {} },
-    { type: 'about', variant: 'default', visible: true, order: 2, overrides: {} },
+    { type: 'hero', variant: 'split', visible: true, order: 0, overrides: { eyebrow: 'Neuropsicologia & Avaliação' } },
+    { type: 'specialties', variant: 'cards', visible: true, order: 1, overrides: { title: 'Áreas de avaliação' } },
+    { type: 'about', variant: 'default', visible: true, order: 2, overrides: { title: 'Experiência clínica' } },
     { type: 'faq', variant: 'accordion', visible: true, order: 3, overrides: {} },
     { type: 'contact', variant: 'form', visible: true, order: 4, overrides: {} },
   ],

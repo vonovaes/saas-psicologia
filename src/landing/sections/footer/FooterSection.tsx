@@ -19,7 +19,7 @@ export function FooterSection({ data, editable, onUpdateContent }: FooterSection
   };
 
   return (
-    <footer className="bg-site-bg border-t border-white/5 py-16 px-4">
+    <footer className="bg-site-bg border-t border-site-text/10 py-16 px-4">
       <div className="max-w-7xl mx-auto">
         <div className="grid @md:grid-cols-3 gap-6 @sm:p-12 mb-12">
           <div>
@@ -91,7 +91,7 @@ export function FooterSection({ data, editable, onUpdateContent }: FooterSection
             />
           </div>
         </div>
-        <div className="border-t border-white/5 pt-8 text-center">
+        <div className="border-t border-site-text/10 pt-8 text-center">
           <p className="text-site-text-muted font-light">
             &copy; {new Date().getFullYear()} {profile.displayName}. Todos os direitos reservados.
           </p>

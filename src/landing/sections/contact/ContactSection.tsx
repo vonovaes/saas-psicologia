@@ -89,10 +89,9 @@ export function ContactSection({ data, config, sectionIndex, editable, onUpdateS
         </div>
 
         <div className="site-card p-6 @sm:p-12">
-          {whatsappOnly ? (
+          {whatsappOnly && whatsappLink ? (
             <div className="text-center space-y-6 @sm:space-y-8">
-              {whatsappLink ? (
-                <a
+              <a
                   href={whatsappLink}
                   target="_blank"
                   rel="noopener noreferrer"
@@ -103,11 +102,6 @@ export function ContactSection({ data, config, sectionIndex, editable, onUpdateS
                   </svg>
                   Conversar no WhatsApp
                 </a>
-              ) : (
-                <p className="text-site-text-muted font-light">
-                  Configure seu número de WhatsApp nas configurações.
-                </p>
-              )}
               {settings?.instagramHandle && (
                 <a
                   href={`https://instagram.com/${settings.instagramHandle.replace('@', '')}`}
@@ -119,6 +113,10 @@ export function ContactSection({ data, config, sectionIndex, editable, onUpdateS
                 </a>
               )}
             </div>
+          ) : whatsappOnly && editable ? (
+            <p className="text-center text-site-text-muted font-light">
+              Configure seu número de WhatsApp nas configurações da seção — enquanto isso, o formulário será exibido na página pública.
+            </p>
           ) : submitSuccess ? (
             <div className="text-center py-16">
               <div className="w-20 h-20 bg-site-primary/10 rounded-full flex items-center justify-center mx-auto mb-6 backdrop-blur-sm">
@@ -148,7 +146,7 @@ export function ContactSection({ data, config, sectionIndex, editable, onUpdateS
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 placeholder="Seu nome completo"
                 required
-                className="bg-site-surface! border-white/10! text-site-text! placeholder-site-text-muted!"
+                className="bg-site-surface! border-site-text/15! text-site-text! placeholder-site-text-muted!"
               />
               <Input
                 label="Telefone"
@@ -157,7 +155,7 @@ export function ContactSection({ data, config, sectionIndex, editable, onUpdateS
                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                 placeholder="(11) 99999-9999"
                 required
-                className="bg-site-surface! border-white/10! text-site-text! placeholder-site-text-muted!"
+                className="bg-site-surface! border-site-text/15! text-site-text! placeholder-site-text-muted!"
               />
               <Textarea
                 label="Mensagem"
@@ -166,7 +164,7 @@ export function ContactSection({ data, config, sectionIndex, editable, onUpdateS
                 placeholder="Como posso ajudar?"
                 rows={4}
                 required
-                className="bg-site-surface! border-white/10! text-site-text! placeholder-site-text-muted!"
+                className="bg-site-surface! border-site-text/15! text-site-text! placeholder-site-text-muted!"
               />
               <div className="flex items-start gap-3">
                 <input
@@ -175,7 +173,7 @@ export function ContactSection({ data, config, sectionIndex, editable, onUpdateS
                   checked={formData.consent}
                   onChange={(e) => setFormData({ ...formData, consent: e.target.checked })}
                   required
-                  className="mt-1 w-5 h-5 bg-site-surface border-white/20 rounded"
+                  className="mt-1 w-5 h-5 bg-site-surface border-site-text/20 rounded"
                 />
                 <label htmlFor="consent" className="text-sm text-site-text-muted font-light">
                   Concordo com o processamento dos meus dados de contato conforme a{' '}

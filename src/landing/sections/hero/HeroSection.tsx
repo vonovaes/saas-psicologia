@@ -43,11 +43,7 @@ export function HeroSection({ data, config, sectionIndex, editable, onUpdateCont
     </svg>
   );
 
-  const smallImagePlaceholder = (
-    <svg className="w-16 h-16 text-site-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-    </svg>
-  );
+
 
   // ── Variant: minimal (só tipografia) ─────────────────────────
   if (variant === 'minimal') {
@@ -175,7 +171,7 @@ export function HeroSection({ data, config, sectionIndex, editable, onUpdateCont
               editable={editable}
               placeholder="Abordagem"
               className="flex flex-wrap justify-center gap-2 mb-10"
-              itemClassName="px-3 py-1.5 rounded-full text-xs font-medium bg-site-surface text-site-text-muted border border-white/10"
+              itemClassName="px-3 py-1.5 rounded-full text-xs font-medium bg-site-surface text-site-text-muted border border-site-text/10"
               addLabel="Abordagem"
             />
           ) : null}
@@ -263,7 +259,7 @@ export function HeroSection({ data, config, sectionIndex, editable, onUpdateCont
                 editable={editable}
                 placeholder="Abordagem"
                 className="flex flex-wrap gap-2"
-                itemClassName="px-3 py-1.5 rounded-full text-xs font-medium bg-site-surface text-site-text-muted border border-white/10"
+                itemClassName="px-3 py-1.5 rounded-full text-xs font-medium bg-site-surface text-site-text-muted border border-site-text/10"
                 addLabel="Abordagem"
               />
             ) : null}
@@ -287,23 +283,18 @@ export function HeroSection({ data, config, sectionIndex, editable, onUpdateCont
           </div>
 
           <div className="relative">
-            <div className="aspect-square bg-site-primary/20 rounded-full blur-3xl absolute inset-0" />
-            <div className="relative site-card p-6 @sm:p-12">
-              <div className="text-center">
-                <div className="w-32 h-32 bg-site-primary/20 rounded-full mx-auto mb-6 flex items-center justify-center backdrop-blur-sm overflow-hidden">
-                  <InlineImage
-                    src={profile.profileImageUrl}
-                    onChange={updateProfile('profileImageUrl')}
-                    editable={editable}
-                    alt="Foto do profissional"
-                    className="w-full h-full rounded-full"
-                    placeholderClassName="w-full h-full flex items-center justify-center"
-                  >
-                    {smallImagePlaceholder}
-                  </InlineImage>
-                </div>
-                <p className="text-site-text-muted font-light">Foto Profissional</p>
-              </div>
+            <div className="aspect-[4/5] bg-site-primary/20 rounded-full blur-3xl absolute -inset-4" />
+            <div className="relative site-card overflow-hidden aspect-[4/5] max-w-md mx-auto">
+              <InlineImage
+                src={profile.profileImageUrl}
+                onChange={updateProfile('profileImageUrl')}
+                editable={editable}
+                alt="Foto do profissional"
+                className="absolute inset-0 h-full w-full"
+                placeholderClassName="absolute inset-0 h-full w-full flex items-center justify-center"
+              >
+                {imagePlaceholder}
+              </InlineImage>
             </div>
           </div>
         </div>

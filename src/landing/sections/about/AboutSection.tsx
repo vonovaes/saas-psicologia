@@ -20,7 +20,7 @@ export function AboutSection({ data, config, sectionIndex, editable, onUpdateCon
   };
 
   return (
-    <section className="py-16 @sm:py-24 @lg:py-32 px-4 bg-site-bg">
+    <section className="py-12 @sm:py-16 @lg:py-24 px-4 bg-site-bg">
       <div className="max-w-7xl mx-auto">
         <div className={`grid ${minimal ? '@lg:grid-cols-1 max-w-3xl' : '@lg:grid-cols-2'} gap-6 @sm:p-12 @lg:gap-20 items-center`}>
           <div className="space-y-6 @sm:space-y-8">

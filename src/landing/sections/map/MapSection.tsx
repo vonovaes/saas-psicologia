@@ -20,9 +20,9 @@ export function MapSection({ data, config, sectionIndex, editable, onUpdateConte
   };
 
   return (
-    <section className="py-16 @sm:py-24 @lg:py-32 px-4 bg-site-bg">
+    <section className="py-12 @sm:py-16 @lg:py-24 px-4 bg-site-bg">
       <div className="max-w-5xl mx-auto">
-        <div className="text-center mb-16">
+        <div className="text-center mb-10">
           <p className="text-site-primary/80 tracking-[0.3em] uppercase text-sm font-medium mb-4">
             Localização
           </p>

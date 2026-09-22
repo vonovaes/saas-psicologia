@@ -9,7 +9,7 @@ export const aboutSchema: SectionSchema = {
     { id: 'minimal', label: 'Minimalista (só texto)' },
   ],
   settings: [
-    { id: 'description', type: 'textarea', label: 'Texto sobre você', source: 'profile.description' },
+    { id: 'text', type: 'textarea', label: 'Texto sobre você' },
     { id: 'attendanceType', type: 'select', label: 'Tipo de atendimento', source: 'profile.attendanceType' },
     { id: 'city', type: 'text', label: 'Cidade', source: 'profile.city' },
     { id: 'address', type: 'text', label: 'Endereço', source: 'profile.address' },

@@ -43,15 +43,16 @@ export function InlineText({
   const isRich = richText !== undefined ? richText : multiline;
 
   const Tag = as;
+  const isEmpty = !value;
 
   if (!editable) {
     if (!isRich) {
-      return <Tag className={className}>{value || placeholder}</Tag>;
+      return <Tag className={className}>{value}</Tag>;
     }
     return (
       <Tag
         className={className}
-        dangerouslySetInnerHTML={{ __html: sanitizeHtml(value || placeholder || '') }}
+        dangerouslySetInnerHTML={{ __html: sanitizeHtml(value || '') }}
       />
     );
   }
@@ -83,6 +84,13 @@ export function InlineText({
     if (next !== value) onChange?.(next);
   };
 
+  const handleFocus = () => {
+    setIsEditing(true);
+    // O placeholder eh so dica visual — limpa para o usuario nao
+    // digitar "em cima" dele e salvar o placeholder junto.
+    if (isEmpty && ref.current) ref.current.innerText = '';
+  };
+
   const handleBlur = (e: React.FocusEvent) => {
     const related = e.relatedTarget as HTMLElement | null;
     if (related?.closest('[data-inline-toolbar]')) return;
@@ -104,13 +112,17 @@ export function InlineText({
   return (
     <Tag
       ref={ref as any}
-      className={`${className} outline-none`}
+      className={`${className} outline-none cursor-text${
+        isEmpty
+          ? ' inline-block min-w-[10rem] rounded-md border border-dashed border-site-primary/40 px-3 py-1.5 text-site-text-muted/80 italic'
+          : ''
+      }`}
       contentEditable
       suppressContentEditableWarning
       role="textbox"
       aria-multiline={false}
       aria-label={ariaLabel || placeholder || 'Texto editavel'}
-      onFocus={() => setIsEditing(true)}
+      onFocus={handleFocus}
       onBlur={handleBlur}
       onKeyDown={handleKeyDown}
       onClick={(e) => e.stopPropagation()}

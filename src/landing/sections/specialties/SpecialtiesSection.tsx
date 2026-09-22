@@ -29,7 +29,7 @@ export function SpecialtiesSection({ data, config, sectionIndex, editable, onUpd
           </p>
           <InlineText
             as="h2"
-            className="text-3xl @sm:text-4xl @lg:text-5xl font-light tracking-tight text-site-text"
+            className="site-heading text-3xl @sm:text-4xl @lg:text-5xl text-site-text"
             value={title}
             editable={editable}
             onChange={(v) => updateSection('title', v)}
@@ -62,7 +62,7 @@ export function SpecialtiesSection({ data, config, sectionIndex, editable, onUpd
                 </span>
                 <InlineText
                   as="h3"
-                  className="text-2xl font-light text-site-text"
+                  className="site-heading text-2xl text-site-text"
                   value={specialty}
                   editable={editable}
                   onChange={(v) => updateSpecialty(index, v)}
@@ -78,7 +78,7 @@ export function SpecialtiesSection({ data, config, sectionIndex, editable, onUpd
             {profile.specialties.map((specialty, index) => (
               <div
                 key={index}
-                className="group bg-gradient-to-br from-site-surface to-site-bg rounded-3xl p-10 backdrop-blur-xl border border-white/5 hover:border-site-primary/30 transition-all duration-500"
+                className="group site-card p-10 hover:border-site-primary/30 transition-all duration-500"
               >
                 <div className="w-16 h-16 bg-site-primary/20 rounded-2xl flex items-center justify-center mb-6">
                   <svg className="w-8 h-8 text-site-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -87,7 +87,7 @@ export function SpecialtiesSection({ data, config, sectionIndex, editable, onUpd
                 </div>
                 <InlineText
                   as="h3"
-                  className="text-2xl font-light mb-3 text-site-text"
+                  className="site-heading text-2xl mb-3 text-site-text"
                   value={specialty}
                   editable={editable}
                   onChange={(v) => updateSpecialty(index, v)}

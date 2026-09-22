@@ -10,7 +10,7 @@ export const vitalPreset: TenantThemeData = {
   tokens: {
     colors: {
       primary: '#4d7c0f',
-      accent: '#a3b18a',
+      accent: '#58713a',
       surface: '#eef3e6',
       background: '#f7f9f4',
       text: '#1a2e05',

@@ -1,25 +1,25 @@
 import { TenantThemeData } from '../tokens';
 
 /**
- * Template "Sereno" — Clínico e Calmo.
- * Persona: TCC, neuropsicologia, abordagem técnica e limpa.
- * Fundo branco, teal, layout limpo e organizado.
+ * Template "Oceano" — Confiança Clínica.
+ * Persona: neuropsicologia, público corporativo, avaliações.
+ * Azul-marinho sóbrio, superfície azul-gelo, cards com borda.
  */
-export const serenoPreset: TenantThemeData = {
-  templateId: 'sereno',
+export const oceanoPreset: TenantThemeData = {
+  templateId: 'oceano',
   tokens: {
     colors: {
-      primary: '#0d9488',
-      accent: '#0f766e',
-      surface: '#f0fdfa',
-      background: '#ffffff',
-      text: '#134e4a',
-      textMuted: '#5f7a76',
+      primary: '#1d4e89',
+      accent: '#1668a8',
+      surface: '#e8f0f7',
+      background: '#f4f8fb',
+      text: '#0c2334',
+      textMuted: '#4a6172',
     },
     typography: {
       headingFont: 'sans',
-      headingWeight: 'normal',
-      scale: 'normal',
+      headingWeight: 'bold',
+      scale: 'compact',
     },
     shape: {
       radius: 'md',

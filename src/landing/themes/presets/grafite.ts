@@ -27,9 +27,9 @@ export const grafitePreset: TenantThemeData = {
     },
   },
   sections: [
-    { type: 'hero', variant: 'minimal', visible: true, order: 0, overrides: {} },
-    { type: 'specialties', variant: 'list', visible: true, order: 1, overrides: {} },
-    { type: 'about', variant: 'minimal', visible: true, order: 2, overrides: {} },
+    { type: 'hero', variant: 'minimal', visible: true, order: 0, overrides: { eyebrow: 'Psicologia Organizacional' } },
+    { type: 'specialties', variant: 'list', visible: true, order: 1, overrides: { title: 'Frentes de atuação' } },
+    { type: 'about', variant: 'minimal', visible: true, order: 2, overrides: { title: 'Resultado com método' } },
     { type: 'faq', variant: 'accordion', visible: true, order: 3, overrides: {} },
     { type: 'contact', variant: 'whatsapp-only', visible: true, order: 4, overrides: {} },
   ],

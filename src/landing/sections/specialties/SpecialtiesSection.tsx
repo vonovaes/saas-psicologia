@@ -16,7 +16,11 @@ export function SpecialtiesSection({ data, config, sectionIndex, editable, onUpd
   const title = (config.overrides.title as string) || 'Áreas de atuação';
   const variant = config.variant;
 
-  const updateSection = (key: string, value: string) => {
+  // Descricoes opcionais por especialidade (variante "cards").
+  // Ficam nos overrides da secao, paralelas a lista do perfil.
+  const descriptions = (config.overrides.descriptions as string[]) ?? [];
+
+  const updateSection = (key: string, value: unknown) => {
     onUpdateSectionOverride?.(sectionIndex, key, value);
   };
 
@@ -24,6 +28,12 @@ export function SpecialtiesSection({ data, config, sectionIndex, editable, onUpd
     const next = [...profile.specialties];
     next[index] = value;
     onUpdateContent?.('profile.specialties', next);
+  };
+
+  const updateDescription = (index: number, value: string) => {
+    const next = [...descriptions];
+    next[index] = value;
+    updateSection('descriptions', next);
   };
 
   return (
@@ -60,7 +70,7 @@ export function SpecialtiesSection({ data, config, sectionIndex, editable, onUpd
         )}
 
         {variant === 'list' && (
-          <div className="max-w-3xl mx-auto divide-y divide-white/5">
+          <div className="max-w-3xl mx-auto divide-y divide-site-text/10">
             {profile.specialties.map((specialty, index) => (
               <div key={index} className="py-8 flex items-baseline gap-6">
                 <span className="text-site-primary/60 font-light text-lg">
@@ -99,9 +109,17 @@ export function SpecialtiesSection({ data, config, sectionIndex, editable, onUpd
                   onChange={(v) => updateSpecialty(index, v)}
                   placeholder="Especialidade"
                 />
-                <p className="text-site-text-muted font-light leading-relaxed">
-                  Tratamento especializado e personalizado.
-                </p>
+                {(descriptions[index] || editable) && (
+                  <InlineText
+                    as="p"
+                    className="text-site-text-muted font-light leading-relaxed"
+                    value={descriptions[index] ?? ''}
+                    editable={editable}
+                    multiline
+                    onChange={(v) => updateDescription(index, v)}
+                    placeholder="Descreva como você trabalha essa área"
+                  />
+                )}
               </div>
             ))}
           </div>

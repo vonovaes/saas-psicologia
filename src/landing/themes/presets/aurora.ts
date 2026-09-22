@@ -27,10 +27,10 @@ export const auroraPreset: TenantThemeData = {
     },
   },
   sections: [
-    { type: 'hero', variant: 'centered', visible: true, order: 0, overrides: {} },
-    { type: 'about', variant: 'default', visible: true, order: 1, overrides: {} },
-    { type: 'specialties', variant: 'tags', visible: true, order: 2, overrides: {} },
+    { type: 'hero', variant: 'centered', visible: true, order: 0, overrides: { eyebrow: 'Acalmar a mente' } },
+    { type: 'about', variant: 'default', visible: true, order: 1, overrides: { title: 'Um espaço para desacelerar' } },
+    { type: 'specialties', variant: 'tags', visible: true, order: 2, overrides: { title: 'Como posso ajudar' } },
     { type: 'faq', variant: 'accordion', visible: true, order: 3, overrides: {} },
-    { type: 'contact', variant: 'form', visible: true, order: 4, overrides: {} },
+    { type: 'contact', variant: 'form', visible: true, order: 4, overrides: { subtitle: 'Dê o primeiro passo para noites mais tranquilas' } },
   ],
 };

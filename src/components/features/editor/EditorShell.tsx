@@ -10,6 +10,7 @@ import { useEditorState } from './hooks/useEditorState';
 import { useIsMobile } from '@/hooks/useIsMobile';
 import { SectionsPanel } from './SectionsPanel';
 import { PersonalizePanel } from './PersonalizePanel';
+import { EditorTour } from './EditorTour';
 
 interface EditorShellProps {
   baseData: SiteData;
@@ -187,6 +188,7 @@ export function EditorShell({
           )}
           <button
             type="button"
+            data-tour="sections"
             onClick={() => setSectionsOpen(true)}
             className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-2.5 py-1.5 text-xs font-medium text-gray-700 transition-colors hover:bg-gray-50 sm:px-3 sm:text-sm"
           >
@@ -194,6 +196,7 @@ export function EditorShell({
           </button>
           <button
             type="button"
+            data-tour="personalize"
             onClick={() => setPersonalizeOpen(true)}
             className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-2.5 py-1.5 text-xs font-medium text-gray-700 transition-colors hover:bg-gray-50 sm:px-3 sm:text-sm"
           >
@@ -209,15 +212,17 @@ export function EditorShell({
           >
             Salvar rascunho
           </Button>
-          <Button
-            variant="primary"
-            size="sm"
-            onClick={handlePublish}
-            loading={editor.publishing}
-            disabled={editor.publishing}
-          >
-            Publicar
-          </Button>
+          <span data-tour="publish" className="inline-flex">
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={handlePublish}
+              loading={editor.publishing}
+              disabled={editor.publishing}
+            >
+              Publicar
+            </Button>
+          </span>
           {publicSlug && (
             <a
               href={`/p/${publicSlug}`}
@@ -235,6 +240,7 @@ export function EditorShell({
       {/* Canvas */}
       <div className={`relative flex-1 overflow-y-auto bg-gray-200 ${isMobile ? '' : 'p-2 sm:p-4 flex justify-center'}`}>
         <div
+          data-tour="preview"
           className={`${
             isMobile
               ? 'w-full'
@@ -286,6 +292,8 @@ export function EditorShell({
         onUpdateTokens={editor.updateTokens}
         onApplyTemplate={editor.applyTemplate}
       />
+
+      <EditorTour />
     </div>
   );
 }

@@ -2,9 +2,9 @@
 
 > Documento vivo que rastreia o progresso do desenvolvimento e as próximas etapas.
 
-## Status Atual: 22/08/2026
+## Status Atual: 21/09/2026
 
-### Fase Atual: Fase 7 - Segurança e LGPD (Concluída)
+### Fase Atual: Pré-soft-launch (Fase 8 em preparação)
 
 ### Progresso Geral
 
@@ -15,289 +15,138 @@
 | Fase 2 - Autenticação e Painel Básico | ✅ Completo | 100% |
 | Fase 3 - Painel Administrativo | ✅ Completo | 100% |
 | Fase 4 - Landing Page Pública | ✅ Completo | 100% |
-| Fase 5 - Domínios Personalizados e SSL | 🔶 Em andamento | 70% |
+| Fase 5 - Domínios Personalizados e SSL | 🔶 Em andamento | 75% |
 | Fase 6 - Analytics e Tracking | ⏳ Pendente | 0% |
 | Fase 7 - Segurança e LGPD | ✅ Completo | 100% |
-| Fase 8 - Preparação para Produção | ⏳ Pendente | 0% |
+| Fase 8 - Preparação para Produção | 🔶 Em andamento | 35% |
+| Editor Visual (E-1 → E5) | ✅ Completo | 100% |
+| Backoffice da plataforma | ✅ Completo | 100% |
+| Recuperação de senha | ✅ Completo | 100% |
 
-## Detalhamento por Fase
+## Entregas Recentes (set/2026)
 
-### Fase 0 - Fundação Técnica ✅
+### Editor Visual — completo
+- Edição inline de texto com TipTap (negrito, itálico, alinhamento, multilinha)
+- Edição inline de imagens (upload Vercel Blob, remoção, popover posicionado)
+- Listas editáveis (especialidades, abordagens)
+- Seções: reordenar, ocultar, remover, adicionar (SectionsPanel)
+- FAQ dentro do fluxo draft/publish (página /faq removida — sem código morto)
+- Personalização: cores, tipografia, template (PersonalizePanel)
+- Draft/publish com autosave, undo/redo, device preview, mobile fullscreen
+- Um único `SiteRenderer` para editor e página pública
 
-**Objetivo:** Configurar ambiente, stack e infraestrutura básica.
+### Onboarding novo (6 passos)
+`Sobre você → Foto → Especialidades → Contato → FAQ → Visual`
+- Upload de foto de perfil com preview (opcional)
+- FAQ com até 5 pares pergunta/resposta e sugestões (opcional)
+- Ao finalizar salva tudo como **rascunho** e leva direto ao editor —
+  "publicar" virou o evento de ativação do usuário
 
-**Concluído:**
-- ✅ Projeto Next.js 16 criado com App Router, TypeScript, Tailwind CSS 4
-- ✅ Estrutura com `src/` e alias `@/*`
-- ✅ Dependências instaladas e ESLint validado
-- ✅ Prisma 7.9.1 configurado com PostgreSQL (Neon)
-- ✅ Repository Git local configurado
-- ✅ Documentação inicial criada
+### Tour guiado do editor (driver.js)
+- 4 passos curtos com indicador de progresso: clique-para-editar, seções, personalizar, publicar
+- Dispara só com `?tour=1` (fim do onboarding), uma vez por dispositivo, pulável
 
-**Arquivos Chave:**
-- `package.json` - Dependências do projeto
-- `next.config.ts` - Configuração do Next.js
-- `tsconfig.json` - Configuração TypeScript
-- `tailwind.config.ts` - Configuração Tailwind
-- `.env` - Variáveis de ambiente
+### Backoffice da plataforma (`/admin`)
+- `isSuperAdmin` no User + propagado no JWT/sessão
+- Tabela de tenants: status, leads, página publicada, domínios, cadastro
+- Suspender/reativar tenant (a landing cai em `/suspended` automaticamente)
+- `GET/PATCH /api/admin/tenants` com guard + audit log
+- `scripts/create-admin.ts` — cria tenant plataforma + usuário admin
 
-### Fase 1 - Dados e Resolução de Tenant ✅
+### Recuperação de senha
+- `PasswordResetToken`: hash SHA-256, uso único, expira em 1h
+- `/forgot-password` + `/reset-password` com visual do login
+- Resposta genérica (não enumera emails); 502 se o SMTP falhar
+- Email via Gmail SMTP (Nodemailer + senha de app) — `src/server/lib/email.ts`
 
-**Objetivo:** Implementar schema multi-tenant e sistema de resolução por domínio.
+### Domínios (Fase 5)
+- `/api/vercel/domains` com auth + tenantId (era pública — corrigido)
+- Persistência na tabela `Domain`, resolução por host conectada
+- `/dashboard/dominio`: adicionar, verificar (DNS/SSL), monitorar, remover
+- Todo `*.vercel.app` tratado como host da plataforma (previews OK)
 
-**Concluído:**
-- ✅ Schema Prisma completo (8 tabelas, enums, índices, soft delete)
-- ✅ Migration inicial criada e aplicada
-- ✅ Repository Pattern com tenant-aware (BaseRepository)
-- ✅ Services para todas as entidades
-- ✅ DTOs com Zod para validação
-- ✅ Factory para repositories com contexto de tenant
-- ✅ Middleware de resolução de tenant por host
-- ✅ TenantContext para acesso ao contexto
-- ✅ TenantResolutionService com cache
-- ✅ Sistema de isolamento de dados
+### Housekeeping
+- `middleware.ts` → `proxy.ts` (codemod Next 16)
+- `next 16.3.2 → 16.3.5` (2 CVEs críticos de RCE corrigidos)
+- `vitest → 5.0.1` + `@types/node ^24`; `npm test` em modo `vitest run`
+- Barra de progresso de navegação (`nextjs-toploader`) no root layout
 
-**Arquivos Chave:**
-- `prisma/schema.prisma` - Schema do banco
-- `src/server/repositories/*.ts` - Repositories
-- `src/server/services/*.ts` - Services
-- `src/server/dtos/*.ts` - DTOs
-- `src/server/lib/tenant-context.ts` - Contexto de tenant
-- `src/server/services/tenant-resolution.service.ts` - Resolução de tenant
-- `src/middleware.ts` - Middleware Next.js
+### WhatsApp CTA
+- Botão "Agendar Consulta" abre `wa.me` com mensagem pré-preenchida:
+  "Olá, vim pelo Acolha e gostaria de agendar uma sessão."
+- Helper `src/lib/whatsapp.ts` usado no Hero, Contato e Footer
+- Fallback: sem número configurado, o botão rola para a seção de contato
 
-**Entidades Implementadas:**
-- Tenant
-- Domain
-- TenantSettings
-- TenantProfile
-- User
-- FAQ
-- Lead
-- AuditLog
+## Variáveis de Ambiente
 
-### Fase 2 - Autenticação e Painel Básico ✅
+| Var | Uso |
+|-----|-----|
+| `DATABASE_URL` | Neon Postgres |
+| `NEXTAUTH_SECRET` / `NEXTAUTH_URL` | Auth.js |
+| `BLOB_READ_WRITE_TOKEN` | Upload de imagens (Vercel Blob) |
+| `VERCEL_TOKEN` / `VERCEL_PROJECT_ID` | Domínios customizados |
+| `PLATFORM_HOSTS` | Hosts da plataforma (ex: `acolha-psicologos.vercel.app`) |
+| `GMAIL_USER` / `GMAIL_APP_PASSWORD` | Email transacional (reset de senha) |
+| `APP_URL` | Base dos links de email (produção: URL da Vercel) |
 
-**Objetivo:** Implementar sistema de autenticação e painel básico.
+## Problemas Conhecidos
 
-**Concluído:**
-- ✅ Auth.js v5 configurado com Credentials provider
-- ✅ Hash de senhas com bcrypt
-- ✅ Login funcional com email/senha
-- ✅ Sessão JWT com tenantId e role
-- ✅ Página de login (`/login`)
-- ✅ Página de dashboard básica (`/dashboard`)
-- ✅ Middleware de autenticação
-- ✅ Script de seed para dados de teste
-- ✅ Validação de credenciais com Zod
-- ✅ Verificação de status do tenant
+1. **`PUBLIC_ROUTES` com `'/'`** — `startsWith('/')` casa tudo no proxy;
+   a resolução de tenant via proxy é dead code (a resolução real acontece
+   em `page.tsx` + `/api/public/data`). Revisitar na Fase de subdomínios.
+2. **`/profile` legado** — página antiga ainda existe; o editor cobre os
+   casos. Avaliar redirect/remoção.
+3. **4 vulns altas no audit** — cadeia do Prisma (`mysql2`, `deepmerge-ts`);
+   só corrigíveis com downgrade breaking Prisma 7→6. `mysql2` não é usado
+   (Postgres). Aceito conscientemente.
+4. **Emails podem cair em spam** — remetente `@gmail.com`. Migrar para
+   Resend/SES quando houver domínio próprio melhora entregabilidade.
 
-**Arquivos Chave:**
-- `src/server/lib/auth.ts` - Configuração Auth.js
-- `src/app/api/auth/[...nextauth]/route.ts` - Handler Auth.js
-- `src/app/login/page.tsx` - Página de login
-- `src/app/dashboard/page.tsx` - Página de dashboard
-- `src/middleware.ts` - Middleware de autenticação
-- `prisma/seed.ts` - Script de seed
+## Decisão Estratégica Pendente — Domínios
 
-**Credenciais de Teste:**
-- Email: admin@psicologos.test
-- Senha: password123
-- Domínio: localhost
+Dois modelos possíveis (não excludentes):
 
-**Status do Git:**
-- Branch atual: development
-- Último commit: 51c3bef - fix: clean up duplicate CSRF header call in public data endpoint
-- Status: Sincronizado com origin/development
-- Arquivos modificados: 1 file changed, 1 insertion(+), 1 deletion(-)
-- Em progresso: Fase 7 - Segurança e LGPD (95% completo)
+- **A. Subdomínio da plataforma** (`drjoao.acolha.com.br`) — comprar um
+  domínio raiz, wildcard DNS na Vercel, subdomínio gerado do slug no
+  signup. Zero configuração pro psicólogo. **É o modelo alinhado ao
+  produto** — o sistema cria e gerencia o endereço.
+- **B. Domínio próprio do psicólogo** (`dramaria.com.br`) — já funciona
+  via `/dashboard/dominio`, mas deve virar fluxo premium/admin-gerenciado.
 
-### Fase 3 - Painel Administrativo ✅ Concluída
+Pré-requisito do modelo A: comprar `acolha.com.br` (ou similar) e apontar
+nameservers para a Vercel.
 
-**Objetivo:** Implementar telas completas do painel administrativo.
+## Próximos Passos
 
-**Concluído:**
-- ✅ Dashboard básico funcional
-- ✅ Tela de edição de perfil (formulário com validação)
-- ✅ Tela de gestão de FAQ (CRUD completo)
-- ✅ Tela de visualização de leads (filtros e exportação CSV)
-- ✅ Biblioteca de componentes UI reutilizáveis
-- ✅ Arquitetura de componentes documentada
-4. Implementar tela de domínios (integração Vercel Domains API)
-5. Implementar tela de leads (listagem e filtros)
+### Imediato
+1. Merge/deploy das branches abertas
+2. Configurar `GMAIL_*` e `APP_URL` na Vercel; testar reset em produção
+3. Decidir compra do domínio raiz (modelo A)
 
-### Fase 4 - Landing Page Pública ✅ Concluída
+### Pré-soft-launch
+4. SEO/metadata por tenant (OG image — preview bonito no WhatsApp)
+5. Subdomínios automáticos (se domínio comprado): `slug.acolha.com.br`
+6. Soft launch com 2–5 psicólogos reais
 
-**Objetivo:** Criar landing page de conversão otimizada com design premium.
-
-**Concluído:**
-- ✅ Landing page premium com design dark mode 2026
-- ✅ Hero section com gradient effects e glassmorphism
-- ✅ Seção sobre com cards translúcidos
-- ✅ Seção de especialidades com hover effects
-- ✅ FAQ com accordion interativo
-- ✅ Formulário de contato para leads
-- ✅ Footer com informações de contato
-- ✅ Multi-tenant resolution por host
-- ✅ Design responsivo e mobile-first
-
-### Fase 5 - Domínios Personalizados e SSL 🔶 Em andamento
-
-**Objetivo:** Implementar sistema de domínios personalizados com SSL automatizado.
-
-**Concluído (branch feat/custom-domains):**
-- ✅ Integração Vercel Domains API (addDomain, getDomain, removeDomain)
-- ✅ Autenticação + isolamento por tenant em /api/vercel/domains
-- ✅ Persistência na tabela Domain vinculada ao tenant
-- ✅ Validação de DNS com atualização de dnsStatus/sslStatus no banco
-- ✅ Listar/verificar/remover domínios na tela /dashboard/dominio
-- ✅ Resolução de tenant por host conectada à tabela Domain
-  (ignora domínios soft-deleted; cache compartilhado e invalidável)
-- ✅ SSL automático via Vercel (Let's Encrypt, renovação gerenciada)
-
-**Pendente:**
-- ⏳ Testar fluxo completo com domínio real
-- ⏳ Instruções de configuração mais detalhadas por provedor (Registro.br, Cloudflare, GoDaddy)
-- ⏳ Re-verificação periódica automática de status (cron)
-- ⏳ Definir domínio primário e redirecionamentos www
-
-### Fase 6 - Analytics e Tracking ⏳
-
-**Objetivo:** Implementar sistema de tracking de conversão por tenant.
-
-**Pendente:**
-- ⏳ dataLayer por tenant
-- ⏳ Injeção condicional de scripts
-- ⏳ Eventos de conversão personalizados
-- ⏳ Configuração de IDs por tenant
-
-### Fase 7 - Segurança e LGPD ✅ Concluída
-
-**Objetivo:** Implementar requisitos de segurança e privacidade.
-
-**Concluído:**
-- ✅ Headers de segurança no Next.js config
-- ✅ Política de privacidade completa (LGPD compliant)
-- ✅ Consentimento explícito no formulário de contato
-- ✅ Página de direitos de dados (acesso, correção, exclusão)
-- ✅ API endpoint para solicitações de direitos de dados
-- ✅ Navegação do painel atualizada com link para direitos de dados
-- ✅ Audit log para solicitações de direitos de dados
-- ✅ Rate limiting em rotas públicas (/api/lead e /api/public/data)
-- ✅ Headers informativos de rate limit (X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset)
-- ✅ Validação de uploads (tipo, tamanho, assinatura de arquivo)
-- ✅ Upload service com Vercel Blob integration
-- ✅ API endpoint para uploads (/api/upload)
-- ✅ Proteção contra uploads maliciosos (magic bytes validation)
-- ✅ Proteção CSRF em rotas públicas (validação de Origin/Referer)
-- ✅ Proteção CSRF no Auth.js (configuração de secure cookies)
-- ✅ Headers de segurança adicionais em respostas CSRF
-
-**Pendente:**
-- ✅ Fluxo automatizado de anonimização individual de lead e encerramento de conta do tenant
-- ✅ Auditoria das ações de anonimização e encerramento de conta
-
-### Fase 8 - Preparação para Produção ⏳
-
-**Objetivo:** Preparar ambiente para lançamento.
-
-**Pendente:**
-- ⏳ Configuração de ambiente de produção
-- ⏳ Setup de domínio principal
-- ⏳ Backup e restore
-- ⏳ Monitoramento
-- ⏳ Processo de onboarding
-- ⏳ Documentação de suporte
-- ⏳ Soft launch com 2-5 clientes
-
-## Problemas Conhecidos e Soluções
-
-1. **Email de teste inválido** ✅ Resolvido
-   - Problema: Zod rejeitava `admin@localhost` como email inválido
-   - Solução: Alterado para `admin@psicologos.test`
-
-2. **Edge Runtime com Prisma** ✅ Resolvido
-   - Problema: Middleware não pode usar Prisma diretamente
-   - Solução: Usar API interna `/api/tenant-resolve`
-
-3. **Contexto de tenant no login** ✅ Resolvido
-   - Problema: Middleware não injetava contexto para rotas de login
-   - Solução: Middleware resolve tenant para rotas de login
-
-4. **Índice único composto no Prisma** ✅ Resolvido
-   - Problema: `findUnique` não aceitava apenas `email`
-   - Solução: Alterado para `findFirst`
-
-5. **Auth.js v5 authorize callback** ✅ Resolvido
-   - Problema: Não tem acesso fácil ao contexto de request
-   - Solução: Buscar usuário globalmente e validar tenant no callback
-
-6. **Middleware deprecation warning** ⏳ Pendente
-   - Problema: Next.js 16 deprecou "middleware" em favor de "proxy"
-   - Solução: Planejada migração para proxy.ts
+### Pós-feedback
+7. Fase 6 — Analytics: injetar GTM/GA/Meta Pixel por tenant (campos já
+   existem em `TenantSettings`) + eventos de conversão
+8. Notificação de lead (WhatsApp/email para o psicólogo)
+9. Billing: Mercado Pago + planos (domínio próprio e analytics = Pro)
+10. Backoffice v2: métricas (cadastros/semana, taxa de publicação)
+11. Mais cobertura de testes (useEditorState, publish, upload, auth)
 
 ## Métricas do Projeto
 
-- **Total de arquivos:** ~92
-- **Linhas de código:** ~6300
-- **Tabelas no banco:** 8
-- **Services implementados:** 9 (adicionado UploadService)
-- **Repositories implementados:** 8
-- **DTOs implementados:** 9 (adicionado upload.dto)
-- **Rotas API:** 10 (adicionado /api/upload)
-- **Páginas implementadas:** 7 (login, dashboard, profile, faq, leads, landing page, privacy, data-rights)
-- **Componentes UI:** 6 (Input, Textarea, Select, Button, FieldGroup, Accordion)
-- **Security features:** Rate limiting, security headers, privacy policy, data rights portal, upload validation, CSRF protection
-- **Storage:** Vercel Blob integration configured
-- **Security libraries:** CSRF protection utilities (session-based and public request validation)
+- Tabelas: 10 (Tenant, Domain, TenantSettings, TenantProfile, User,
+  PasswordResetToken, Faq, Lead, AuditLog, TenantTheme)
+- Rotas API: ~15 · Páginas: ~15
+- Testes: Vitest 5 + jsdom (3 testes — cobertura mínima, ampliar)
+- Deploy: Vercel (`acolha-psicologos.vercel.app`)
 
-## Próximos Passos Imediatos
+## Observações
 
-### Prioridade 1: Editor Visual de Templates
-
-**Objetivo:** Substituir o modelo "formulário + preview" por edição visual direta — o psicólogo escolhe um template pronto e edita a página real clicando nas seções (modelo Shopify Customizer adaptado).
-
-**Plano completo:** ver `docs/plano-editor-visual.md`
-
-**Status:** ✅ Editor Visual completo — todas as fases entregues
-
-**Roadmap:**
-- ✅ E-1 Higiene Frontend (4-6h) — AdminLayout, custom hooks, design tokens
-- ✅ E0 Fundação de Tema (6-8h) — TenantTheme + /api/theme + ThemeProvider
-- ✅ E1 Modularização (10-12h) — seções com schema + SiteRenderer
-- ✅ E2 Templates (6-8h) — 5 presets (Noite, Acolhimento, Sereno, Essencial, Vital) + galeria
-- ✅ E3 Editor Visual (12-16h) — click-to-select + inspector + draft/publish
-- ✅ E4 Seções/Listas (6-8h) — reordenação, FAQ no editor, Depoimentos, Mapa
-- ✅ E5 Polish (6-8h) — undo/redo, autosave, device preview, a11y
-
-**Pendente (validação com usuário):** retirar ou redirecionar `/profile` antigo após confirmação de que o editor cobre todos os casos de uso.
-- ⏳ E1 Modularização (10-12h) — seções com schema + SiteRenderer
-- ⏳ E2 Templates (6-8h) — 5 presets (Noite, Acolhimento, Sereno, Essencial, Vital) + galeria
-- ⏳ E3 Editor Visual (12-16h) — click-to-select + inspector + draft/publish
-- ⏳ E4 Seções/Listas (6-8h) — reordenação, FAQ no editor, Depoimentos, Mapa
-- ⏳ E5 Polish (6-8h) — undo/redo, autosave, device preview, a11y
-
-**Total estimado:** 50-66h
-
-**Legado já aproveitável:**
-- PreviewWrapper → base do EditorShell
-- LivePreview → será substituído pelo SiteRenderer único
-- PreviewStateManager → base do debounce/autosave do draft
-
-### Prioridade 2: Completar Fase 7 - Segurança e LGPD
-1. Implementar fluxo de exclusão de dados automatizado
-2. Implementar auditoria de ações sensíveis
-
-### Prioridade 3: Fases Futuras
-1. Implementar gestão de domínios personalizados (integração Vercel API)
-2. Implementar sistema de analytics e tracking
-3. Testar fluxo completo end-to-end
-4. Preparar para produção
-
-## Observações Importantes
-
-- O projeto está em desenvolvimento solo em horas vagas
-- Foco em funcionalidades core do MVP
-- Decisões técnicas priorizam baixo custo operacional
-- Documentação mantida atualizada para facilitar retomada
-- Branch principal único (sem feature branches ainda)
+- Desenvolvimento solo em horas vagas; foco em MVP e baixo custo
+- Regra de trabalho: feature branch a partir de `origin/development`,
+  commit, push, PR para `development`. Nunca commitar em `development`/`main`.
+- Após migration Prisma: `npx prisma generate`.

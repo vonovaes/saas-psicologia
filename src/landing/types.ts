@@ -65,4 +65,6 @@ export interface SectionSchema {
   description: string;
   variants: { id: string; label: string }[];
   settings: SettingField[];
+  /** Aviso exibido no editor ao adicionar a seção (ex: compliance CFP) */
+  warning?: string;
 }

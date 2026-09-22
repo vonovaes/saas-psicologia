@@ -127,6 +127,11 @@ export function SectionList({
                   <span className="block text-xs text-gray-500">
                     {mod!.schema.description}
                   </span>
+                  {mod!.schema.warning && (
+                    <span className="mt-1 block text-xs text-amber-700">
+                      {mod!.schema.warning}
+                    </span>
+                  )}
                 </button>
               ))
             )}

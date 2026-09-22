@@ -128,6 +128,25 @@ export function tokensToCssVars(tokens: ThemeTokens): Record<string, string> {
     full: '9999px',
   };
 
+  const headingFontMap: Record<TypographyTokens['headingFont'], string> = {
+    sans: 'var(--font-site-sans)',
+    serif: 'var(--font-site-serif)',
+    display: 'var(--font-site-display)',
+  };
+
+  const headingWeightMap: Record<TypographyTokens['headingWeight'], string> = {
+    light: '300',
+    normal: '450',
+    bold: '700',
+  };
+
+  // scale controla respiro dos títulos: zoom + tracking
+  const scaleMap: Record<TypographyTokens['scale'], { zoom: string; tracking: string }> = {
+    compact: { zoom: '0.94', tracking: '-0.02em' },
+    normal: { zoom: '1', tracking: '0' },
+    spacious: { zoom: '1.05', tracking: '0.005em' },
+  };
+
   return {
     '--site-primary': tokens.colors.primary,
     '--site-accent': tokens.colors.accent,
@@ -136,5 +155,9 @@ export function tokensToCssVars(tokens: ThemeTokens): Record<string, string> {
     '--site-text': tokens.colors.text,
     '--site-text-muted': tokens.colors.textMuted,
     '--site-radius': radiusMap[tokens.shape.radius],
+    '--site-heading-font': headingFontMap[tokens.typography.headingFont],
+    '--site-heading-weight': headingWeightMap[tokens.typography.headingWeight],
+    '--site-heading-zoom': scaleMap[tokens.typography.scale].zoom,
+    '--site-heading-tracking': scaleMap[tokens.typography.scale].tracking,
   };
 }

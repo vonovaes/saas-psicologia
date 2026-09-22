@@ -23,7 +23,7 @@ export function MapSection({ data, config, sectionIndex, editable, onUpdateConte
           </p>
           <InlineText
             as="h2"
-            className="text-3xl @sm:text-4xl @lg:text-5xl font-light tracking-tight text-site-text"
+            className="site-heading text-3xl @sm:text-4xl @lg:text-5xl text-site-text"
             value={title}
             editable={editable}
             onChange={(v) => updateSection('title', v)}
@@ -41,7 +41,7 @@ export function MapSection({ data, config, sectionIndex, editable, onUpdateConte
           )}
         </div>
         {embedUrl && (
-          <div className="rounded-3xl overflow-hidden border border-white/5 aspect-video">
+          <div className="site-card overflow-hidden aspect-video">
             <iframe
               src={embedUrl}
               className="w-full h-full"

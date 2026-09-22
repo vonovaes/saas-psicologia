@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { SectionProps } from '@/landing/types';
 import { InlineText } from '@/components/features/editor/inline/InlineText';
 import {
@@ -38,7 +38,32 @@ function HighlightIcon({ name, className }: { name: string; className?: string }
 
 export function AboutSection({ data, config, sectionIndex, editable, onUpdateSectionOverride }: SectionProps) {
   const profile = data.profile;
-  const [pickerIndex, setPickerIndex] = useState<number | null>(null);
+  const [picker, setPicker] = useState<{ index: number; top: number; left: number } | null>(null);
+  const pickerRef = useRef<HTMLDivElement>(null);
+
+  // Fecha o seletor em clique fora, Escape ou scroll
+  useEffect(() => {
+    if (!picker) return;
+    const handleClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (pickerRef.current?.contains(target)) return;
+      if (target.closest('[data-icon-trigger]')) return;
+      setPicker(null);
+    };
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setPicker(null);
+    };
+    const handleScroll = () => setPicker(null);
+    document.addEventListener('mousedown', handleClick);
+    document.addEventListener('keydown', handleKey);
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => {
+      document.removeEventListener('mousedown', handleClick);
+      document.removeEventListener('keydown', handleKey);
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, [picker]);
+
   if (!profile) return null;
 
   const title = (config.overrides.title as string) || 'Experiência que transforma';
@@ -64,6 +89,23 @@ export function AboutSection({ data, config, sectionIndex, editable, onUpdateSec
   };
   const addHighlight = () => updateSection('highlights', [...highlights, { icon: 'star', text: '' }]);
   const removeHighlight = (index: number) => updateSection('highlights', highlights.filter((_, i) => i !== index));
+
+  const openPicker = (index: number, e: React.MouseEvent<HTMLElement>) => {
+    e.stopPropagation();
+    if (picker?.index === index) {
+      setPicker(null);
+      return;
+    }
+    const rect = e.currentTarget.getBoundingClientRect();
+    const width = 224;
+    const height = 148;
+    const top =
+      window.innerHeight - rect.bottom >= height + 8
+        ? rect.bottom + 8
+        : Math.max(8, rect.top - height - 8);
+    const left = Math.max(8, Math.min(window.innerWidth - width - 8, rect.left - width / 2 + rect.width / 2));
+    setPicker({ index, top, left });
+  };
 
   return (
     <section className="py-12 @sm:py-16 @lg:py-24 px-4 bg-site-bg">
@@ -102,46 +144,18 @@ export function AboutSection({ data, config, sectionIndex, editable, onUpdateSec
                   className="site-card p-8 w-full max-w-md hover:border-site-primary/20 transition-all duration-500 relative group/highlight"
                 >
                   <div className="flex items-center gap-4">
-                    <div className="relative shrink-0">
-                      <button
-                        type="button"
-                        disabled={!editable}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setPickerIndex(pickerIndex === index ? null : index);
-                        }}
-                        title={editable ? 'Trocar ícone' : undefined}
-                        className={`w-12 h-12 bg-site-primary/10 rounded-full flex items-center justify-center ${
-                          editable ? 'cursor-pointer hover:bg-site-primary/20 ring-offset-2 hover:ring-2 hover:ring-site-primary/30' : ''
-                        }`}
-                      >
-                        <HighlightIcon name={item.icon} className="w-6 h-6 text-site-primary" />
-                      </button>
-
-                      {editable && pickerIndex === index && (
-                        <div
-                          className="absolute left-0 top-14 z-40 grid grid-cols-4 gap-1 rounded-xl border border-gray-200 bg-white p-2 shadow-xl"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          {Object.entries(HIGHLIGHT_ICONS).map(([key, { icon: Icon, label }]) => (
-                            <button
-                              key={key}
-                              type="button"
-                              title={label}
-                              onClick={() => {
-                                updateHighlight(index, { icon: key });
-                                setPickerIndex(null);
-                              }}
-                              className={`flex h-9 w-9 items-center justify-center rounded-lg transition-colors ${
-                                item.icon === key ? 'bg-acolha-accent text-white' : 'text-gray-600 hover:bg-gray-100'
-                              }`}
-                            >
-                              <Icon className="h-4 w-4" />
-                            </button>
-                          ))}
-                        </div>
-                      )}
-                    </div>
+                    <button
+                      type="button"
+                      data-icon-trigger
+                      disabled={!editable}
+                      onClick={(e) => openPicker(index, e)}
+                      title={editable ? 'Trocar ícone' : undefined}
+                      className={`w-12 h-12 shrink-0 bg-site-primary/10 rounded-full flex items-center justify-center ${
+                        editable ? 'cursor-pointer hover:bg-site-primary/20 hover:ring-2 hover:ring-site-primary/30' : ''
+                      }`}
+                    >
+                      <HighlightIcon name={item.icon} className="w-6 h-6 text-site-primary" />
+                    </button>
                     <InlineText
                       as="span"
                       className="text-site-text-muted font-light flex-1"
@@ -182,6 +196,34 @@ export function AboutSection({ data, config, sectionIndex, editable, onUpdateSec
           )}
         </div>
       </div>
+
+      {editable && picker && (
+        <div
+          ref={pickerRef}
+          className="fixed z-[100] grid w-56 grid-cols-4 gap-1 rounded-xl border border-gray-200 bg-white p-2 shadow-2xl"
+          style={{ top: picker.top, left: picker.left }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          {Object.entries(HIGHLIGHT_ICONS).map(([key, { icon: Icon, label }]) => (
+            <button
+              key={key}
+              type="button"
+              title={label}
+              onClick={() => {
+                updateHighlight(picker.index, { icon: key });
+                setPicker(null);
+              }}
+              className={`flex h-10 w-10 items-center justify-center rounded-lg transition-colors ${
+                highlights[picker.index]?.icon === key
+                  ? 'bg-acolha-accent text-white'
+                  : 'text-gray-600 hover:bg-gray-100'
+              }`}
+            >
+              <Icon className="h-4 w-4" />
+            </button>
+          ))}
+        </div>
+      )}
     </section>
   );
 }

@@ -33,15 +33,7 @@ export class TenantSettingsRepository extends BaseRepository {
     });
   }
 
-  async upsert(data: {
-    whatsappNumber?: string;
-    instagramHandle?: string;
-    googleMapsEmbedUrl?: string;
-    googleTagManagerId?: string;
-    googleAnalyticsId?: string;
-    googleAdsId?: string;
-    metaPixelId?: string;
-  }): Promise<TenantSettings> {
+  async upsert(data: Partial<TenantSettings>): Promise<TenantSettings> {
     return prisma.tenantSettings.upsert({
       where: { tenantId: this.tenantId },
       create: {

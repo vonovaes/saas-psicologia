@@ -3,10 +3,15 @@
 import { Accordion } from '@/components/ui';
 import { SectionProps } from '@/landing/types';
 import { InlineText } from '@/components/features/editor/inline/InlineText';
+import { SectionEmptyState } from '../SectionEmptyState';
 
 export function FaqSection({ data, config, sectionIndex, editable, onUpdateContent, onUpdateSectionOverride }: SectionProps) {
   const faqs = data.faqs;
-  if (!faqs || faqs.length === 0) return null;
+  if (!faqs || faqs.length === 0) {
+    return editable ? (
+      <SectionEmptyState message="Nenhuma pergunta ainda. Adicione pelo painel de seções." />
+    ) : null;
+  }
 
   const title = (config.overrides.title as string) || 'Perguntas Frequentes';
   const variant = config.variant;

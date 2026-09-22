@@ -3,6 +3,8 @@ import { headers } from 'next/headers';
 import { AcolhaHome } from '@/components/features/marketing/AcolhaHome';
 import TenantLandingPage from '@/components/features/tenant/TenantLandingPage';
 import { getHostname, getLoginHref, getSalesContactUrl, isPlatformHost } from '@/lib/platform-host';
+import { buildTenantMetadata } from '@/lib/seo';
+import { prisma } from '@/server/lib/prisma';
 import { TenantResolutionService } from '@/server/services';
 
 const tenantResolutionService = new TenantResolutionService();
@@ -25,6 +27,14 @@ export async function generateMetadata(): Promise<Metadata> {
       description:
         'Landing page profissional, domínio próprio e painel simples para psicólogos captarem contatos por WhatsApp ou formulário.',
     };
+  }
+
+  const resolution = await tenantResolutionService.resolveByHost(host);
+  if (resolution?.isActive) {
+    const profile = await prisma.tenantProfile.findUnique({
+      where: { tenantId: resolution.tenant.id },
+    });
+    return buildTenantMetadata(profile, resolution.tenant.name);
   }
 
   return {

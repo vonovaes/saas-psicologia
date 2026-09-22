@@ -8,6 +8,8 @@ export function AboutSection({ data, config, sectionIndex, editable, onUpdateCon
   if (!profile) return null;
 
   const title = (config.overrides.title as string) || 'Experiência que transforma';
+  // Texto próprio da seção — até ser editado, espelha a descrição do perfil.
+  const aboutText = (config.overrides.text as string) || profile.description;
   const minimal = config.variant === 'minimal';
 
   const updateSection = (key: string, value: string) => {
@@ -37,11 +39,11 @@ export function AboutSection({ data, config, sectionIndex, editable, onUpdateCon
             <InlineText
               as="p"
               className="text-base @sm:text-xl text-site-text-muted font-light leading-relaxed"
-              value={profile.description}
+              value={aboutText}
               editable={editable}
               multiline
-              onChange={updateProfile('description')}
-              placeholder="Descrição profissional"
+              onChange={(v) => updateSection('text', v)}
+              placeholder="Conte um pouco sobre você, sua formação e experiência"
             />
           </div>
 

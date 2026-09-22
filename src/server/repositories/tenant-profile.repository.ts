@@ -34,21 +34,19 @@ export class TenantProfileRepository extends BaseRepository {
     });
   }
 
-  async upsert(data: {
-    displayName: string;
-    specialties: string[];
-    approaches?: string[];
-    city: string;
-    description: string;
-    address?: string;
-    profileImageUrl?: string;
-    attendanceType?: string;
-  }): Promise<TenantProfile> {
+  async upsert(data: Partial<TenantProfile>): Promise<TenantProfile> {
     return prisma.tenantProfile.upsert({
       where: { tenantId: this.tenantId },
       create: {
-        ...data,
         tenantId: this.tenantId,
+        displayName: data.displayName ?? '',
+        specialties: data.specialties ?? [],
+        approaches: data.approaches ?? [],
+        city: data.city ?? '',
+        description: data.description ?? '',
+        address: data.address,
+        profileImageUrl: data.profileImageUrl,
+        attendanceType: data.attendanceType,
       },
       update: data,
     });

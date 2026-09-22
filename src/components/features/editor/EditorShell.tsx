@@ -99,13 +99,16 @@ export function EditorShell({
   }, [editor.isDirty]);
 
   const handlePublish = async () => {
-    const ok = await editor.publish();
-    if (ok) {
+    try {
+      await editor.publish();
       await onRefreshData();
       editor.clearContentEdits();
       setFeedback('Publicado com sucesso!');
-    } else {
-      setFeedback('Erro ao publicar.');
+    } catch (err) {
+      console.error('Publish failed:', err);
+      setFeedback(
+        err instanceof Error ? err.message : 'Erro ao publicar. Tente novamente.'
+      );
     }
     setTimeout(() => setFeedback(''), 4000);
   };

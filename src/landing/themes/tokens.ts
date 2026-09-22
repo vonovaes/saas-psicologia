@@ -113,6 +113,27 @@ export const DEFAULT_THEME: TenantThemeData = {
   sections: DEFAULT_SECTIONS,
 };
 
+/**
+ * Troca de template preservando as edições do usuário: para cada
+ * seção do novo preset, mantém `overrides` (textos editados como
+ * chapéu e títulos) e `visible` da seção anterior do mesmo tipo.
+ */
+export function mergeSectionsPreservingEdits(
+  prevSections: SectionConfig[],
+  nextSections: SectionConfig[],
+): SectionConfig[] {
+  const prevByType = new Map(prevSections.map((s) => [s.type, s]));
+  return nextSections.map((s) => {
+    const prev = prevByType.get(s.type);
+    if (!prev) return s;
+    return {
+      ...s,
+      visible: prev.visible,
+      overrides: { ...s.overrides, ...prev.overrides },
+    };
+  });
+}
+
 // ─── Mapeamento tokens → CSS variables ──────────────────────────
 
 /**

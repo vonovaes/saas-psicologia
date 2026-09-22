@@ -7,6 +7,7 @@ import {
   SectionType,
   ThemeTokens,
   DEFAULT_THEME,
+  mergeSectionsPreservingEdits,
 } from '@/landing/themes/tokens';
 import { SiteData } from '@/landing/types';
 import { useRef } from 'react';
@@ -141,7 +142,10 @@ export function useEditorState(initialTheme: TenantThemeData | null, initialCont
   }, []);
 
   const applyTemplate = useCallback((template: TenantThemeData) => {
-    setTheme(template);
+    setTheme((prev) => ({
+      ...template,
+      sections: mergeSectionsPreservingEdits(prev.sections, template.sections),
+    }));
     pushHistory();
     setIsDirty(true);
   }, []);
@@ -288,7 +292,7 @@ export function useEditorState(initialTheme: TenantThemeData | null, initialCont
             ...(Object.keys(settingsPatch).length ? { settings: settingsPatch } : {}),
           }),
         });
-        if (!res.ok) throw new Error('Failed to save content');
+        if (!res.ok) throw new Error('Erro ao salvar o conteúdo do perfil.');
       }
 
       // FAQs editadas no editor substituem a lista inteira ao publicar
@@ -301,7 +305,7 @@ export function useEditorState(initialTheme: TenantThemeData | null, initialCont
             faqs: faqsEdit.map(({ question, answer }) => ({ question, answer })),
           }),
         });
-        if (!res.ok) throw new Error('Failed to save FAQs');
+        if (!res.ok) throw new Error('Erro ao salvar as perguntas frequentes.');
       }
 
       // 2) Publica o tema
@@ -310,7 +314,7 @@ export function useEditorState(initialTheme: TenantThemeData | null, initialCont
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action: 'publish', theme }),
       });
-      if (!res.ok) throw new Error('Failed to publish theme');
+      if (!res.ok) throw new Error('Erro ao publicar o tema.');
 
       setLastSavedAt(new Date());
       return true;

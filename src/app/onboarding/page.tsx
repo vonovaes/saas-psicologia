@@ -99,7 +99,19 @@ function HelperCard({ children }: { children: React.ReactNode }) {
   );
 }
 
-const STEPS = ['Sobre você', 'Especialidades', 'Contato', 'Visual'];
+const STEPS = ['Sobre você', 'Foto', 'Especialidades', 'Contato', 'FAQ', 'Visual'];
+
+interface FaqItem {
+  question: string;
+  answer: string;
+}
+
+const FAQ_SUGGESTIONS = [
+  'Como funciona a primeira sessão?',
+  'Atende online ou presencial?',
+  'Qual o valor da sessão?',
+  'Qual a duração e frequência das sessões?',
+];
 
 export default function OnboardingPage() {
   const router = useRouter();
@@ -110,23 +122,18 @@ export default function OnboardingPage() {
   const [city, setCity] = useState('');
   const [description, setDescription] = useState('');
   const [attendanceType, setAttendanceType] = useState('Presencial e Online');
+  const [photoUrl, setPhotoUrl] = useState('');
+  const [photoPreview, setPhotoPreview] = useState('');
+  const [uploading, setUploading] = useState(false);
   const [specialties, setSpecialties] = useState<string[]>([]);
   const [approaches, setApproaches] = useState<string[]>([]);
   const [whatsapp, setWhatsapp] = useState('');
   const [instagram, setInstagram] = useState('');
+  const [faqs, setFaqs] = useState<FaqItem[]>([]);
   const [templateId, setTemplateId] = useState('acolhimento');
-  const [done, setDone] = useState(false);
-  const [tenantSlug, setTenantSlug] = useState<string | null>(null);
-  const [linkCopied, setLinkCopied] = useState(false);
 
   const mainRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    fetch('/api/profile')
-      .then((r) => (r.ok ? r.json() : null))
-      .then((d) => setTenantSlug(d?.tenantSlug ?? null))
-      .catch(() => {});
-  }, []);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     // Foco no primeiro campo util a cada etapa
@@ -141,11 +148,36 @@ export default function OnboardingPage() {
   const canContinue =
     step === 0
       ? city.trim().length > 0 && description.trim().length >= 20
-      : step === 1
+      : step === 2
       ? specialties.length > 0
-      : step === 3
+      : step === 5
       ? !!templateId
       : true;
+
+  const handlePhotoSelect = async (file: File) => {
+    setError('');
+    setPhotoPreview(URL.createObjectURL(file));
+    setUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      const res = await fetch('/api/upload', { method: 'POST', body: formData });
+      const data = await res.json().catch(() => null);
+      if (!res.ok || !data?.file?.url) {
+        throw new Error(data?.error ?? 'Erro no upload da foto');
+      }
+      setPhotoUrl(data.file.url);
+    } catch (err) {
+      setPhotoPreview('');
+      setError(err instanceof Error ? err.message : 'Erro no upload da foto');
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const updateFaq = (index: number, field: keyof FaqItem, value: string) => {
+    setFaqs((prev) => prev.map((f, i) => (i === index ? { ...f, [field]: value } : f)));
+  };
 
   const finish = async () => {
     setSaving(true);
@@ -155,114 +187,44 @@ export default function OnboardingPage() {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          profile: { city, description, specialties, approaches, attendanceType },
+          profile: {
+            city,
+            description,
+            specialties,
+            approaches,
+            attendanceType,
+            profileImageUrl: photoUrl,
+          },
           settings: { whatsappNumber: whatsapp, instagramHandle: instagram },
         }),
       });
       if (!profileRes.ok) throw new Error('Erro ao salvar perfil');
 
+      const validFaqs = faqs.filter((f) => f.question.trim() && f.answer.trim());
+      if (validFaqs.length > 0) {
+        const faqRes = await fetch('/api/faq', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ faqs: validFaqs }),
+        });
+        if (!faqRes.ok) throw new Error('Erro ao salvar perguntas frequentes');
+      }
+
       const template = TEMPLATES.find((t) => t.id === templateId)!;
       const themeRes = await fetch('/api/theme', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'publish', theme: template.preset }),
+        body: JSON.stringify({ action: 'draft', draft: template.preset }),
       });
       if (!themeRes.ok) throw new Error('Erro ao aplicar template');
 
-      setDone(true);
+      // Leva direto ao editor em modo tour — o usuário revisa e publica lá
+      router.push('/editor?tour=1');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erro ao finalizar');
       setSaving(false);
     }
   };
-
-  const publicUrl = tenantSlug
-    ? `${typeof window !== 'undefined' ? window.location.origin : ''}/p/${tenantSlug}`
-    : null;
-
-  if (done) {
-    return (
-      <div className="min-h-screen bg-acolha-bg flex flex-col">
-        <header className="px-6 py-6">
-          <div className="mx-auto max-w-3xl">
-            <span className="text-xl font-semibold tracking-tight text-acolha-ink">
-              Acolha<span className="text-acolha-accent">.</span>
-            </span>
-          </div>
-        </header>
-        <main className="flex flex-1 items-center justify-center px-6 py-10">
-          <div className="w-full max-w-xl text-center">
-            <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-green-100 text-3xl">
-              🎉
-            </div>
-            <h1 className="text-3xl font-medium text-acolha-ink">Sua página está no ar!</h1>
-            <p className="mt-3 text-acolha-body">
-              Parabéns. Agora é só compartilhar seu endereço com pacientes e ajustar o que quiser.
-            </p>
-
-            {publicUrl && (
-              <div className="mt-6 rounded-[1.4rem] border border-white/80 bg-white/90 p-6 shadow-[0_28px_80px_-35px_rgba(24,49,43,0.25)]">
-                <code className="block break-all text-sm font-medium text-acolha-accent">
-                  {publicUrl}
-                </code>
-                <div className="mt-4 flex flex-wrap justify-center gap-2">
-                  <button
-                    type="button"
-                    onClick={async () => {
-                      await navigator.clipboard.writeText(publicUrl);
-                      setLinkCopied(true);
-                      setTimeout(() => setLinkCopied(false), 2000);
-                    }}
-                    className="rounded-full bg-acolha-accent px-5 py-2.5 text-sm font-semibold text-white hover:bg-acolha-accent-hover"
-                  >
-                    {linkCopied ? '✓ Copiado!' : 'Copiar link'}
-                  </button>
-                  <a
-                    href={publicUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="rounded-full border border-acolha-line px-5 py-2.5 text-sm font-medium text-acolha-ink hover:bg-acolha-bg"
-                  >
-                    Abrir minha página ↗
-                  </a>
-                </div>
-              </div>
-            )}
-
-            <div className="mt-8 rounded-[1.4rem] border border-white/80 bg-white/90 p-6 text-left shadow-[0_28px_80px_-35px_rgba(24,49,43,0.25)]">
-              <p className="mb-4 text-sm font-medium text-acolha-ink">Próximos passos no editor</p>
-              <ul className="space-y-3 text-sm text-acolha-body">
-                <li className="flex items-start gap-3">
-                  <span className="text-acolha-accent">✎</span>
-                  <span>Clique em qualquer texto da página para editar.</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <span className="text-acolha-accent">☰</span>
-                  <span>Use o botão Seções para reordenar, ocultar ou adicionar blocos.</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <span className="text-acolha-accent">🎨</span>
-                  <span>Use o botão Personalizar para trocar cores, fontes e template.</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <span className="text-acolha-accent">🖼</span>
-                  <span>Clique na foto do perfil para trocar ou adicionar sua imagem.</span>
-                </li>
-              </ul>
-            </div>
-
-            <button
-              type="button"
-              onClick={() => router.push('/editor')}
-              className="mt-6 inline-flex items-center rounded-full bg-acolha-ink px-6 py-3 text-sm font-semibold text-white hover:bg-acolha-ink/90"
-            >
-              Abrir o editor →
-            </button>
-          </div>
-        </main>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-acolha-bg flex flex-col">
@@ -364,8 +326,76 @@ export default function OnboardingPage() {
               </div>
             )}
 
-            {/* ── Passo 1: Especialidades ─────────────────────── */}
+            {/* ── Passo 1: Foto ──────────────────────────────── */}
             {step === 1 && (
+              <div className="space-y-5">
+                <StepHeader
+                  title="Sua foto profissional"
+                  subtitle="Ela aparece no topo da página e passa confiança para quem visita. Opcional — você pode adicionar depois."
+                />
+                <div className="flex flex-col items-center gap-4">
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={uploading}
+                    className="group relative h-32 w-32 overflow-hidden rounded-full border-2 border-dashed border-acolha-line bg-acolha-mist transition-colors hover:border-acolha-accent focus:outline-none focus:ring-2 focus:ring-acolha-accent/30"
+                    aria-label="Enviar foto de perfil"
+                  >
+                    {photoPreview ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={photoPreview}
+                        alt="Prévia da foto de perfil"
+                        className="h-full w-full object-cover"
+                      />
+                    ) : (
+                      <span className="flex h-full w-full flex-col items-center justify-center gap-1 text-acolha-muted transition-colors group-hover:text-acolha-accent">
+                        <svg className="h-7 w-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0z" />
+                        </svg>
+                        <span className="text-xs font-medium">Adicionar</span>
+                      </span>
+                    )}
+                    {uploading && (
+                      <span className="absolute inset-0 flex items-center justify-center bg-white/70 text-xs font-medium text-acolha-ink">
+                        Enviando...
+                      </span>
+                    )}
+                  </button>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) handlePhotoSelect(file);
+                      e.target.value = '';
+                    }}
+                  />
+                  {photoPreview && !uploading && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setPhotoPreview('');
+                        setPhotoUrl('');
+                      }}
+                      className="text-xs font-medium text-acolha-muted hover:text-red-600"
+                    >
+                      Remover foto
+                    </button>
+                  )}
+                </div>
+                <HelperCard>
+                  <strong className="text-acolha-ink">Dica:</strong> use uma foto nítida, com fundo
+                  neutro e olhando para a câmera — é o que mais gera confiança.
+                </HelperCard>
+              </div>
+            )}
+
+            {/* ── Passo 2: Especialidades ─────────────────────── */}
+            {step === 2 && (
               <div className="space-y-5">
                 <StepHeader
                   title="Suas especialidades"
@@ -392,8 +422,8 @@ export default function OnboardingPage() {
               </div>
             )}
 
-            {/* ── Passo 2: Contato ────────────────────────────── */}
-            {step === 2 && (
+            {/* ── Passo 3: Contato ────────────────────────────── */}
+            {step === 3 && (
               <div className="space-y-5">
                 <StepHeader
                   title="Como pacientes falam com você"
@@ -425,8 +455,65 @@ export default function OnboardingPage() {
               </div>
             )}
 
-            {/* ── Passo 3: Template ───────────────────────────── */}
-            {step === 3 && (
+            {/* ── Passo 4: FAQ ────────────────────────────────── */}
+            {step === 4 && (
+              <div className="space-y-5">
+                <StepHeader
+                  title="Perguntas frequentes"
+                  subtitle="Responda o que pacientes costumam perguntar. Opcional — até 5 perguntas."
+                />
+                {faqs.map((faq, i) => (
+                  <div
+                    key={i}
+                    className="space-y-3 rounded-xl border border-acolha-line bg-white p-4"
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-semibold uppercase tracking-wide text-acolha-muted">
+                        Pergunta {i + 1}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setFaqs((prev) => prev.filter((_, idx) => idx !== i))}
+                        className="text-xs font-medium text-acolha-muted hover:text-red-600"
+                      >
+                        Remover
+                      </button>
+                    </div>
+                    <input
+                      value={faq.question}
+                      onChange={(e) => updateFaq(i, 'question', e.target.value)}
+                      placeholder="Pergunta"
+                      className={inputClass}
+                    />
+                    <textarea
+                      value={faq.answer}
+                      onChange={(e) => updateFaq(i, 'answer', e.target.value)}
+                      placeholder="Resposta"
+                      rows={2}
+                      className={inputClass}
+                    />
+                  </div>
+                ))}
+                {faqs.length < 5 && (
+                  <button
+                    type="button"
+                    onClick={() => setFaqs((prev) => [...prev, { question: '', answer: '' }])}
+                    className="w-full rounded-xl border-2 border-dashed border-acolha-line py-3 text-sm font-medium text-acolha-muted transition-colors hover:border-acolha-accent hover:text-acolha-accent"
+                  >
+                    + Adicionar pergunta
+                  </button>
+                )}
+                {faqs.length === 0 && (
+                  <HelperCard>
+                    <strong className="text-acolha-ink">Sem ideias?</strong> Exemplos comuns:{' '}
+                    {FAQ_SUGGESTIONS.join(' · ')}
+                  </HelperCard>
+                )}
+              </div>
+            )}
+
+            {/* ── Passo 5: Template ───────────────────────────── */}
+            {step === 5 && (
               <div className="space-y-5">
                 <StepHeader
                   title="Escolha o visual da página"

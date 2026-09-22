@@ -109,8 +109,8 @@ export default async function DashboardPage() {
     },
     {
       href: '/dashboard/dominio',
-      title: 'Domínio personalizado',
-      desc: 'Use seu próprio domínio (ex: seusite.com.br)',
+      title: 'Endereço da página',
+      desc: 'Ative um endereço gratuito (ex: seu-nome.vercel.app)',
       iconBg: 'bg-sky-100 text-sky-600',
       icon: (
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8}

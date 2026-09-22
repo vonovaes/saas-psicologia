@@ -29,7 +29,7 @@ export function FaqSection({ data, config, sectionIndex, editable, onUpdateConte
           </p>
           <InlineText
             as="h2"
-            className="text-3xl @sm:text-4xl @lg:text-5xl font-light tracking-tight text-site-text"
+            className="site-heading text-3xl @sm:text-4xl @lg:text-5xl text-site-text"
             value={title}
             editable={editable}
             onChange={(v) => updateSection('title', v)}
@@ -42,7 +42,7 @@ export function FaqSection({ data, config, sectionIndex, editable, onUpdateConte
             {faqs.map((faq, index) => (
               <div
                 key={faq.id || index}
-                className="bg-gradient-to-br from-site-surface to-site-bg rounded-2xl p-6 backdrop-blur-xl border border-white/5 hover:border-site-primary/30 transition-all duration-300"
+                className="site-card p-6 hover:border-site-primary/30 transition-all duration-300"
               >
                 <InlineText
                   as="h3"
@@ -65,7 +65,7 @@ export function FaqSection({ data, config, sectionIndex, editable, onUpdateConte
             ))}
           </div>
         ) : (
-          <div className="bg-gradient-to-br from-site-surface to-site-bg rounded-3xl backdrop-blur-xl border border-white/5">
+          <div className="site-card">
             <Accordion
               items={faqs.map((faq, index) => ({
                 title: (

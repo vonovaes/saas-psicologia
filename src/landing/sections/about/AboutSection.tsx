@@ -28,7 +28,7 @@ export function AboutSection({ data, config, sectionIndex, editable, onUpdateCon
             </p>
             <InlineText
               as="h2"
-              className="text-3xl @sm:text-4xl @lg:text-5xl font-light tracking-tight text-site-text"
+              className="site-heading text-3xl @sm:text-4xl @lg:text-5xl text-site-text"
               value={title}
               editable={editable}
               onChange={(v) => updateSection('title', v)}
@@ -47,7 +47,7 @@ export function AboutSection({ data, config, sectionIndex, editable, onUpdateCon
 
           {!minimal && (
             <div className="space-y-6">
-              <div className="bg-gradient-to-br from-site-surface to-site-bg rounded-2xl p-8 backdrop-blur-xl border border-white/5 hover:border-site-primary/20 transition-all duration-500">
+              <div className="site-card p-8 hover:border-site-primary/20 transition-all duration-500">
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 bg-site-primary/10 rounded-full flex items-center justify-center">
                     <svg className="w-6 h-6 text-site-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -65,7 +65,7 @@ export function AboutSection({ data, config, sectionIndex, editable, onUpdateCon
                 </div>
               </div>
 
-              <div className="bg-gradient-to-br from-site-surface to-site-bg rounded-2xl p-8 backdrop-blur-xl border border-white/5 hover:border-site-primary/20 transition-all duration-500">
+              <div className="site-card p-8 hover:border-site-primary/20 transition-all duration-500">
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 bg-site-primary/10 rounded-full flex items-center justify-center">
                     <svg className="w-6 h-6 text-site-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -85,7 +85,7 @@ export function AboutSection({ data, config, sectionIndex, editable, onUpdateCon
               </div>
 
               {profile.address && (
-                <div className="bg-gradient-to-br from-site-surface to-site-bg rounded-2xl p-8 backdrop-blur-xl border border-white/5 hover:border-site-primary/20 transition-all duration-500">
+                <div className="site-card p-8 hover:border-site-primary/20 transition-all duration-500">
                   <div className="flex items-center gap-4">
                     <div className="w-12 h-12 bg-site-primary/10 rounded-full flex items-center justify-center">
                       <svg className="w-6 h-6 text-site-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -71,7 +71,7 @@ export function ContactSection({ data, config, sectionIndex, editable, onUpdateS
           </p>
           <InlineText
             as="h2"
-            className="text-3xl @sm:text-4xl @lg:text-5xl font-light tracking-tight mb-4 text-site-text"
+            className="site-heading text-3xl @sm:text-4xl @lg:text-5xl mb-4 text-site-text"
             value={title}
             editable={editable}
             onChange={(v) => updateSection('title', v)}
@@ -88,7 +88,7 @@ export function ContactSection({ data, config, sectionIndex, editable, onUpdateS
           />
         </div>
 
-        <div className="bg-gradient-to-br from-site-surface to-site-bg rounded-3xl p-6 @sm:p-12 backdrop-blur-xl border border-white/5">
+        <div className="site-card p-6 @sm:p-12">
           {whatsappOnly ? (
             <div className="text-center space-y-6 @sm:space-y-8">
               {whatsappLink ? (

@@ -64,7 +64,7 @@ export function HeroSection({ data, config, sectionIndex, editable, onUpdateCont
           />
           <InlineText
             as="h1"
-            className="text-4xl @sm:text-5xl @lg:text-7xl font-light tracking-tight leading-tight text-site-text mb-6"
+            className="site-heading text-4xl @sm:text-5xl @lg:text-7xl leading-tight text-site-text mb-6"
             value={profile.displayName}
             editable={editable}
             onChange={updateProfile('displayName')}
@@ -136,7 +136,7 @@ export function HeroSection({ data, config, sectionIndex, editable, onUpdateCont
           />
           <InlineText
             as="h1"
-            className="text-4xl @sm:text-5xl @lg:text-7xl font-light tracking-tight leading-tight text-site-text mb-4"
+            className="site-heading text-4xl @sm:text-5xl @lg:text-7xl leading-tight text-site-text mb-4"
             value={profile.displayName}
             editable={editable}
             onChange={updateProfile('displayName')}
@@ -220,7 +220,7 @@ export function HeroSection({ data, config, sectionIndex, editable, onUpdateCont
               />
               <InlineText
                 as="h1"
-                className="text-4xl @sm:text-5xl @lg:text-7xl font-light tracking-tight leading-tight text-site-text"
+                className="site-heading text-4xl @sm:text-5xl @lg:text-7xl leading-tight text-site-text"
                 value={profile.displayName}
                 editable={editable}
                 onChange={updateProfile('displayName')}
@@ -288,7 +288,7 @@ export function HeroSection({ data, config, sectionIndex, editable, onUpdateCont
 
           <div className="relative">
             <div className="aspect-square bg-site-primary/20 rounded-full blur-3xl absolute inset-0" />
-            <div className="relative bg-gradient-to-br from-site-surface to-site-bg rounded-3xl p-6 @sm:p-12 backdrop-blur-xl border border-white/5">
+            <div className="relative site-card p-6 @sm:p-12">
               <div className="text-center">
                 <div className="w-32 h-32 bg-site-primary/20 rounded-full mx-auto mb-6 flex items-center justify-center backdrop-blur-sm overflow-hidden">
                   <InlineImage

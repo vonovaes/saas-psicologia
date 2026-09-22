@@ -72,9 +72,50 @@ body:has(.mobile-menu[open]) {
   container-type: inline-size;
 }
 
+/* ── Tokens tipográficos e de forma do site do tenant ───────────
+   Seções marcam títulos com .site-heading e cards com .site-card;
+   os valores vêm dos tokens injetados pelo ThemeProvider. */
+.tenant-site .site-heading {
+  font-family: var(--site-heading-font, inherit);
+  font-weight: var(--site-heading-weight, inherit);
+  letter-spacing: var(--site-heading-tracking, inherit);
+}
+
+@supports (zoom: 1) {
+  .tenant-site .site-heading {
+    zoom: var(--site-heading-zoom, 1);
+  }
+}
+
+.tenant-site .site-card {
+  border-radius: var(--site-radius, 1rem);
+}
+
+.tenant-site[data-card-style='flat'] .site-card {
+  background: var(--site-surface);
+}
+
+.tenant-site[data-card-style='bordered'] .site-card {
+  background: var(--site-surface);
+  border: 1px solid color-mix(in srgb, var(--site-text-muted) 30%, transparent);
+}
+
+.tenant-site[data-card-style='glass'] .site-card {
+  background: color-mix(in srgb, var(--site-surface) 70%, transparent);
+  border: 1px solid color-mix(in srgb, var(--site-text) 12%, transparent);
+  backdrop-filter: blur(14px);
+}
+
+.tenant-site[data-card-style='elevated'] .site-card {
+  background: var(--site-surface);
+  box-shadow: 0 14px 36px rgb(0 0 0 / 0.14);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .acolha-home,
-  .acolha-home * {
+  .acolha-home *,
+  .tenant-site,
+  .tenant-site * {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
